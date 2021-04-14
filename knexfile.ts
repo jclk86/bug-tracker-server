@@ -1,6 +1,4 @@
-require("ts-node/register");
-
-module.exports = {
+export default {
   client: "pg",
   connection: process.env.DATABASE_URL,
   pool: {
