@@ -17,9 +17,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn run prettier:format && yarn run eslint",
-      "pre-push": "",
-      "...": "..."
+      "pre-commit": "yarn run prettier:format && yarn run eslint"
     }
   },
   "dependencies": {
