@@ -1,5 +1,3 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm test
-yarn run prettier:format && yarn run eslint
