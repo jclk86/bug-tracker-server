@@ -13,12 +13,8 @@
     "eslint": "eslint . --ext .ts",
     "eslint:fix": "eslint . --ext .ts --fix",
     "prettier:format": "prettier --config .prettierrc src/**/*.ts --write",
-    "prettier:watch": "onchange src/**/*.ts -- prettier --write {{changed}}"
-  },
-  "husky": {
-    "hooks": {
-      "precommit": "yarn run prettier:format && yarn run eslint"
-    }
+    "prettier:watch": "onchange src/**/*.ts -- prettier --write {{changed}}",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^4.22.0",
@@ -34,12 +30,12 @@
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.4.0",
-    "husky": "^6.0.0",
     "nodemon": "^2.0.7",
     "onchange": "^7.1.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.2.4"
+    "typescript": "^4.2.4",
+    "husky": "^6.0.0"
   },
   "repository": {
     "type": "git",
