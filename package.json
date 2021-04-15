@@ -9,9 +9,22 @@
     "build": "tsc",
     "knex:migrate:make": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:make",
     "knex:migrate:latest": "node -r  ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest",
-    "knex:migrate:rollback": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback"
+    "knex:migrate:rollback": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback",
+    "eslint": "eslint . --ext .ts",
+    "eslint:fix": "eslint . --ext .ts --fix",
+    "prettier:format": "prettier --config .prettierrc src/**/*.ts --write",
+    "prettier:watch": "onchange src/**/*.ts -- prettier --write {{changed}}"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "",
+      "pre-push": "",
+      "...": "..."
+    }
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "knex": "^0.95.4",
@@ -20,8 +33,13 @@
   "devDependencies": {
     "@types/node": "^14.14.37",
     "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
     "nodemon": "^2.0.7",
+    "onchange": "^7.1.0",
+    "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   },
