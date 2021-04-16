@@ -9,5 +9,8 @@ export default {
     tableName: 'knex_migrations',
     directory: './src/database/migrations'
   },
+  seeds: {
+    directory: './src/database/seeds'
+  },
   timezone: 'UTC'
 };
