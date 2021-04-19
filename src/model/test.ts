@@ -1,9 +1,9 @@
 import knex from './knex';
 
-const db = knex();
+const db = knex;
 
 const get = async () => {
-  const data = await db.select('*').from('company');
+  const data = await db('company').select('*');
   return data;
 };
 
