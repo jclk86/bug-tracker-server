@@ -1,14 +1,28 @@
 import * as express from 'express';
+import * as helmet from 'helmet';
+
 const app = express();
 
-app.get('/test', (req, res) => {
-  res.send('Hello World');
-});
+app.use(helmet());
 
-console.log('hi');
+// config express
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.status(404).send({ error: { message: 'Page Not Found' } });
+app.use(function (err, req, res, next) {
+  let message = null;
+
+  if (err.raw) {
+    message = err.raw.message;
+  } else if (err.message) {
+    message = err.message;
+  } else if (err.sqlMessage) {
+    message = err.sqlMessage;
+  }
+
+  console.error(message);
+
+  message ? res.status(400).send({ message: message }) : res.status(400).send(err);
 });
 
 export default app;

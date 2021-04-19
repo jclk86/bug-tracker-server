@@ -20,5 +20,5 @@ export async function up(knex: Knex): Promise<any> {
 }
 
 export async function down(knex: Knex): Promise<any> {
-  return knex.schema.dropTable('company');
+  return knex.schema.dropTable('project_users');
 }
