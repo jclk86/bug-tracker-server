@@ -1,16 +1,26 @@
 import * as express from 'express';
 import * as helmet from 'helmet';
+import * as cors from 'cors';
+import morgan from './loggers/config/morgan';
 import apiRouter from './api';
 
 const app = express();
 
 app.use(helmet());
 
+// !create cors access options
+
 // config express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(apiRouter);
+app.use(cors(), apiRouter);
+
+app.use(morgan);
+
+app.use('/', (req, res, next) => {
+  res.send('Not found');
+});
 
 app.use(function (err, req, res, next) {
   let message = null;
