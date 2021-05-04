@@ -1,10 +1,10 @@
-import * as express from 'express';
-import * as helmet from 'helmet';
-import * as cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
 import morgan from './loggers/config/morgan';
 import apiRouter from './api';
 
-const app = express();
+const app: express.Application = express();
 
 app.use(helmet());
 

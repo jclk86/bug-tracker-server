@@ -2,11 +2,16 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist",
     "sourceMap": true,
     "noEmitOnError": true,
-    "strictNullChecks": true
+    "strict": true, // sets all strict options to true
+    "noImplicitAny": false,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*.ts", "knexfile.ts"],
-  "exclude": ["node_modules", ".vscode"]
+  "exclude": ["node_modules"]
 }

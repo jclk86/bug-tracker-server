@@ -1,5 +1,5 @@
-import * as express from 'express';
-import * as supertest from 'supertest';
+import express from 'express';
+import supertest from 'supertest';
 const app = express();
 
 import application from '../app';

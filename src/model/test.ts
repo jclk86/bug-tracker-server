@@ -1,5 +1,5 @@
 import knex from './knex';
-
+// should be a class
 const db = knex;
 
 const get = async () => {
