@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from './loggers/config/morgan';
 import Routes from './routes';
 
+// Server class executes constructor when instantiated. Exported into index.ts
 class Server {
   public app: express.Application;
   constructor() {
@@ -13,7 +14,7 @@ class Server {
   }
 
   // !create cors access options
-
+  // middleware
   private config(): void {
     this.app.use(helmet());
     this.app.use(express.json());

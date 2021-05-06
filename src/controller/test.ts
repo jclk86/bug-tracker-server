@@ -21,15 +21,18 @@ import { RequestHandler } from 'express';
 //   get
 // };
 
+// controller handles all client requests. Does not directly manipulate database
+
 const all: RequestHandler = async (req, res): Promise<void> => {
   const trx = await DB.startTransaction();
   try {
     // ensures all or nothing transaction
     const companies = await Test.all(trx, req.query.limit);
+    // commits if all processes in transaction is successful
     await trx.commit();
     res.status(200).send(companies);
   } catch (error) {
-    // abort transaction
+    // abort transaction and rollback if not successful. Ensures database integrity.
     await trx.rollback();
     res.status(500).send(error);
   }
