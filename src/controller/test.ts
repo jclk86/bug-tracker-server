@@ -24,10 +24,12 @@ import { RequestHandler } from 'express';
 const all: RequestHandler = async (req, res): Promise<void> => {
   const trx = await DB.startTransaction();
   try {
+    // ensures all or nothing transaction
     const companies = await Test.all(trx, req.query.limit);
     await trx.commit();
     res.status(200).send(companies);
   } catch (error) {
+    // abort transaction
     await trx.rollback();
     res.status(500).send(error);
   }
