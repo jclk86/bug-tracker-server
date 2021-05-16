@@ -1,22 +1,11 @@
 import { Router } from 'express';
 import testController from '../controller/test';
 
-class TestRouter {
-  public router: Router;
-  constructor() {
-    this.router = Router();
-    this.routes();
-  }
+const testRouter = Router();
 
-  public routes() {
-    this.router.get('/', testController.all);
-  }
-}
+testRouter.get('/test', testController.all);
+// testRouter.get('/test2', testController.all);
 
-const testRouter = new TestRouter();
+// add testRouter.post, patch delete
 
-testRouter.routes();
-
-const router = testRouter.router;
-
-export default router;
+export default testRouter;

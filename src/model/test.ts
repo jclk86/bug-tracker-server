@@ -1,9 +1,13 @@
-import testDB from '../service/test';
-
 // model interfaces with database. Handles all data logic and data manipulation
 
-async function all(trx, limit) {
-  return testDB.all(trx, limit);
+interface Company {
+  id: string;
+  name: string;
+  date: Date;
+}
+
+async function all(trx, limit): Promise<Company> {
+  return trx.select('*').from('company').limit(limit);
 }
 
 export default {

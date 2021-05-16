@@ -1,6 +1,7 @@
 import Test from '../model/test';
-import DB from '../database';
+import startTransaction from '../database';
 import { RequestHandler } from 'express';
+
 // models are classes, so you would instantiate those classes here.
 // can use typecasting on request body, since TS doesn't know what type it will be
 // !typecasting only instances that you know what the type will be.
@@ -24,7 +25,7 @@ import { RequestHandler } from 'express';
 // controller handles all client requests. Does not directly manipulate database
 
 const all: RequestHandler = async (req, res): Promise<void> => {
-  const trx = await DB.startTransaction();
+  const trx = await startTransaction();
   try {
     // ensures all or nothing transaction
     const companies = await Test.all(trx, req.query.limit);

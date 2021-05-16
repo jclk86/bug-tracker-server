@@ -1,25 +1,8 @@
-import express from 'express';
+import { Router } from 'express';
 import testRouter from './test';
 
-export default function Routes(app: express.Application): void {
-  const router: express.Router = express.Router();
+const router = Router();
 
-  app.use('/', router);
-  app.use('/test', testRouter);
+router.use(testRouter);
 
-  // error handler
-  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const err = new Error('Not Found');
-    res.status(404);
-    next(err);
-  });
-
-  app.use(function (err, req, res, next) {
-    res.status(err.status || 500);
-    res.json({
-      error: {
-        message: err.message
-      }
-    });
-  });
-}
+export = router;
