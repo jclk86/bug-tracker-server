@@ -28,7 +28,7 @@ const all: RequestHandler = async (req, res): Promise<void> => {
   const trx = await startTransaction();
   try {
     // ensures all or nothing transaction
-    const companies = await Test.all(trx, req.query.limit);
+    const companies = await Test.all(trx);
     // commits if all processes in transaction is successful
     await trx.commit();
     res.status(200).send(companies);

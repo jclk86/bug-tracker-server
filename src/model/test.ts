@@ -1,13 +1,13 @@
 // model interfaces with database. Handles all data logic and data manipulation
-
+import { Knex } from 'knex';
 interface Company {
   id: string;
   name: string;
-  date: Date;
+  date_created: Date;
 }
 
-async function all(trx, limit): Promise<Company> {
-  return trx.select('*').from('company').limit(limit);
+function all(trx: Knex.Transaction): Knex.QueryBuilder {
+  return trx.table<Company>('company').returning('*');
 }
 
 export default {
