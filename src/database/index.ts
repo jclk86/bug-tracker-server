@@ -7,7 +7,9 @@ export default function startTransaction(): Promise<Knex.Transaction> {
       .transaction((trx) => {
         return resolve(trx);
       })
-      .catch(reject);
+      .catch((err) => {
+        throw new Error(err);
+      });
   }) as Promise<Knex.Transaction>;
 }
 
