@@ -2,8 +2,6 @@ import Test from '../model/test';
 import startTransaction from '../database';
 import { RequestHandler } from 'express';
 
-// models are classes, so you would instantiate those classes here.
-// can use typecasting on request body, since TS doesn't know what type it will be
 // !typecasting only instances that you know what the type will be.
 // typecasting uses 'as' keyword, followed by the type {title: string}
 // we know our own api and database types, so do typecasting
