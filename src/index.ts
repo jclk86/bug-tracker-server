@@ -9,7 +9,7 @@ const { port } = config;
 
 app
   .listen(port, () => {
-    Logger.http(`Server is running in http://localhost:${port}`);
+    Logger.info(`Server is running in http://localhost:${port}`);
   })
   // if port in use
   .on('error', function (err) {

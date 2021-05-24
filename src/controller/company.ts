@@ -2,34 +2,13 @@ import Company from '../model/company';
 import util from '../model/utilities';
 import { RequestHandler } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { ICompany } from '../schema/company';
-
-// !typecasting only instances that you know what the type will be.
-// typecasting uses 'as' keyword, followed by the type {title: string}
-// we know our own api and database types, so do typecasting
-// see 5:00 of working with controllers and parsing req bodies in TS tutorial
-
-// !if dealing with params ... params.id = /:id in routes.
-// for req.params.whatver, the RequestHandler mustb e given a generic type or else
-// req.params.whatever will resort to "any" type again. Ex: RequestHandler<{ whatever: string}>
-// const get: RequestHandler = async (req, res) => {
-//   const data = await test.get();
-
-//   res.send(data);
-// };
-
-// export default {
-//   get
-// };
-
-// controller handles all client requests. Does not directly manipulate database
 
 // getAllCompanies
 const getAllCompanies: RequestHandler = async (req, res) => {
   try {
     const companies = await Company.getAllCompanies();
     res.status(200).send(companies);
-  } catch (error) {
+  } catch (e) {
     res.status(404).send({
       message: 'No companies have been added'
     });
@@ -37,16 +16,15 @@ const getAllCompanies: RequestHandler = async (req, res) => {
 };
 
 // getCompanyByName
-const getCompanyByName: RequestHandler = async (req, res) => {
-  const name = req.params.name as string;
+const getCompanyByName: RequestHandler<{ name: string }> = async (req, res, next) => {
+  const { name } = req.params;
 
   try {
     const company = await Company.getCompanyByName(name);
+    if (!company?.length) throw new Error('No company found');
     res.status(200).send(company[0]);
-  } catch (error) {
-    res.status(404).send({
-      message: 'Company not found'
-    });
+  } catch (e) {
+    next(e);
   }
 };
 
@@ -63,9 +41,9 @@ const createCompany: RequestHandler = async (req, res) => {
     // check if all fields are filled out
     const result = await Company.createCompany(newCompany);
     res.status(201).send(result);
-  } catch (error) {
+  } catch (e) {
     res.status(422).send({
-      message: error.message
+      message: e.message
     });
   }
 };

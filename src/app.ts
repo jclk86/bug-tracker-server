@@ -2,7 +2,6 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from './loggers/config/morgan';
-import Logger from './loggers/config/logger';
 import routes from './routes';
 
 // Server class executes constructor when instantiated. Exported into index.ts
@@ -17,13 +16,16 @@ app.use(morgan);
 
 app.use(routes);
 
+app.use((req, res) => {
+  res.status(404).send('NOT FOUND');
+});
+
 app.use(function errorHandler(error, req, res, next) {
   let response;
   if (process.env.NODE_ENV === 'production') {
     response = { error: { message: 'server error' } };
   } else {
-    Logger.error(error);
-    response = { message: error.message, error };
+    response = { message: error.message };
   }
   res.status(500).json(response);
 });

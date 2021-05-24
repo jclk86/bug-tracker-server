@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import companyController from '../controller/company';
+import company from '../model/company';
 
 const companyRouter = Router();
 
