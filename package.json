@@ -1,11 +1,11 @@
 {
   "name": "chimuwaku-server",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node -r ts-node/register src/server.ts",
-    "dev": "nodemon --config nodemon.json --inspect-brk src/server.ts",
+    "start": "node -r ts-node/register src/index.ts",
+    "dev": "nodemon --config nodemon.json --inspect-brk src/index.ts",
     "build": "tsc",
     "test:dev": "nodemon --config nodemon.json --watch . --ext ts --exec \"mocha -r ts-node/register src/__tests__/**/*.test.ts\"",
     "knex:migrate:make": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:make",

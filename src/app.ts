@@ -2,40 +2,49 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from './loggers/config/morgan';
-import apiRouter from './api';
+import Logger from './loggers/config/logger';
+import routes from './routes';
+
+// Server class executes constructor when instantiated. Exported into index.ts
 
 const app: express.Application = express();
 
 app.use(helmet());
-
-// !create cors access options
-
-// config express
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use(cors(), apiRouter);
-
+app.use(cors());
 app.use(morgan);
 
-app.use('/', (req, res, next) => {
-  res.send('Not found');
-});
+app.use(routes);
 
-app.use(function (err, req, res, next) {
-  let message = null;
-
-  if (err.raw) {
-    message = err.raw.message;
-  } else if (err.message) {
-    message = err.message;
-  } else if (err.sqlMessage) {
-    message = err.sqlMessage;
+app.use(function errorHandler(error, req, res, next) {
+  let response;
+  if (process.env.NODE_ENV === 'production') {
+    response = { error: { message: 'server error' } };
+  } else {
+    Logger.error(error);
+    response = { message: error.message, error };
   }
-
-  console.error(message);
-
-  message ? res.status(400).send({ message: message }) : res.status(400).send(err);
+  res.status(500).json(response);
 });
+
+// class Server {
+//   public app: express.Application;
+//   constructor() {
+//     this.app = express();
+//     this.config();
+//     Routes(this.app);
+//   }
+
+//   // !create cors access options
+//   // middleware
+//   private config(): void {
+//     this.app.use(helmet());
+//     this.app.use(express.json());
+//     this.app.use(express.urlencoded({ extended: true }));
+//     this.app.use(cors());
+//     this.app.use(morgan);
+//   }
+// }
 
 export default app;
