@@ -28,23 +28,4 @@ app.use(function errorHandler(error, req, res, next) {
   res.status(500).json(response);
 });
 
-// class Server {
-//   public app: express.Application;
-//   constructor() {
-//     this.app = express();
-//     this.config();
-//     Routes(this.app);
-//   }
-
-//   // !create cors access options
-//   // middleware
-//   private config(): void {
-//     this.app.use(helmet());
-//     this.app.use(express.json());
-//     this.app.use(express.urlencoded({ extended: true }));
-//     this.app.use(cors());
-//     this.app.use(morgan);
-//   }
-// }
-
 export default app;
