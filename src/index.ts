@@ -2,15 +2,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 import app from './app';
 import config from './config';
+import Logger from './loggers/config/logger';
 
 // server config
 const { port } = config;
 
 app
   .listen(port, () => {
-    console.log(`Server is running in http://localhost:${port}`);
+    Logger.http(`Server is running in http://localhost:${port}`);
   })
   // if port in use
   .on('error', function (err) {
-    console.log(err);
+    Logger.error(err);
   });

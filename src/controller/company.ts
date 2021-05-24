@@ -37,9 +37,11 @@ const getAllCompanies: RequestHandler = async (req, res) => {
 };
 
 // getCompanyByName
-const getCompanyByName: RequestHandler = async (req, res): Promise<void> => {
+const getCompanyByName: RequestHandler = async (req, res) => {
+  const name = req.params.name as string;
+
   try {
-    const company = await Company.getCompanyByName(req.params.name);
+    const company = await Company.getCompanyByName(name);
     res.status(200).send(company[0]);
   } catch (error) {
     res.status(404).send({
