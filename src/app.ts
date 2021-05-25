@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from './loggers/config/morgan';
@@ -20,14 +20,20 @@ app.use((req, res) => {
   res.status(404).send('NOT FOUND');
 });
 
-app.use(function errorHandler(error, req, res, next) {
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.log(error.name);
+  next(error);
+});
+// if next is used here, will pass to express' in-built error handler -- you don't need to use their in-built errorhandler though
+// next needs to be here, or else it returns error stack
+app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   let response;
   if (process.env.NODE_ENV === 'production') {
-    response = { error: { message: 'server error' } };
+    response = { error: { message: 'server error', status: 500 } };
   } else {
-    response = { message: error.message };
+    response = { error };
   }
-  res.status(500).json(response);
+  res.status(response.error.status).json(response);
 });
 
 export default app;

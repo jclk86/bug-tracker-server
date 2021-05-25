@@ -16,6 +16,8 @@ const checkBody = function (requestBody: ICompany): ResultError | ResultSuccess 
   };
 };
 
+// const verify = function () {};
+
 export default {
   checkBody
 };

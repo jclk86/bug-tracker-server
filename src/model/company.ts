@@ -3,7 +3,7 @@ import db from '../database/config';
 import { ICompany } from '../schema/company';
 
 // getAllCompanies
-function getAllCompanies(): Promise<ICompany[]> {
+async function getAllCompanies(): Promise<ICompany[]> {
   return db<ICompany>('company').returning('*');
 }
 
