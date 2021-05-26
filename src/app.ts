@@ -1,9 +1,9 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from './loggers/config/morgan';
-import Logger from './loggers/config/logger';
 import routes from './routes';
+import CustomError from './errorhandler/CustomError';
 
 // Server class executes constructor when instantiated. Exported into index.ts
 
@@ -17,34 +17,20 @@ app.use(morgan);
 
 app.use(routes);
 
-app.use(function errorHandler(error, req, res, next) {
-  let response;
-  if (process.env.NODE_ENV === 'production') {
-    response = { error: { message: 'server error' } };
-  } else {
-    Logger.error(error);
-    response = { message: error.message, error };
-  }
-  res.status(500).json(response);
+app.use((req, res) => {
+  res.status(404).send('Page Not Found');
 });
 
-// class Server {
-//   public app: express.Application;
-//   constructor() {
-//     this.app = express();
-//     this.config();
-//     Routes(this.app);
-//   }
-
-//   // !create cors access options
-//   // middleware
-//   private config(): void {
-//     this.app.use(helmet());
-//     this.app.use(express.json());
-//     this.app.use(express.urlencoded({ extended: true }));
-//     this.app.use(cors());
-//     this.app.use(morgan);
-//   }
-// }
+// if next is used here, will pass to express' in-built error handler -- you don't need to use their in-built errorhandler though
+// next needs to be here, or else it returns error stack
+app.use((error: CustomError, req: Request, res: Response, next: NextFunction) => {
+  let response;
+  if (process.env.NODE_ENV === 'production') {
+    response = { error: { message: 'server error', status: 500 } };
+  } else {
+    response = { error };
+  }
+  res.status(response.error.status).json(response.error.message);
+});
 
 export default app;

@@ -1,76 +1,51 @@
 import Company from '../model/company';
-import util from '../model/utilities';
-import { RequestHandler } from 'express';
+import util from './utilities';
+import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { ICompany } from '../schema/company';
+import CustomError from '../errorhandler/CustomError';
 
-// !typecasting only instances that you know what the type will be.
-// typecasting uses 'as' keyword, followed by the type {title: string}
-// we know our own api and database types, so do typecasting
-// see 5:00 of working with controllers and parsing req bodies in TS tutorial
+// next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
+// Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
 
-// !if dealing with params ... params.id = /:id in routes.
-// for req.params.whatver, the RequestHandler mustb e given a generic type or else
-// req.params.whatever will resort to "any" type again. Ex: RequestHandler<{ whatever: string}>
-// const get: RequestHandler = async (req, res) => {
-//   const data = await test.get();
-
-//   res.send(data);
-// };
-
-// export default {
-//   get
-// };
-
-// controller handles all client requests. Does not directly manipulate database
-
-// getAllCompanies
-const getAllCompanies: RequestHandler = async (req, res) => {
-  try {
-    const companies = await Company.getAllCompanies();
-    res.status(200).send(companies);
-  } catch (error) {
-    res.status(404).send({
-      message: 'No companies have been added'
-    });
-  }
+const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
+  const companies = await Company.getAllCompanies();
+  if (!companies?.length) throw new CustomError(400, 'No companies have been added');
+  res.status(200).send(companies);
 };
 
-// getCompanyByName
-const getCompanyByName: RequestHandler = async (req, res) => {
-  const name = req.params.name as string;
-
-  try {
-    const company = await Company.getCompanyByName(name);
-    res.status(200).send(company[0]);
-  } catch (error) {
-    res.status(404).send({
-      message: 'Company not found'
-    });
-  }
+const getCompanyByName = async (req: Request, res: Response): Promise<void> => {
+  const { name } = req.params;
+  const company = await Company.getCompanyByName(name);
+  if (!company?.length) throw new CustomError(400, 'No such company exists');
+  res.status(200).send(company);
 };
 
-// createCompany
-const createCompany: RequestHandler = async (req, res) => {
+const createCompany = async (req: Request, res: Response): Promise<void> => {
   // check for missing required item
   const newCompany = {
     id: uuidv4(),
     name: req.body.name as string
   };
 
-  try {
-    await util.checkBody(newCompany);
-    // check if all fields are filled out
-    const result = await Company.createCompany(newCompany);
-    res.status(201).send(result);
-  } catch (error) {
-    res.status(422).send({
-      message: error.message
-    });
-  }
+  // check if all fields are filled out
+  await util.checkBody(newCompany);
+
+  const exists = await Company.getCompanyByName(newCompany.name);
+
+  if (exists) throw new CustomError(400, 'Company already exists');
+
+  // might want to attach a primary email to the company
+
+  const result = await Company.createCompany(newCompany);
+
+  res.status(201).send(result);
 };
 
-// updateCompany
+// const updateCompany = async (req: Request, res: Response): Promise<void> => {
+//   const updatedCompany = {
+//     name: req.body.name
+//   }
+// };
 
 // deleteCompany
 
