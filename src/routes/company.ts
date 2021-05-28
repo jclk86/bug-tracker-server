@@ -6,9 +6,9 @@ const companyRouter = Router();
 
 companyRouter.get('/company', catchAsync(companyController.getAllCompanies));
 
-companyRouter.get('/company/:name', catchAsync(companyController.getCompanyByName));
+companyRouter.get('/company/name/:name', catchAsync(companyController.getCompanyByName));
 
-companyRouter.get('/select/:id', catchAsync(companyController.getCompanyById));
+companyRouter.get('/company/id/:id', catchAsync(companyController.getCompanyById));
 
 companyRouter.post('/company/create', catchAsync(companyController.createCompany));
 
