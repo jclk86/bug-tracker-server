@@ -1,19 +1,26 @@
 import { Router } from 'express';
-import companyController from '../controller/company';
+import {
+  getAllCompanies,
+  getCompanyByName,
+  getCompanyById,
+  createCompany,
+  updateCompany,
+  deleteCompany
+} from '../controller/company';
 import catchAsync from './utilities';
 
 const companyRouter = Router();
 
-companyRouter.get('/company', catchAsync(companyController.getAllCompanies));
+companyRouter.get('/company', catchAsync(getAllCompanies));
 
-companyRouter.get('/company/name/:name', catchAsync(companyController.getCompanyByName));
+companyRouter.get('/company/name/:name', catchAsync(getCompanyByName));
 
-companyRouter.get('/company/id/:id', catchAsync(companyController.getCompanyById));
+companyRouter.get('/company/id/:id', catchAsync(getCompanyById));
 
-companyRouter.post('/company/create', catchAsync(companyController.createCompany));
+companyRouter.post('/company/create', catchAsync(createCompany));
 
-companyRouter.put('/company/edit/:id', catchAsync(companyController.updateCompany));
+companyRouter.put('/company/edit/:id', catchAsync(updateCompany));
 
-companyRouter.delete('/company/delete/:id', catchAsync(companyController.deleteCompany));
+companyRouter.delete('/company/delete/:id', catchAsync(deleteCompany));
 
 export default companyRouter;
