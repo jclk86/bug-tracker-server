@@ -59,7 +59,8 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
   if (!exists) throw new CustomError(400, 'Company does not exist');
 
   const companyBody = {
-    name: req.body.name
+    name: req.body.name,
+    account_owner_id: req.body.account_owner_id
   };
 
   await util.checkBody(companyBody);

@@ -5,8 +5,20 @@ export async function up(knex: Knex): Promise<any> {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
     table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
-    table.uuid('team_leader_id').notNullable().references('id').inTable('user').onDelete('cascade');
-    table.uuid('company_id').notNullable().references('id').inTable('company').onDelete('cascade');
+    table
+      .uuid('team_leader_id')
+      .notNullable()
+      .references('id')
+      .inTable('user')
+      .onUpdate('cascade')
+      .onDelete('cascade');
+    table
+      .uuid('company_id')
+      .notNullable()
+      .references('id')
+      .inTable('company')
+      .onUpdate('cascade')
+      .onDelete('cascade');
     table.date('deadline');
   });
 }

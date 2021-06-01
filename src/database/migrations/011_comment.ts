@@ -5,7 +5,13 @@ export async function up(knex: Knex): Promise<any> {
     table.uuid('id').primary();
     table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
     table.uuid('ticket_id').notNullable().references('id').inTable('ticket');
-    table.uuid('user_id').notNullable().references('id').inTable('user');
+    table
+      .uuid('user_id')
+      .notNullable()
+      .references('id')
+      .inTable('user')
+      .onUpdate('cascade')
+      .onDelete('cascade');
     table.text('content').notNullable;
   });
 }
