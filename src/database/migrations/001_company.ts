@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
     table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
-    table.uuid('account_owner_id');
+    table.string('email', 64).notNullable().unique();
   });
 }
 

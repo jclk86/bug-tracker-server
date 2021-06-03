@@ -4,8 +4,15 @@ export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable('checklist', (table: Knex.TableBuilder) => {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
-    table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
-    table.boolean('completed').notNullable();
+    table.string('description', 64);
+    table.boolean('completed').defaultTo(false);
+    table
+      .uuid('ticket_id')
+      .notNullable()
+      .references('id')
+      .inTable('ticket')
+      .onUpdate('cascade')
+      .onDelete('cascade');
   });
 }
 

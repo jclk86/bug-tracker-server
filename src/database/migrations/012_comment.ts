@@ -5,6 +5,7 @@ export async function up(knex: Knex): Promise<any> {
     table.uuid('id').primary();
     table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
     table.uuid('ticket_id').notNullable().references('id').inTable('ticket');
+    table.timestamp('last_edited').defaultTo(knex.fn.now());
     table
       .uuid('user_id')
       .notNullable()

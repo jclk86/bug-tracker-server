@@ -16,7 +16,7 @@ exports.seed = async function (knex) {
         password: 'Password123!',
         active: true,
         permission: 'owner',
-        company_id: '0e5760c1-e802-4767-b9e0-a321890b7db9'
+        company_id: '9bf71040-8622-4a33-8187-ab49dcf480fb'
       }
     ]);
   }

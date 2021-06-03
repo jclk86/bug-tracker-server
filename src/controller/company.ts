@@ -8,6 +8,8 @@ import CustomError from '../errorhandler/CustomError';
 // next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
 // Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
 
+// this is admin controlled and owner
+
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
   const companies = await Company.get();
   // !this still needs to be tested
@@ -67,7 +69,7 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   await Company.update(id, companyBody);
 
-  res.status(204).send('Resouce successfully updated');
+  res.status(204).send('Resource successfully updated');
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {
