@@ -1,4 +1,4 @@
-const priorities = [
+const projectPriorities = [
   {
     order_number: 0,
     option: 'None',
@@ -23,5 +23,5 @@ const priorities = [
 
 exports.seed = async function (knex) {
   await knex('project_priority').del();
-  await knex('project_priority').insert(priorities);
+  await knex('project_priority').insert(projectPriorities);
 };

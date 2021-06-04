@@ -1,4 +1,4 @@
-const statuses = [
+const projectStatuses = [
   {
     order_number: 0,
     option: 'None',
@@ -45,5 +45,5 @@ const statuses = [
 
 exports.seed = async function (knex) {
   await knex('project_status').del();
-  await knex('project_status').insert(statuses);
+  await knex('project_status').insert(projectStatuses);
 };
