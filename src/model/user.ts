@@ -5,6 +5,10 @@ async function get(): Promise<IUser[]> {
   return await db<IUser>('user').returning('*');
 }
 
+async function getByEmail(email: string): Promise<IUser | undefined> {
+  return await db<IUser>('user').returning('*').where({ email }).first();
+}
+
 async function getByName(name: string): Promise<IUser | undefined> {
   return await db<IUser>('user').returning('*').where({ name }).first();
 }
@@ -20,7 +24,8 @@ async function create(newUser: IUser): Promise<IUser> {
 
 export default {
   get,
-  getByName,
+  getByEmail,
   getById,
+  getByName,
   create
 };

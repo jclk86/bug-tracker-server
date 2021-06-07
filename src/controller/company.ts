@@ -32,7 +32,8 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
   // check for missing required item
   const newCompany = {
     id: uuidv4(),
-    name: req.body.name
+    name: req.body.name,
+    email: req.body.email
   };
 
   // check if all fields are filled out
