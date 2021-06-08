@@ -4,6 +4,6 @@ export interface IUser {
   email: string;
   active: boolean;
   password: string;
-  permission: string;
+  permission_id: number;
   company_id: string;
 }

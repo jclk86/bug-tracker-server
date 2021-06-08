@@ -9,7 +9,12 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
     table.boolean('active').notNullable();
     table.timestamp('last_active').defaultTo(knex.fn.now());
-    table.string('permission', 16).notNullable();
+    table
+      .integer('permission_id')
+      .notNullable()
+      .references('id')
+      .inTable('permission')
+      .onDelete('set null');
     table
       .uuid('company_id')
       .notNullable()
