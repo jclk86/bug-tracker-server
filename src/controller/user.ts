@@ -59,7 +59,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     id: uuidv4(),
     name: user.firstName + ' ' + user.lastName,
     email: user.email,
-    permission: user.permission,
+    permission_id: user.permission_id,
     password: user.password,
     company_id: user.company_id,
     active: true
@@ -74,7 +74,9 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   // company should be a dropdown menu?
   // If not, you have to check for its existence. But if you do dropdown, user needs to be approved
 
-  if (newUser.permission === 'owner') {
+  // a permisson id is needed and then we need a get for that permission id to check permission level
+
+  if (newUser.permission_id === 1) {
     // then does user email match the company? we use getCompanyByEmail and if he returns, then move forth
 
     const company = await Company.getById(newUser.company_id);
