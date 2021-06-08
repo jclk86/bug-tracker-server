@@ -11,7 +11,8 @@ exports.seed = async function (knex) {
     await knex('company').insert([
       {
         id: uuid(),
-        name: `Company${i}`
+        name: `Company${i}`,
+        email: `CompanyEmail${i}@gmail.com`
       }
     ]);
   }
