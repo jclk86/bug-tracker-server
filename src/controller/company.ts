@@ -1,4 +1,5 @@
 import Company from '../model/company';
+import User from '../model/user';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,8 +33,7 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
   // check for missing required item
   const newCompany = {
     id: uuidv4(),
-    name: req.body.name,
-    email: req.body.email
+    name: req.body.name
   };
 
   // check if all fields are filled out
@@ -57,20 +57,25 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await Company.getById(id);
+  const company = await Company.getById(id);
 
-  if (!exists) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(400, 'Company does not exist');
 
   const companyBody = {
-    name: req.body.name,
-    account_owner_id: req.body.account_owner_id
+    name: req.body.name
   };
 
   await util.checkBody(companyBody);
 
+  // look through database to see if any other company under that name
+
+  const exists = await Company.getByName(companyBody.name);
+
+  if (exists) throw new CustomError(400, 'Please choose a different company name');
+
   await Company.update(id, companyBody);
 
-  res.status(204).send('Resource successfully updated');
+  res.status(201).send({ message: 'company successfuly updated' });
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {
@@ -85,6 +90,8 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
   if (!exists) throw new CustomError(400, 'Company does not exist');
 
   await Company.remove(id);
+
+  //! check if deleting a company deletes all users
 
   res.status(200).send({ message: 'Company deleted' });
 };

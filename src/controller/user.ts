@@ -54,7 +54,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   const user = req.body;
 
   // check password
-  // permission will be gotten a different way
   const newUser = {
     id: uuidv4(),
     name: user.firstName + ' ' + user.lastName,
@@ -71,20 +70,67 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   if (userExists) throw new CustomError(400, 'User is already registered');
 
-  // company should be a dropdown menu?
-  // If not, you have to check for its existence. But if you do dropdown, user needs to be approved
-
-  // a permisson id is needed and then we need a get for that permission id to check permission level
+  if (newUser.permission_id > 3 || newUser.permission_id < 0)
+    throw new CustomError(400, 'Non-existent permission level');
 
   if (newUser.permission_id === 1) {
-    // then does user email match the company? we use getCompanyByEmail and if he returns, then move forth
-
-    const company = await Company.getById(newUser.company_id);
-
-    if (company?.email !== newUser.email) throw new CustomError(403, 'Request denied');
+    // Ensures only 1 owner per company
+    const owner = await User.getAccountOwner(newUser.company_id, 1);
+    if (owner) throw new CustomError(400, 'Company already has owner');
   }
 
   await User.create(newUser);
 
   res.status(201).send({ message: 'User was sucessfully created' });
+};
+
+// ! date created keeps updating upon edits. Should remain same, while last_active or last_edited changes
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+  // search for id
+  const { id } = req.params;
+
+  const isValid = await isValidUUIDV4(id);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const user = await User.getById(id);
+
+  if (!user) throw new CustomError(400, 'User does not exist');
+
+  const userBody = {
+    password: req.body.password,
+    email: req.body.email,
+    permission_id: req.body.permission_id,
+    active: req.body.active
+  };
+
+  await util.checkBody(userBody);
+
+  if (userBody.permission_id > 3 || userBody.permission_id < 0)
+    throw new CustomError(400, 'Non-existent permission level');
+
+  if (userBody.permission_id !== user.permission_id && userBody.permission_id <= 1)
+    throw new CustomError(400, 'Can only change permission level between Manager and Developer');
+
+  await User.update(id, userBody);
+
+  res.status(201).send({ message: 'User successfully updated' });
+};
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  const isValid = await isValidUUIDV4(id);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const user = await User.getById(id);
+
+  if (!user) throw new CustomError(400, 'User does not exist');
+
+  await User.removeById(id);
+
+  //! what if owner is deleted?
+
+  res.status(200).send({ message: 'User successfully deleted' });
 };

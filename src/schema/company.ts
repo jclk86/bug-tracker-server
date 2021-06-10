@@ -1,7 +1,10 @@
 export interface ICompany {
   id: string;
   name: string;
-  email: string;
+}
+
+export interface IUpdateCompany {
+  name: string;
 }
 
 export interface ICompanyGeneric {

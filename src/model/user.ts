@@ -1,5 +1,5 @@
 import db from '../database/config';
-import { IUser } from '../schema/user';
+import { IUser, IUpdateUser } from '../schema/user';
 
 async function get(): Promise<IUser[]> {
   return await db<IUser>('user').returning('*');
@@ -17,9 +17,33 @@ async function getById(id: string): Promise<IUser | undefined> {
   return await db<IUser>('user').returning('*').where({ id }).first();
 }
 
+async function getAccountOwner(
+  company_id: string,
+  permission_id: number
+): Promise<IUser | undefined> {
+  return await db<IUser>('user')
+    .returning('*')
+    .where('company_id', company_id)
+    .andWhere('permission_id', permission_id)
+    .first();
+}
+
 async function create(newUser: IUser): Promise<IUser> {
   await db<IUser>('user').insert(newUser);
   return newUser;
+}
+
+async function update(id: string, data: IUpdateUser): Promise<IUpdateUser> {
+  await db<IUser>('user').where({ id }).update(data);
+  return data;
+}
+
+async function removeByEmail(email: string): Promise<IUser | undefined> {
+  return await db<IUser>('user').where('email', email).delete();
+}
+
+async function removeById(id: string): Promise<void> {
+  return await db<IUser>('user').where({ id }).delete();
 }
 
 export default {
@@ -27,5 +51,9 @@ export default {
   getByEmail,
   getById,
   getByName,
-  create
+  create,
+  removeByEmail,
+  removeById,
+  getAccountOwner,
+  update
 };
