@@ -23,10 +23,15 @@ async function update(id: string, data: IUpdateProject): Promise<IUpdateProject 
   return data;
 }
 
+async function removeById(id: string): Promise<void> {
+  return db<IProject>('project').where({ id }).delete();
+}
+
 export default {
   get,
   create,
   getById,
   getByName,
-  update
+  update,
+  removeById
 };

@@ -59,7 +59,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   res.status(201).send(result);
 };
-
+//! same issue with start date and last_edited date. Keeps updating
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -71,9 +71,36 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   if (!exists) throw new CustomError(400, 'Project does not exist');
 
-  const projectBody = {};
+  const projectBody = {
+    name: req.body.name,
+    description: req.body.description,
+    start_date: req.body.start_date,
+    completion_date: req.body.completion_date,
+    due_date: req.body.due_date,
+    team_leader_id: req.body.team_leader_id,
+    project_priority_id: req.body.project_priority_id,
+    project_status_id: req.body.project_status_id
+  };
 
   await util.checkBody(projectBody);
 
-  // await Project.update(id, projectBody);
+  await Project.update(id, projectBody);
+
+  res.status(201).send({ message: 'Project was sucessfully updated' });
+};
+
+export const deleteProject = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  const isValid = await isValidUUIDV4(id);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const exists = await Project.getById(id);
+
+  if (!exists) throw new CustomError(400, 'Project does not exist');
+
+  await Project.removeById(id);
+
+  res.status(200).send({ message: 'Project successfully deleted' });
 };
