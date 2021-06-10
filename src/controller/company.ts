@@ -33,8 +33,7 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
   // check for missing required item
   const newCompany = {
     id: uuidv4(),
-    name: req.body.name,
-    email: req.body.email
+    name: req.body.name
   };
 
   // check if all fields are filled out
@@ -58,26 +57,23 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await Company.getById(id);
+  const company = await Company.getById(id);
 
-  if (!exists) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(400, 'Company does not exist');
 
   const companyBody = {
-    name: req.body.name,
-    email: req.body.email
+    name: req.body.name
   };
 
   await util.checkBody(companyBody);
 
-  if (exists.email !== companyBody.email) {
-    await User.removeByEmail(exists.email);
-  }
-  //! this is causing issues
-  // if email is change for company, delete owner
-  // if owner is deleted first, then set company email to null
-  await Company.update(id, companyBody);
+  // look through database to see if any other company under that name
 
-  res.status(204).send('Resource successfully updated');
+  const exists = await Company.getByName(companyBody.name);
+
+  if (exists) throw new CustomError(400, 'Please choose a different company name');
+
+  res.status(204);
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {
@@ -92,6 +88,8 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
   if (!exists) throw new CustomError(400, 'Company does not exist');
 
   await Company.remove(id);
+
+  //! check if deleting a company deletes all users
 
   res.status(200).send({ message: 'Company deleted' });
 };

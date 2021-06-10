@@ -19,7 +19,7 @@ companyRouter.get('/company/id/:id', catchAsync(getCompanyById));
 
 companyRouter.post('/company/create', catchAsync(createCompany));
 
-companyRouter.put('/company/edit/:id', catchAsync(updateCompany));
+companyRouter.patch('/company/edit/:id', catchAsync(updateCompany));
 
 companyRouter.delete('/company/delete/:id', catchAsync(deleteCompany));
 

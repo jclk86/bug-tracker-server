@@ -10,10 +10,6 @@ async function getByName(name: string): Promise<ICompany | undefined> {
   return await db<ICompany>('company').returning('*').where({ name }).first();
 }
 
-async function getByEmail(email: string): Promise<ICompany | undefined> {
-  return await db<ICompany>('company').returning('*').where({ email }).first();
-}
-
 async function getById(id: string): Promise<ICompany | undefined> {
   return await db<ICompany>('company').returning('*').where({ id }).first();
 }
@@ -36,7 +32,6 @@ export default {
   get,
   getByName,
   getById,
-  getByEmail,
   create,
   update,
   remove

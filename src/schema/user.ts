@@ -7,3 +7,10 @@ export interface IUser {
   permission_id: number;
   company_id: string;
 }
+
+export interface IUpdateUser {
+  email: string;
+  active: boolean;
+  password: string;
+  permission_id: number;
+}

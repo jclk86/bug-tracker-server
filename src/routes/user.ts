@@ -4,7 +4,8 @@ import {
   getUserByName,
   getUserById,
   getUserByEmail,
-  createUser
+  createUser,
+  updateUser
 } from '../controller/user';
 import catchAsync from './utilities';
 
@@ -19,5 +20,7 @@ userRouter.get('/user/email/:email', catchAsync(getUserByEmail));
 userRouter.get('/user/id/:id', catchAsync(getUserById));
 
 userRouter.post('/user/create', catchAsync(createUser));
+
+userRouter.patch('/user/edit/:id', catchAsync(updateUser));
 
 export default userRouter;
