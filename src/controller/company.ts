@@ -73,7 +73,9 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   if (exists) throw new CustomError(400, 'Please choose a different company name');
 
-  res.status(204);
+  await Company.update(id, companyBody);
+
+  res.status(201).send({ message: 'company successfuly updated' });
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {

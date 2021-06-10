@@ -42,6 +42,10 @@ async function removeByEmail(email: string): Promise<IUser | undefined> {
   return await db<IUser>('user').where('email', email).delete();
 }
 
+async function removeById(id: string): Promise<void> {
+  return await db<IUser>('user').where({ id }).delete();
+}
+
 export default {
   get,
   getByEmail,
@@ -49,6 +53,7 @@ export default {
   getByName,
   create,
   removeByEmail,
+  removeById,
   getAccountOwner,
   update
 };

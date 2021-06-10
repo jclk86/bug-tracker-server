@@ -5,7 +5,8 @@ import {
   getUserById,
   getUserByEmail,
   createUser,
-  updateUser
+  updateUser,
+  deleteUser
 } from '../controller/user';
 import catchAsync from './utilities';
 
@@ -22,5 +23,7 @@ userRouter.get('/user/id/:id', catchAsync(getUserById));
 userRouter.post('/user/create', catchAsync(createUser));
 
 userRouter.patch('/user/edit/:id', catchAsync(updateUser));
+
+userRouter.delete('/user/delete/:id', catchAsync(deleteUser));
 
 export default userRouter;

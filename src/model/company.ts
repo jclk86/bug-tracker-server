@@ -24,7 +24,7 @@ async function update(id: string, data: IUpdateCompany): Promise<IUpdateCompany>
   return data;
 }
 
-async function remove(id: string): Promise<string> {
+async function remove(id: string): Promise<void> {
   return await db<ICompany>('company').where('id', id).delete();
 }
 

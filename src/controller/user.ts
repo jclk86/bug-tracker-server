@@ -54,7 +54,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   const user = req.body;
 
   // check password
-  // permission will be gotten a different way
   const newUser = {
     id: uuidv4(),
     name: user.firstName + ' ' + user.lastName,
@@ -85,6 +84,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   res.status(201).send({ message: 'User was sucessfully created' });
 };
 
+// ! date created keeps updating upon edits. Should remain same, while last_active or last_edited changes
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   // search for id
   const { id } = req.params;
@@ -114,5 +114,23 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   await User.update(id, userBody);
 
-  res.status(204);
+  res.status(201).send({ message: 'User successfully updated' });
+};
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  const isValid = await isValidUUIDV4(id);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const user = await User.getById(id);
+
+  if (!user) throw new CustomError(400, 'User does not exist');
+
+  await User.removeById(id);
+
+  //! what if owner is deleted?
+
+  res.status(200).send({ message: 'User successfully deleted' });
 };
