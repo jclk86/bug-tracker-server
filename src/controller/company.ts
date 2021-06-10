@@ -1,4 +1,5 @@
 import Company from '../model/company';
+import User from '../model/user';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -63,11 +64,17 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   const companyBody = {
     name: req.body.name,
-    account_owner_id: req.body.account_owner_id
+    email: req.body.email
   };
 
   await util.checkBody(companyBody);
 
+  if (exists.email !== companyBody.email) {
+    await User.removeByEmail(exists.email);
+  }
+  //! this is causing issues
+  // if email is change for company, delete owner
+  // if owner is deleted first, then set company email to null
   await Company.update(id, companyBody);
 
   res.status(204).send('Resource successfully updated');

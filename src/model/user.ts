@@ -22,10 +22,15 @@ async function create(newUser: IUser): Promise<IUser> {
   return newUser;
 }
 
+async function removeByEmail(email: string): Promise<IUser | undefined> {
+  return await db<IUser>('user').where('email', email).delete();
+}
+
 export default {
   get,
   getByEmail,
   getById,
   getByName,
-  create
+  create,
+  removeByEmail
 };

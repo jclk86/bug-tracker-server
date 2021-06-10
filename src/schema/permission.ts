@@ -1,5 +1,5 @@
 export interface IPermission {
   id: string;
-  order_number: integer;
+  order_number: number;
   level: string;
 }

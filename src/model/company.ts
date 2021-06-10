@@ -1,6 +1,6 @@
 // model interfaces with database. Handles all data logic and data manipulation
 import db from '../database/config';
-import { ICompany, ICompanyGeneric } from '../schema/company';
+import { ICompany, IUpdateCompany } from '../schema/company';
 
 async function get(): Promise<ICompany[]> {
   return await db<ICompany>('company').returning('*');
@@ -23,14 +23,13 @@ async function create(newCompany: ICompany): Promise<ICompany> {
   return newCompany;
 }
 
-async function update(id: string, data: ICompanyGeneric): Promise<ICompanyGeneric> {
+async function update(id: string, data: IUpdateCompany): Promise<IUpdateCompany> {
   await db<ICompany>('company').where({ id }).update(data);
   return data;
 }
 
 async function remove(id: string): Promise<string> {
-  await db<ICompany>('company').where('id', id).delete();
-  return id;
+  return await db<ICompany>('company').where('id', id).delete();
 }
 
 export default {
