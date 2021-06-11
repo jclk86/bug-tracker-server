@@ -6,7 +6,6 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.string('name', 64).notNullable().unique();
     table.string('description', 255);
     table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
-    table.date('deadline');
     table
       .integer('ticket_status_id')
       .notNullable()
@@ -25,7 +24,8 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.uuid('project_id').notNullable().references('id').inTable('project').onDelete('set null');
   });
 }
-
+// ! change onDelete to cascade. If a project is deleted, tickets should not remain
+//! remove deadline - rollback
 export async function down(knex: Knex): Promise<Knex.SchemaBuilder> {
   return knex.schema.dropTable('ticket');
 }

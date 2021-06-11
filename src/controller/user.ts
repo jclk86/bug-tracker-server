@@ -8,7 +8,7 @@ import CustomError from '../errorhandler/CustomError';
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await User.get();
-  if (!users.length) throw new CustomError(400, 'No users exist');
+  if (!users.length) throw new CustomError(404, 'No users exist');
   res.status(200).send(users);
 };
 

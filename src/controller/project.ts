@@ -70,7 +70,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   const exists = await Project.getById(id);
 
   if (!exists) throw new CustomError(400, 'Project does not exist');
-
+  // ! deal with duplate names
   const projectBody = {
     name: req.body.name,
     description: req.body.description,

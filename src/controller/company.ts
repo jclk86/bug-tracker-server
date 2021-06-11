@@ -1,5 +1,4 @@
 import Company from '../model/company';
-import User from '../model/user';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,7 +13,7 @@ import CustomError from '../errorhandler/CustomError';
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
   const companies = await Company.get();
   // !this still needs to be tested
-  if (!companies?.length) throw new CustomError(400, 'No companies have been added');
+  if (!companies?.length) throw new CustomError(404, 'No companies have been added');
 
   res.status(200).send(companies);
 };
