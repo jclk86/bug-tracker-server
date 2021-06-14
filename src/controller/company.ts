@@ -12,7 +12,7 @@ import CustomError from '../errorhandler/CustomError';
 
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
   const companies = await Company.get();
-  // !this still needs to be tested
+
   if (!companies?.length) throw new CustomError(404, 'No companies have been added');
 
   res.status(200).send(companies);
@@ -32,7 +32,8 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
   // check for missing required item
   const newCompany = {
     id: uuidv4(),
-    name: req.body.name
+    name: req.body.name,
+    date_created: util.currentTimeStamp
   };
 
   // check if all fields are filled out
@@ -61,7 +62,8 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
   if (!company) throw new CustomError(400, 'Company does not exist');
 
   const companyBody = {
-    name: req.body.name
+    name: req.body.name,
+    last_edited: util.currentTimeStamp
   };
 
   await util.checkBody(companyBody);

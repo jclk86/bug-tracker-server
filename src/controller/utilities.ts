@@ -10,6 +10,16 @@ const checkBody = function (requestBody: { [key: string]: string | boolean }): v
 
 // const verify = function () {};
 
+const currentTimeStamp = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit'
+});
+
 export default {
-  checkBody
+  checkBody,
+  currentTimeStamp
 };

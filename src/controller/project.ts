@@ -40,6 +40,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
     id: uuidv4(),
     name: project.name,
     description: project.description,
+    date_created: util.currentTimeStamp,
     start_date: project.start_date,
     completion_date: project.completion_date,
     due_date: project.due_date,
@@ -59,7 +60,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   res.status(201).send(result);
 };
-//! same issue with start date and last_edited date. Keeps updating
+
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -70,13 +71,18 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   const exists = await Project.getById(id);
 
   if (!exists) throw new CustomError(400, 'Project does not exist');
-  // ! deal with duplate names
+
+  // const nameExists = await Project.getByName(req.body.name);
+
+  // if (nameExists) throw new CustomError(400, 'Please enter a different project name');
+
   const projectBody = {
     name: req.body.name,
     description: req.body.description,
     start_date: req.body.start_date,
     completion_date: req.body.completion_date,
     due_date: req.body.due_date,
+    last_edited: util.currentTimeStamp,
     team_leader_id: req.body.team_leader_id,
     project_priority_id: req.body.project_priority_id,
     project_status_id: req.body.project_status_id

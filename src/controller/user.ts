@@ -1,11 +1,10 @@
 import User from '../model/user';
-import Company from '../model/company';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
-
+//! last_active should be done on sign out
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await User.get();
   if (!users.length) throw new CustomError(404, 'No users exist');
@@ -59,6 +58,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     name: user.firstName + ' ' + user.lastName,
     email: user.email,
     permission_id: user.permission_id,
+    date_created: util.currentTimeStamp,
     password: user.password,
     company_id: user.company_id,
     active: true
@@ -84,7 +84,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   res.status(201).send({ message: 'User was sucessfully created' });
 };
 
-// ! date created keeps updating upon edits. Should remain same, while last_active or last_edited changes
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   // search for id
   const { id } = req.params;
@@ -101,7 +100,8 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     password: req.body.password,
     email: req.body.email,
     permission_id: req.body.permission_id,
-    active: req.body.active
+    active: req.body.active,
+    last_edited: util.currentTimeStamp
   };
 
   await util.checkBody(userBody);
@@ -130,7 +130,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
   await User.removeById(id);
 
-  //! what if owner is deleted?
+  //! what if owner is deleted? we don't want to delete everyone if owner is deleted
 
   res.status(200).send({ message: 'User successfully deleted' });
 };

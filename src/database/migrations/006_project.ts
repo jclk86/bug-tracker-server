@@ -5,9 +5,9 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
     table.string('description', 255);
-    table.timestamp('date_created').notNullable();
-    table.date('start_date').notNullable().defaultTo(knex.fn.now());
-    table.timestamp('last_edited').defaultTo(knex.fn.now());
+    table.timestamp('date_created');
+    table.date('start_date');
+    table.timestamp('last_edited');
     table.date('due_date');
     table.date('completion_date');
     table

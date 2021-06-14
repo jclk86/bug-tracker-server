@@ -43,7 +43,7 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
     id: uuidv4(),
     name: ticket.name,
     description: ticket.description,
-    start_date: ticket.start_date,
+    date_created: util.currentTimeStamp,
     ticket_status_id: ticket.ticket_status_id,
     ticket_priority_level_id: ticket.ticket_priority_level_id,
     due_date: ticket.due_date,
@@ -75,24 +75,19 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
     ticket_status_id: req.body.ticket_status_id,
     ticket_priority_level_id: req.body.ticket_priority_level_id,
     due_date: req.body.due_date,
-    completion_date: req.body.completion_date
+    completion_date: req.body.completion_date,
+    last_edited: util.currentTimeStamp
   };
 
   await util.checkBody(ticketBody);
-
-  const ticketNameExists = await Ticket.getByName(req.body.name);
-
-  if (ticketNameExists) throw new CustomError(400, 'Please choose different name');
 
   const ticketIdExists = await Ticket.getById(id);
 
   if (!ticketIdExists) throw new CustomError(400, 'No ticket exists by that id');
 
-  try {
-    await Ticket.update(id, ticketBody);
-  } catch (e) {
-    console.log(e);
-  }
+  //! Need to not duplicate name. If ID matches, you can keep name, but if it doesn't, then you must choose different name
+
+  await Ticket.update(id, ticketBody);
 
   res.status(201).send({ message: 'Ticket successfully updated' });
 };

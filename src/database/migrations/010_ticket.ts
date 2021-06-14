@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
     table.string('description', 255);
-    table.timestamp('date_created').notNullable();
+    table.timestamp('date_created');
     table
       .integer('ticket_status_id')
       .notNullable()
@@ -18,7 +18,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .references('id')
       .inTable('ticket_priority')
       .onDelete('set null');
-    table.timestamp('last_edited').defaultTo(knex.fn.now());
+    table.timestamp('last_edited');
     table.date('due_date');
     table.date('completion_date');
     table.uuid('project_id').notNullable().references('id').inTable('project').onDelete('set null');

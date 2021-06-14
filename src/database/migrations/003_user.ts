@@ -6,9 +6,10 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.string('name', 64).notNullable();
     table.string('email', 64).notNullable().unique();
     table.string('password', 64).notNullable();
-    table.timestamp('date_created').notNullable();
+    table.timestamp('date_created');
+    table.timestamp('last_edited');
     table.boolean('active').notNullable();
-    table.timestamp('last_active').defaultTo(knex.fn.now());
+    table.timestamp('last_active');
     table
       .integer('permission_id')
       .notNullable()

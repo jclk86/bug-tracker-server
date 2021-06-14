@@ -10,7 +10,8 @@ async function get(ticket_id: string): Promise<IChecklist | undefined> {
 
 // do we need ticketId?
 async function create(newChecklist: IChecklist): Promise<IChecklist> {
-  return await db<IChecklist>('checklist').insert(newChecklist);
+  await db<IChecklist>('checklist').insert(newChecklist);
+  return newChecklist;
 }
 
 export default {

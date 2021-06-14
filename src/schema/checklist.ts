@@ -2,6 +2,6 @@ export interface IChecklist {
   id: string;
   name: string;
   description: string;
-  compelted: boolean;
+  completed: boolean;
   ticket_id: string;
 }
