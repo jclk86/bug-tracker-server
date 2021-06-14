@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
     table.string('description', 255);
-    table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
+    table.timestamp('date_created').notNullable();
     table
       .integer('ticket_status_id')
       .notNullable()

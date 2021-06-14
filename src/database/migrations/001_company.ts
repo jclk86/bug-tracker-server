@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
   return knex.schema.createTable('company', (table: Knex.TableBuilder) => {
     table.uuid('id').primary();
     table.string('name', 64).notNullable().unique();
-    table.timestamp('date_created').notNullable().defaultTo(knex.fn.now());
+    table.timestamp('date_created').notNullable();
   });
 }
 // !should we reference the user table, if so, user needs to be created first
