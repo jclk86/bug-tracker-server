@@ -117,8 +117,8 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   await util.checkBody(userBody);
 
-  //! if (userBody.permission_id > 3 || userBody.permission_id < 0)
-  //!   throw new CustomError(400, 'Non-existent permission level');
+  if (userBody.permission_id > 3 || userBody.permission_id < 0)
+    throw new CustomError(400, 'Non-existent permission level');
 
   if (userBody.permission_id !== user.permission_id && userBody.permission_id <= 1)
     throw new CustomError(400, 'Can only change permission level between Manager and Developer');

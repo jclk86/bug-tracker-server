@@ -10,7 +10,8 @@
     "noImplicitAny": false,
     "removeComments": true,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strictNullChecks": false
   },
   "include": ["src/**/*.ts", "knexfile.ts"],
   "exclude": ["node_modules"]
