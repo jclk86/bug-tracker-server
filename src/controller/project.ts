@@ -1,4 +1,5 @@
-import Project from '../model/project';
+import { get, getById, getByName, create, update, removeById } from '../model/project';
+import { Project } from '../schema/project';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,7 +7,7 @@ import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
 export const getAllProjects = async (req: Request, res: Response): Promise<void> => {
-  const projects = await Project.get();
+  const projects = await get();
 
   if (!projects?.length) throw new CustomError(404, 'No projects have been added');
 
@@ -16,7 +17,7 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
 export const getProjectByName = async (req: Request, res: Response): Promise<void> => {
   const { name } = req.params;
 
-  const project = await Project.getByName(name);
+  const project = await getByName(name);
 
   if (!project) throw new CustomError(400, 'No project of that name exists');
 
@@ -26,7 +27,7 @@ export const getProjectByName = async (req: Request, res: Response): Promise<voi
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  const project = await Project.getById(id);
+  const project = await getById(id);
 
   if (!project) throw new CustomError(400, 'No project of that id exists');
 
@@ -36,7 +37,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   const project = req.body;
 
-  const newProject = {
+  const newProject: Project = {
     id: uuidv4(),
     name: project.name,
     description: project.description,
@@ -52,11 +53,11 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   await util.checkBody(newProject);
 
-  const exists = await Project.getByName(newProject.name);
+  const exists = await getByName(newProject.name);
 
   if (exists) throw new CustomError(400, 'Choose different project name');
 
-  const result = await Project.create(newProject);
+  const result = await create(newProject);
 
   res.status(201).send(result);
 };
@@ -68,15 +69,15 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await Project.getById(id);
+  const exists = await getById(id);
 
   if (!exists) throw new CustomError(400, 'Project does not exist');
 
-  // const nameExists = await Project.getByName(req.body.name);
+  // const nameExists = await getByName(req.body.name);
 
   // if (nameExists) throw new CustomError(400, 'Please enter a different project name');
 
-  const projectBody = {
+  const projectBody: Partial<Project> = {
     name: req.body.name,
     description: req.body.description,
     start_date: req.body.start_date,
@@ -90,7 +91,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await util.checkBody(projectBody);
 
-  await Project.update(id, projectBody);
+  await update(id, projectBody);
 
   res.status(201).send({ message: 'Project was sucessfully updated' });
 };
@@ -102,11 +103,11 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await Project.getById(id);
+  const exists = await getById(id);
 
   if (!exists) throw new CustomError(400, 'Project does not exist');
 
-  await Project.removeById(id);
+  await removeById(id);
 
   res.status(200).send({ message: 'Project successfully deleted' });
 };

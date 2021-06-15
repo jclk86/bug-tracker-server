@@ -1,42 +1,35 @@
 import db from '../database/config';
-import { ITicket, IUpdateTicket } from '../schema/ticket';
+import { Ticket } from '../schema/ticket';
 
-async function get(): Promise<ITicket[]> {
-  return await db<ITicket>('ticket').returning('*');
+export async function get(): Promise<Ticket[]> {
+  return await db<Ticket>('ticket').returning('*');
 }
 
-async function getByName(name: string): Promise<ITicket | undefined> {
-  return await db<ITicket>('ticket').returning('*').where({ name }).first();
+export async function getByName(name: string): Promise<Ticket | undefined> {
+  return await db<Ticket>('ticket').returning('*').where({ name }).first();
 }
 
-async function getById(id: string): Promise<ITicket | undefined> {
-  return await db<ITicket>('ticket').returning('*').where({ id }).first();
+export async function getById(id: string): Promise<Ticket | undefined> {
+  return await db<Ticket>('ticket').returning('*').where({ id }).first();
 }
 
-async function create(newTicket: ITicket): Promise<ITicket> {
-  await db<ITicket>('ticket').insert(newTicket);
+export async function create(newTicket: Ticket): Promise<Ticket> {
+  await db<Ticket>('ticket').insert(newTicket);
   return newTicket;
 }
 
-async function removeByName(name: string): Promise<void> {
-  return await db<ITicket>('ticket').where({ name }).delete();
+export async function removeByName(name: string): Promise<void> {
+  return await db<Ticket>('ticket').where({ name }).delete();
 }
 
-async function removeById(id: string): Promise<void> {
-  return await db<ITicket>('ticket').where({ id }).delete();
+export async function removeById(id: string): Promise<void> {
+  return await db<Ticket>('ticket').where({ id }).delete();
 }
 
-async function update(id: string, data: IUpdateTicket): Promise<IUpdateTicket | undefined> {
-  await db<ITicket>('ticket').where({ id }).update(data);
+export async function update(
+  id: string,
+  data: Partial<Ticket>
+): Promise<Partial<Ticket> | undefined> {
+  await db<Ticket>('ticket').where({ id }).update(data);
   return data;
 }
-
-export default {
-  get,
-  create,
-  getByName,
-  getById,
-  removeByName,
-  removeById,
-  update
-};

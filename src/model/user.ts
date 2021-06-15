@@ -1,59 +1,47 @@
 import db from '../database/config';
-import { IUser, IUpdateUser } from '../schema/user';
+import { User } from '../schema/user';
 
-async function get(): Promise<IUser[]> {
-  return await db<IUser>('user').returning('*');
+export async function get(): Promise<User[]> {
+  return await db<User>('user').returning('*');
 }
 
-async function getByEmail(email: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').returning('*').where({ email }).first();
+export async function getByEmail(email: string): Promise<User | undefined> {
+  return await db<User>('user').returning('*').where({ email }).first();
 }
 
-async function getByName(name: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').returning('*').where({ name }).first();
+export async function getByName(name: string): Promise<User | undefined> {
+  return await db<User>('user').returning('*').where({ name }).first();
 }
 
-async function getById(id: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').returning('*').where({ id }).first();
+export async function getById(id: string): Promise<User | undefined> {
+  return await db<User>('user').returning('*').where({ id }).first();
 }
 
-async function getAccountOwner(
+export async function getAccountOwner(
   company_id: string,
   permission_id: number
-): Promise<IUser | undefined> {
-  return await db<IUser>('user')
+): Promise<User | undefined> {
+  return await db<User>('user')
     .returning('*')
     .where('company_id', company_id)
     .andWhere('permission_id', permission_id)
     .first();
 }
 
-async function create(newUser: IUser): Promise<IUser> {
-  await db<IUser>('user').insert(newUser);
+export async function create(newUser: User): Promise<User> {
+  await db<User>('user').insert(newUser);
   return newUser;
 }
 
-async function update(id: string, data: IUpdateUser): Promise<IUpdateUser> {
-  await db<IUser>('user').where({ id }).update(data);
+export async function update(id: string, data: Partial<User>): Promise<Partial<User>> {
+  await db<User>('user').where({ id }).update(data);
   return data;
 }
 
-async function removeByEmail(email: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').where('email', email).delete();
+export async function removeByEmail(email: string): Promise<User | undefined> {
+  return await db<User>('user').where('email', email).delete();
 }
 
-async function removeById(id: string): Promise<void> {
-  return await db<IUser>('user').where({ id }).delete();
+export async function removeById(id: string): Promise<void> {
+  return await db<User>('user').where({ id }).delete();
 }
-
-export default {
-  get,
-  getByEmail,
-  getById,
-  getByName,
-  create,
-  removeByEmail,
-  removeById,
-  getAccountOwner,
-  update
-};

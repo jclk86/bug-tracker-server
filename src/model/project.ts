@@ -1,37 +1,31 @@
 import db from '../database/config';
-import { IProject, IUpdateProject } from '../schema/project';
+import { Project } from '../schema/project';
 
-async function get(): Promise<IProject[]> {
-  return await db<IProject>('project').returning('*');
+export async function get(): Promise<Project[]> {
+  return await db<Project>('project').returning('*');
 }
 
-async function getById(id: string): Promise<IProject | undefined> {
-  return await db<IProject>('project').returning('*').where({ id }).first();
+export async function getById(id: string): Promise<Project | undefined> {
+  return await db<Project>('project').returning('*').where({ id }).first();
 }
 
-async function getByName(name: string): Promise<IProject | undefined> {
-  return await db<IProject>('project').returning('*').where({ name }).first();
+export async function getByName(name: string): Promise<Project | undefined> {
+  return await db<Project>('project').returning('*').where({ name }).first();
 }
 
-async function create(newProject: IProject): Promise<IProject | undefined> {
-  await db<IProject>('project').insert(newProject);
+export async function create(newProject: Project): Promise<Project | undefined> {
+  await db<Project>('project').insert(newProject);
   return newProject;
 }
 
-async function update(id: string, data: IUpdateProject): Promise<IUpdateProject | undefined> {
-  await db<IProject>('project').where({ id }).update(data);
+export async function update(
+  id: string,
+  data: Partial<Project>
+): Promise<Partial<Project> | undefined> {
+  await db<Project>('project').where({ id }).update(data);
   return data;
 }
 
-async function removeById(id: string): Promise<void> {
-  return db<IProject>('project').where({ id }).delete();
+export async function removeById(id: string): Promise<void> {
+  return db<Project>('project').where({ id }).delete();
 }
-
-export default {
-  get,
-  create,
-  getById,
-  getByName,
-  update,
-  removeById
-};

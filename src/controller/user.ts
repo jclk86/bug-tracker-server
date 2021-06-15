@@ -1,12 +1,23 @@
-import User from '../model/user';
+import {
+  get,
+  getByEmail,
+  getByName,
+  getById,
+  getAccountOwner,
+  create,
+  update,
+  removeById
+} from '../model/user';
+import { User } from '../schema/user';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
+
 //! last_active should be done on sign out
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
-  const users = await User.get();
+  const users = await get();
   if (!users.length) throw new CustomError(404, 'No users exist');
   res.status(200).send(users);
 };
@@ -16,7 +27,7 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
   // const formattedName = encodeURI(name).replace(/%20/g, ' ');
   // add to lowerCase. I think this is Front end duty though
   // console.log(formattedName);
-  const user = await User.getByEmail(email);
+  const user = await getByEmail(email);
 
   if (!user) throw new CustomError(400, 'No such user exists');
 
@@ -30,7 +41,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const user = await User.getById(id);
+  const user = await getById(id);
 
   if (!user) throw new CustomError(400, 'No such user exists');
 
@@ -42,7 +53,7 @@ export const getUserByName = async (req: Request, res: Response): Promise<void> 
   // const formattedName = encodeURI(name).replace(/%20/g, ' ');
   // add to lowerCase. I think this is Front end duty though
   // console.log(formattedName);
-  const user = await User.getByName(name);
+  const user = await getByName(name);
 
   if (!user) throw new CustomError(400, 'No such user exists');
 
@@ -53,7 +64,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   const user = req.body;
 
   // check password
-  const newUser = {
+  const newUser: User = {
     id: uuidv4(),
     name: user.firstName + ' ' + user.lastName,
     email: user.email,
@@ -66,7 +77,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   await util.checkBody(newUser);
 
-  const userExists = await User.getByEmail(newUser.email);
+  const userExists = await getByEmail(newUser.email);
 
   if (userExists) throw new CustomError(400, 'User is already registered');
 
@@ -75,11 +86,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   if (newUser.permission_id === 1) {
     // Ensures only 1 owner per company
-    const owner = await User.getAccountOwner(newUser.company_id, 1);
+    const owner = await getAccountOwner(newUser.company_id, 1);
     if (owner) throw new CustomError(400, 'Company already has owner');
   }
 
-  await User.create(newUser);
+  await create(newUser);
 
   res.status(201).send({ message: 'User was sucessfully created' });
 };
@@ -92,11 +103,11 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const user = await User.getById(id);
+  const user = await getById(id);
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
-  const userBody = {
+  const userBody: Partial<User> = {
     password: req.body.password,
     email: req.body.email,
     permission_id: req.body.permission_id,
@@ -106,13 +117,13 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   await util.checkBody(userBody);
 
-  if (userBody.permission_id > 3 || userBody.permission_id < 0)
-    throw new CustomError(400, 'Non-existent permission level');
+  //! if (userBody.permission_id > 3 || userBody.permission_id < 0)
+  //!   throw new CustomError(400, 'Non-existent permission level');
 
   if (userBody.permission_id !== user.permission_id && userBody.permission_id <= 1)
     throw new CustomError(400, 'Can only change permission level between Manager and Developer');
 
-  await User.update(id, userBody);
+  await update(id, userBody);
 
   res.status(201).send({ message: 'User successfully updated' });
 };
@@ -124,11 +135,11 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const user = await User.getById(id);
+  const user = await getById(id);
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
-  await User.removeById(id);
+  await removeById(id);
 
   //! what if owner is deleted? we don't want to delete everyone if owner is deleted
 
