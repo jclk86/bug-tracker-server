@@ -73,10 +73,6 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   if (!exists) throw new CustomError(400, 'Project does not exist');
 
-  // const nameExists = await getByName(req.body.name);
-
-  // if (nameExists) throw new CustomError(400, 'Please enter a different project name');
-
   const projectBody: Partial<Project> = {
     name: req.body.name,
     description: req.body.description,
@@ -90,6 +86,11 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   };
 
   await util.checkBody(projectBody);
+
+  if (exists.name !== projectBody.name) {
+    const nameExists = await getByName(projectBody.name);
+    if (nameExists) throw new CustomError(400, 'Please choose different project name');
+  }
 
   await update(id, projectBody);
 

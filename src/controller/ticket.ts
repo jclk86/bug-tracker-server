@@ -71,6 +71,10 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
+  const exists = await getById(id);
+
+  if (!exists) throw new CustomError(400, 'No ticket exists by that id');
+
   const ticketBody: Partial<Ticket> = {
     name: req.body.name,
     description: req.body.description,
@@ -83,11 +87,10 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   await util.checkBody(ticketBody);
 
-  const ticketIdExists = await getById(id);
-
-  if (!ticketIdExists) throw new CustomError(400, 'No ticket exists by that id');
-
-  //! Need to not duplicate name. If ID matches, you can keep name, but if it doesn't, then you must choose different name
+  if (exists.name !== ticketBody.name) {
+    const nameExists = await getByName(ticketBody.name);
+    if (nameExists) throw new CustomError(400, 'Ticket name already exists');
+  }
 
   await update(id, ticketBody);
 

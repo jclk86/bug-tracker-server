@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
+import { exists } from 'node:fs';
 
 // next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
 // Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
@@ -58,9 +59,9 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const company = await getById(id);
+  const exists = await getById(id);
 
-  if (!company) throw new CustomError(400, 'Company does not exist');
+  if (!exists) throw new CustomError(400, 'Company does not exist');
 
   const companyBody: Partial<Company> = {
     name: req.body.name,
@@ -69,13 +70,10 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   await util.checkBody(companyBody);
 
-  // add typeguard
-
-  // look through database to see if any other company under that name
-
-  //! const exists = await getByName(companyBody.name);
-
-  //! if (exists) throw new CustomError(400, 'Please choose a different company name');
+  if (exists.name !== companyBody.name) {
+    const nameExists = await getByName(companyBody.name);
+    if (nameExists) throw new CustomError(400, 'Company name exists');
+  }
 
   await update(id, companyBody);
 
