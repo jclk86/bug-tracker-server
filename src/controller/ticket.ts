@@ -49,12 +49,11 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
     ticket_priority_level_id: ticket.ticket_priority_level_id,
     due_date: ticket.due_date,
     completion_date: ticket.completion_date,
-    project_id: ticket.project_id,
-    last_edited: undefined
+    project_id: ticket.project_id
   };
 
   await util.checkBody(newTicket);
-
+  // really should be get name with project id
   const exists = await getByName(newTicket.name);
 
   if (exists) throw new CustomError(400, 'Please choose a different name');

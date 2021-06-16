@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import catchAsync from './utilities';
+import { catchAsync } from './utilities';
 import {
   getAllTickets,
   createTicket,

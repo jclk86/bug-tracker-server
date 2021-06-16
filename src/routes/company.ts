@@ -7,7 +7,7 @@ import {
   updateCompany,
   deleteCompany
 } from '../controller/company';
-import catchAsync from './utilities';
+import { catchAsync } from './utilities';
 
 const companyRouter = Router();
 

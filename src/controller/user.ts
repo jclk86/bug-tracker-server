@@ -3,6 +3,7 @@ import {
   getByEmail,
   getByName,
   getById,
+  getByCompanyId,
   getAccountOwner,
   create,
   update,
@@ -19,6 +20,15 @@ import CustomError from '../errorhandler/CustomError';
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await get();
   if (!users.length) throw new CustomError(404, 'No users exist');
+  res.status(200).send(users);
+};
+
+export const getAllUsersByCompanyId = async (req: Request, res: Response): Promise<void> => {
+  const { company_id } = req.params;
+  const users = await getByCompanyId(company_id);
+
+  if (!users.length) throw new CustomError(404, 'No users exist');
+
   res.status(200).send(users);
 };
 
@@ -116,6 +126,10 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   };
 
   await util.checkBody(userBody);
+  // ! email exists, but what if you're not changing email? It blocks that too
+  const emailExists = await getByEmail(userBody.email);
+
+  if (emailExists) throw new CustomError(400, 'Email already exists');
 
   if (userBody.permission_id > 3 || userBody.permission_id < 0)
     throw new CustomError(400, 'Non-existent permission level');

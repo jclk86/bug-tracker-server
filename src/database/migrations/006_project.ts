@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
   return knex.schema.createTable('project', (table: Knex.TableBuilder) => {
     table.uuid('id').primary();
-    table.string('name', 64).notNullable().unique();
+    table.string('name', 64).notNullable();
     table.string('description', 255);
     table.timestamp('date_created');
     table.date('start_date');

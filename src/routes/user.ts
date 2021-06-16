@@ -4,16 +4,20 @@ import {
   getUserByName,
   getUserById,
   getUserByEmail,
+  getAllUsersByCompanyId,
   createUser,
   updateUser,
   deleteUser
 } from '../controller/user';
-import catchAsync from './utilities';
+import { catchAsync } from './utilities';
 
 const userRouter = Router();
 
 userRouter.get('/user', catchAsync(getAllUsers));
 
+userRouter.get('/user/company_id/:company_id', catchAsync(getAllUsersByCompanyId));
+
+// might be useless
 userRouter.get('/user/name/:name', catchAsync(getUserByName));
 
 userRouter.get('/user/email/:email', catchAsync(getUserByEmail));

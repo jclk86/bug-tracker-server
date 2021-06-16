@@ -17,6 +17,10 @@ export async function getById(id: string): Promise<User | undefined> {
   return await db<User>('user').returning('*').where({ id }).first();
 }
 
+export async function getByCompanyId(company_id: string): Promise<User[]> {
+  return await db<User>('user').returning('*').where({ company_id });
+}
+
 export async function getAccountOwner(
   company_id: string,
   permission_id: number
