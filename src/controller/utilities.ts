@@ -1,8 +1,8 @@
 import CustomError from '../errorhandler/CustomError';
 
-type A = { [key: string]: unknown };
+type ReqBody = { [key: string]: unknown };
 
-const checkBody = function (requestBody: A): void {
+const checkBody = function (requestBody: ReqBody): void {
   for (const [key, value] of Object.entries(requestBody)) {
     if (value === undefined || value === null || value === '') {
       throw new CustomError(400, key + ' is required');

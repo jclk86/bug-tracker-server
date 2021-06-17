@@ -106,7 +106,6 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
-  // search for id
   const { id } = req.params;
 
   const isValid = await isValidUUIDV4(id);
@@ -126,10 +125,11 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   };
 
   await util.checkBody(userBody);
-  // ! email exists, but what if you're not changing email? It blocks that too
-  const emailExists = await getByEmail(userBody.email);
 
-  if (emailExists) throw new CustomError(400, 'Email already exists');
+  if (user.email !== userBody.email) {
+    const emailExists = await getByEmail(userBody.email);
+    if (emailExists) throw new CustomError(400, 'Email already exists');
+  }
 
   if (userBody.permission_id > 3 || userBody.permission_id < 0)
     throw new CustomError(400, 'Non-existent permission level');
@@ -154,8 +154,6 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   if (!user) throw new CustomError(400, 'User does not exist');
 
   await removeById(id);
-
-  //! what if owner is deleted? we don't want to delete everyone if owner is deleted
 
   res.status(200).send({ message: 'User successfully deleted' });
 };

@@ -1,8 +1,8 @@
 import db from '../database/config';
 import { Ticket } from '../schema/ticket';
 
-export async function get(): Promise<Ticket[]> {
-  return await db<Ticket>('ticket').returning('*');
+export async function getByProjectId(project_id: string): Promise<Ticket[]> {
+  return await db<Ticket>('ticket').returning('*').where({ project_id });
 }
 
 export async function getByName(name: string): Promise<Ticket | undefined> {
@@ -11,6 +11,13 @@ export async function getByName(name: string): Promise<Ticket | undefined> {
 
 export async function getById(id: string): Promise<Ticket | undefined> {
   return await db<Ticket>('ticket').returning('*').where({ id }).first();
+}
+
+export async function getByProjectIdAndName(
+  project_id: string,
+  name: string
+): Promise<Ticket | undefined> {
+  return await db<Ticket>('ticket').returning('*').where({ project_id, name }).first();
 }
 
 export async function create(newTicket: Ticket): Promise<Ticket> {

@@ -12,9 +12,10 @@ import {
 import { catchAsync } from './utilities';
 
 const userRouter = Router();
-
+// route for admins
 userRouter.get('/user', catchAsync(getAllUsers));
 
+// user routes
 userRouter.get('/user/company_id/:company_id', catchAsync(getAllUsersByCompanyId));
 
 // might be useless

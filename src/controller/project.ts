@@ -23,16 +23,6 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
   res.status(200).send(projects);
 };
 
-//! remove
-export const test = async (req: Request, res: Response): Promise<void> => {
-  const { company_id, name } = req.params;
-  const project = await getByCompanyIdAndName(company_id, name);
-
-  if (!project?.length) throw new CustomError(400, 'no such priject');
-
-  res.status(200).send(project);
-};
-
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
@@ -64,19 +54,13 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   //! does the team leader exist in this company, for this project? Does this even matter? A team leader is someone who works for that company
 
-  try {
-    const exists = await getByCompanyIdAndName(project.company_id, project.name);
+  const exists = await getByCompanyIdAndName(newProject.company_id, newProject.name);
 
-    if (exists?.length > 0) throw new CustomError(400, 'Choose different project name');
+  if (exists) throw new CustomError(400, 'Choose different project name');
 
-    const result = await create(newProject);
+  const result = await create(newProject);
 
-    res.status(201).send(result);
-  } catch (e) {
-    console.log(e);
-  }
-
-  // ! this is throwing an error
+  res.status(201).send(result);
 };
 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
@@ -104,10 +88,10 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await util.checkBody(projectBody);
 
-  // !if (exists.name !== projectBody.name) {
-  // !  const nameExists = await getByName(projectBody.name);
-  //!   if (nameExists) throw new CustomError(400, 'Please choose different project name');
-  // !}
+  if (exists.name !== projectBody.name) {
+    const nameExists = await await getByCompanyIdAndName(exists.company_id, projectBody.name);
+    if (nameExists) throw new CustomError(400, 'Please choose different project name');
+  }
 
   await update(id, projectBody);
 

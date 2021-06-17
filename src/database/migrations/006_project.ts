@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .references('id')
       .inTable('user')
       .onUpdate('cascade')
-      .onDelete('cascade');
+      .onDelete('set null');
     table
       .uuid('company_id')
       .notNullable()

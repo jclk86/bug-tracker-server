@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .inTable('ticket_status')
       .onDelete('set null');
     table
-      .integer('ticket_priority_level_id')
+      .integer('ticket_priority_id')
       .notNullable()
       .references('id')
       .inTable('ticket_priority')
@@ -21,11 +21,16 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
     table.timestamp('last_edited');
     table.date('due_date');
     table.date('completion_date');
-    table.uuid('project_id').notNullable().references('id').inTable('project').onDelete('set null');
+    table
+      .uuid('project_id')
+      .notNullable()
+      .references('id')
+      .inTable('project')
+      .onUpdate('cascade')
+      .onDelete('cascade');
   });
 }
-// ! change onDelete to cascade. If a project is deleted, tickets should not remain
-//! remove deadline - rollback
+
 export async function down(knex: Knex): Promise<Knex.SchemaBuilder> {
   return knex.schema.dropTable('ticket');
 }

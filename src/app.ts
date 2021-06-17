@@ -17,20 +17,25 @@ app.use(morgan);
 
 app.use(routes);
 
-app.use((req, res) => {
-  res.status(404).send('Page Not Found');
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const err = new CustomError(404, 'Not Found');
+  next(err);
 });
 
 // if next is used here, will pass to express' in-built error handler -- you don't need to use their in-built errorhandler though
 // next needs to be here, or else it returns error stack
-app.use((error: CustomError, req: Request, res: Response, next: NextFunction) => {
+app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   let response;
+
   if (process.env.NODE_ENV === 'production') {
     response = { error: { message: 'server error', status: 500 } };
   } else {
     response = { error };
   }
-  res.status(response.error.status).json(response.error.message);
+  // For errors without status codes
+  const statusCode = response.error.status || 500;
+
+  res.status(statusCode).json(response.error.message);
 });
 
 export default app;
