@@ -1,5 +1,7 @@
 import db from '../database/config';
 import { Project } from '../schema/project';
+import { Priority } from '../schema/priority';
+import { Status } from '../schema/status';
 
 export async function getByCompanyId(company_id: string): Promise<Project[]> {
   return await db<Project>('project').returning('*').where({ company_id });
@@ -31,4 +33,12 @@ export async function update(
 
 export async function removeById(id: string): Promise<void> {
   return db<Project>('project').where({ id }).delete();
+}
+
+export async function getPriorities(): Promise<Priority[]> {
+  return await db<Priority>('project_priority').returning('*');
+}
+
+export async function getStatuses(): Promise<Status[]> {
+  return await db<Status>('project_priority').returning('*');
 }

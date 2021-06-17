@@ -4,7 +4,9 @@ import {
   createProject,
   getProjectById,
   updateProject,
-  deleteProject
+  deleteProject,
+  getProjectPriorities,
+  getProjectStatuses
 } from '../controller/project';
 import { catchAsync } from './utilities';
 
@@ -19,5 +21,9 @@ projectRouter.post('/project/create', catchAsync(createProject));
 projectRouter.patch('/project/edit/:id', catchAsync(updateProject));
 
 projectRouter.delete('/project/delete/:id', catchAsync(deleteProject));
+
+projectRouter.get('/project/priorities', catchAsync(getProjectPriorities));
+
+projectRouter.get('/project/statuses', catchAsync(getProjectStatuses));
 
 export default projectRouter;

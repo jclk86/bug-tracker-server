@@ -5,8 +5,9 @@ import {
   getByProjectIdAndName,
   create,
   removeById,
-  removeByName,
-  update
+  update,
+  getPriorities,
+  getStatuses
 } from '../model/ticket';
 import { Ticket } from '../schema/ticket';
 import util from './utilities';
@@ -63,7 +64,7 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
   };
 
   await util.checkBody(newTicket);
-  // really should be get name with project id
+
   const exists = await getByProjectIdAndName(newTicket.project_id, newTicket.name);
 
   if (exists) throw new CustomError(400, 'Please choose a different name');
@@ -116,4 +117,20 @@ export const deleteTicket = async (req: Request, res: Response): Promise<void> =
   await removeById(id);
 
   res.status(200).send({ message: 'Ticket successfully deleted' });
+};
+
+export const getTicketPriorities = async (req: Request, res: Response): Promise<void> => {
+  const priorities = await getPriorities();
+
+  if (!priorities.length) throw new CustomError(404, 'No ticket priorities have been added ');
+
+  res.status(200).send(priorities);
+};
+
+export const getTicketStatuses = async (req: Request, res: Response): Promise<void> => {
+  const statuses = await getStatuses();
+
+  if (!statuses.length) throw new CustomError(404, 'No ticket statuses have been added ');
+
+  res.status(200).send(statuses);
 };

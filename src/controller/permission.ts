@@ -18,7 +18,9 @@ export const getPermissionById = async (req: Request, res: Response): Promise<vo
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const permission = await getById(id);
+  const numId = parseInt(id);
+
+  const permission = await getById(numId);
   if (!permission) throw new CustomError(400, 'No matching permission level');
 
   res.status(200).send(permission);

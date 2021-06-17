@@ -1,5 +1,5 @@
 export type Permission = {
-  id: string;
+  id: number;
   order_number: number;
-  level: string;
+  level: number;
 };

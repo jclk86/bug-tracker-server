@@ -1,5 +1,7 @@
 import db from '../database/config';
 import { Ticket } from '../schema/ticket';
+import { Priority } from '../schema/priority';
+import { Status } from '../schema/status';
 
 export async function getByProjectId(project_id: string): Promise<Ticket[]> {
   return await db<Ticket>('ticket').returning('*').where({ project_id });
@@ -39,4 +41,12 @@ export async function update(
 ): Promise<Partial<Ticket> | undefined> {
   await db<Ticket>('ticket').where({ id }).update(data);
   return data;
+}
+
+export async function getPriorities(): Promise<Priority[]> {
+  return await db<Priority>('ticket_priority').returning('*');
+}
+
+export async function getStatuses(): Promise<Status[]> {
+  return await db<Status>('ticket_status').returning('*');
 }

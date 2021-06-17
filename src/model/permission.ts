@@ -5,6 +5,6 @@ export async function get(): Promise<Permission[]> {
   return await db<Permission>('permission').returning('*');
 }
 
-export async function getById(id: string): Promise<Permission | undefined> {
+export async function getById(id: number): Promise<Permission | undefined> {
   return await db<Permission>('permission').returning('*').where({ id }).first();
 }

@@ -4,7 +4,9 @@ import {
   getByCompanyId,
   create,
   update,
-  removeById
+  removeById,
+  getPriorities,
+  getStatuses
 } from '../model/project';
 import { Project } from '../schema/project';
 import util from './utilities';
@@ -112,4 +114,20 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
   await removeById(id);
 
   res.status(200).send({ message: 'Project successfully deleted' });
+};
+
+export const getProjectPriorities = async (req: Request, res: Response): Promise<void> => {
+  const priorities = await getPriorities();
+
+  if (!priorities.length) throw new CustomError(404, 'No project priorities have been added');
+
+  res.status(200).send(priorities);
+};
+
+export const getProjectStatuses = async (req: Request, res: Response): Promise<void> => {
+  const statuses = await getStatuses();
+
+  if (!statuses.length) throw new CustomError(400, 'No project statuses have been added');
+
+  res.status(200).send(statuses);
 };
