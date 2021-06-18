@@ -57,7 +57,7 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
     description: ticket.description,
     date_created: util.currentTimeStamp,
     ticket_status_id: ticket.ticket_status_id,
-    ticket_priority_level_id: ticket.ticket_priority_level_id,
+    ticket_priority_id: ticket.ticket_priority_id,
     due_date: ticket.due_date,
     completion_date: ticket.completion_date,
     project_id: ticket.project_id
@@ -89,7 +89,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
     name: req.body.name,
     description: req.body.description,
     ticket_status_id: req.body.ticket_status_id,
-    ticket_priority_level_id: req.body.ticket_priority_level_id,
+    ticket_priority_id: req.body.ticket_priority_id,
     due_date: req.body.due_date,
     completion_date: req.body.completion_date,
     last_edited: util.currentTimeStamp

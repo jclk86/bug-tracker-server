@@ -3,7 +3,7 @@ export type Ticket = {
   name: string;
   description: string;
   ticket_status_id: number;
-  ticket_priority_level_id: number;
+  ticket_priority_id: number;
   date_created: string;
   due_date: string;
   completion_date: string;
