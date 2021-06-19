@@ -5,6 +5,16 @@ export async function get(ticket_id: string): Promise<Checklist | undefined> {
   return await db<Checklist>('checklist').returning('*').where({ ticket_id }).first();
 }
 
+export async function getById(id: string): Promise<Checklist | undefined> {
+  return await db<Checklist>('checklist').returning('*').where({ id }).first();
+}
+
+export async function getByTicketIdAndName(
+  ticket_id: string,
+  name: string
+): Promise<Checklist | undefined> {
+  return await db<Checklist>('checklist').returning('*').where({ ticket_id, name }).first();
+}
 // we also need to return checklist items
 
 export async function create(newChecklist: Checklist): Promise<Checklist> {

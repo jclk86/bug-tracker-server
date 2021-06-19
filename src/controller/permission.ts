@@ -14,7 +14,7 @@ export const getAllPermissionLevels = async (req: Request, res: Response): Promi
 export const getPermissionById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(id);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 

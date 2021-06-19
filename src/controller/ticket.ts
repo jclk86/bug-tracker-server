@@ -37,7 +37,7 @@ export const getTicketByName = async (req: Request, res: Response): Promise<void
 export const getTicketById = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(id);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
@@ -77,7 +77,7 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
 export const updateTicket = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(id);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
@@ -110,7 +110,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(id);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
