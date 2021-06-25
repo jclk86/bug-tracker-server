@@ -1,6 +1,9 @@
-export type Company = {
-  id: string;
+export interface BaseCompany {
   name: string;
-  date_created: string;
-  last_edited?: string;
-};
+}
+
+export interface Company extends BaseCompany {
+  id: string;
+  dateCreated: string;
+  lastEdited?: string;
+}

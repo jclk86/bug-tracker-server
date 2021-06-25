@@ -1,10 +1,9 @@
 import { get, getById, getByName, create, update, remove } from '../model/company';
-import { Company } from '../schema/company';
 import util from './utilities';
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
+import { BaseCompany } from '../schema/company';
 
 // next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
 // Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
@@ -30,21 +29,18 @@ export const getCompanyByName = async (req: Request, res: Response): Promise<voi
 };
 
 export const createCompany = async (req: Request, res: Response): Promise<void> => {
-  // check for missing required item
-  const newCompany: Company = {
-    id: uuidv4(),
-    name: req.body.name,
-    date_created: util.currentTimeStamp
+  const { name } = req.body;
+
+  const newCompany: BaseCompany = {
+    name: name
   };
 
   // check if all fields are filled out
   await util.checkBody(newCompany);
 
-  const exists = await getByName(newCompany.name);
+  const company = await getByName(newCompany.name);
 
-  if (exists) throw new CustomError(400, 'Company already exists');
-
-  // might want to attach a primary email to the company
+  if (company) throw new CustomError(400, 'Company already exists');
 
   const result = await create(newCompany);
 
@@ -53,28 +49,28 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
 
 export const updateCompany = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
+  const { name } = req.body;
 
   const isValid = await isValidUUIDV4(id);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await getById(id);
+  const company = await getById(id);
 
-  if (!exists) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(400, 'Company does not exist');
 
-  const companyBody: Partial<Company> = {
-    name: req.body.name,
-    last_edited: util.currentTimeStamp
+  const updateCompany: BaseCompany = {
+    name: name
   };
 
-  await util.checkBody(companyBody);
+  await util.checkBody(updateCompany);
 
-  if (exists.name !== companyBody.name) {
-    const nameExists = await getByName(companyBody.name);
+  if (company.name !== updateCompany.name) {
+    const nameExists = await getByName(updateCompany.name);
     if (nameExists) throw new CustomError(400, 'Company name exists');
   }
 
-  await update(id, companyBody);
+  await update(id, updateCompany);
 
   res.status(201).send({ message: 'company successfuly updated' });
 };
@@ -86,9 +82,9 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await getById(id);
+  const company = await getById(id);
 
-  if (!exists) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(400, 'Company does not exist');
 
   await remove(id);
 

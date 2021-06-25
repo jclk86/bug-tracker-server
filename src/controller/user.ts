@@ -1,7 +1,6 @@
 import {
   get,
   getByEmail,
-  getByName,
   getById,
   getByCompanyId,
   getAccountOwner,
@@ -9,22 +8,24 @@ import {
   update,
   removeById
 } from '../model/user';
-import { User } from '../schema/user';
+import { BaseUser, User } from '../schema/user';
 import util from './utilities';
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
 //! last_active should be done on sign out
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await get();
+
   if (!users.length) throw new CustomError(404, 'No users exist');
+
   res.status(200).send(users);
 };
 
 export const getAllUsersByCompanyId = async (req: Request, res: Response): Promise<void> => {
   const { company_id } = req.params;
+
   const users = await getByCompanyId(company_id);
 
   if (!users.length) throw new CustomError(404, 'No users exist');
@@ -58,55 +59,41 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
   res.status(200).send(user);
 };
 
-export const getUserByName = async (req: Request, res: Response): Promise<void> => {
-  const { name } = req.params;
-  // const formattedName = encodeURI(name).replace(/%20/g, ' ');
-  // add to lowerCase. I think this is Front end duty though
-  // console.log(formattedName);
-  const user = await getByName(name);
-
-  if (!user) throw new CustomError(400, 'No such user exists');
-
-  res.status(200).send(user);
-};
-
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-  const user = req.body;
+  const { firstName, lastName, email, permissionId, companyId, password } = req.body;
 
-  // check password
-  const newUser: User = {
-    id: uuidv4(),
-    name: user.firstName + ' ' + user.lastName,
-    email: user.email,
-    permission_id: user.permission_id,
-    date_created: util.currentTimeStamp,
-    password: user.password,
-    company_id: user.company_id,
-    active: true
+  const signUp: BaseUser = {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    permissionId: permissionId,
+    password: password,
+    companyId: companyId
   };
 
-  await util.checkBody(newUser);
+  await util.checkBody(signUp);
 
-  const userExists = await getByEmail(newUser.email);
+  const userExists = await getByEmail(signUp.email);
 
   if (userExists) throw new CustomError(400, 'User is already registered');
 
-  if (newUser.permission_id > 3 || newUser.permission_id < 0)
+  if (signUp.permissionId > 3 || signUp.permissionId < 0)
     throw new CustomError(400, 'Non-existent permission level');
 
-  if (newUser.permission_id === 1) {
+  if (signUp.permissionId === 1) {
     // Ensures only 1 owner per company
-    const owner = await getAccountOwner(newUser.company_id, 1);
+    const owner = await getAccountOwner(signUp.companyId, 1);
     if (owner) throw new CustomError(400, 'Company already has owner');
   }
 
-  await create(newUser);
+  await create(signUp);
 
   res.status(201).send({ message: 'User was sucessfully created' });
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
+  const { password, email, permissionId, active } = req.body;
 
   const isValid = await isValidUUIDV4(id);
 
@@ -116,28 +103,27 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
-  const userBody: Partial<User> = {
-    password: req.body.password,
-    email: req.body.email,
-    permission_id: req.body.permission_id,
-    active: req.body.active,
-    last_edited: util.currentTimeStamp
+  const updateUser: Partial<User> = {
+    password: password,
+    email: email,
+    permissionId: permissionId,
+    active: active
   };
 
-  await util.checkBody(userBody);
+  await util.checkBody(updateUser);
 
-  if (user.email !== userBody.email) {
-    const emailExists = await getByEmail(userBody.email);
+  if (user.email !== updateUser.email) {
+    const emailExists = await getByEmail(updateUser.email);
     if (emailExists) throw new CustomError(400, 'Email already exists');
   }
 
-  if (userBody.permission_id > 3 || userBody.permission_id < 0)
+  if (updateUser.permissionId > 3 || updateUser.permissionId < 0)
     throw new CustomError(400, 'Non-existent permission level');
 
-  if (userBody.permission_id !== user.permission_id && userBody.permission_id <= 1)
+  if (updateUser.permissionId !== user.permissionId && updateUser.permissionId <= 1)
     throw new CustomError(400, 'Can only change permission level between Manager and Developer');
 
-  await update(id, userBody);
+  await update(id, updateUser);
 
   res.status(201).send({ message: 'User successfully updated' });
 };

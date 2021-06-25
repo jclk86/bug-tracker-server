@@ -1,12 +1,16 @@
 import CustomError from '../errorhandler/CustomError';
 
-const checkBody = function (requestBody: unknown): void {
+type ReqBody = { [key: string]: unknown };
+
+const checkBody = function (requestBody: ReqBody): void {
   for (const [key, value] of Object.entries(requestBody)) {
     if (value === undefined || value === null || value === '') {
       throw new CustomError(400, key + ' is required');
     }
   }
 };
+
+// const verify = function () {};
 
 const currentTimeStamp = new Date().toLocaleDateString('en-US', {
   year: 'numeric',

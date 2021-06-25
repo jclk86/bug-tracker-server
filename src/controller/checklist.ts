@@ -60,11 +60,11 @@ export const updateChecklist = async (req: Request, res: Response): Promise<void
 
   // we need the checklist id to edit the checklist - test out
   // ! test out
-  const exists = await getById(id);
+  const checklist = await getById(id);
 
-  if (!exists) throw new CustomError(400, 'Checklist does not exist');
+  if (!checklist) throw new CustomError(400, 'Checklist does not exist');
 
-  if (exists.name !== checklistBody.name) {
+  if (checklist.name !== checklistBody.name) {
     const nameExists = await getByTicketIdAndName(checklistBody.ticket_id, checklistBody.name);
     if (nameExists) throw new CustomError(400, 'Checklist name already exists');
   }

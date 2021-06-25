@@ -65,9 +65,9 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
 
   await util.checkBody(newTicket);
 
-  const exists = await getByProjectIdAndName(newTicket.project_id, newTicket.name);
+  const project = await getByProjectIdAndName(newTicket.project_id, newTicket.name);
 
-  if (exists) throw new CustomError(400, 'Please choose a different name');
+  if (project) throw new CustomError(400, 'Please choose a different name');
 
   await create(newTicket);
 
@@ -81,9 +81,9 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await getById(id);
+  const ticket = await getById(id);
 
-  if (!exists) throw new CustomError(400, 'No ticket exists by that id');
+  if (!ticket) throw new CustomError(400, 'No ticket exists by that id');
 
   const ticketBody: Partial<Ticket> = {
     name: req.body.name,
@@ -97,8 +97,8 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   await util.checkBody(ticketBody);
 
-  if (exists.name !== ticketBody.name) {
-    const nameExists = await getByProjectIdAndName(exists.project_id, ticketBody.name);
+  if (ticket.name !== ticketBody.name) {
+    const nameExists = await getByProjectIdAndName(ticket.project_id, ticketBody.name);
     if (nameExists) throw new CustomError(400, 'PLease choose a different ticket name');
   }
 

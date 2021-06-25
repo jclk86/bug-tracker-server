@@ -36,29 +36,39 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 };
 
 export const createProject = async (req: Request, res: Response): Promise<void> => {
-  const project = req.body;
+  const {
+    name,
+    description,
+    start_date,
+    completion_date,
+    due_date,
+    team_leader_id,
+    project_priority_id,
+    project_status_id,
+    company_id
+  } = req.body;
 
   const newProject: Project = {
     id: uuidv4(),
-    name: project.name,
-    description: project.description,
+    name: name,
+    description: description,
     date_created: util.currentTimeStamp,
-    start_date: project.start_date,
-    completion_date: project.completion_date,
-    due_date: project.due_date,
-    team_leader_id: project.team_leader_id,
-    project_priority_id: project.project_priority_id,
-    project_status_id: project.project_status_id,
-    company_id: project.company_id
+    start_date: start_date,
+    completion_date: completion_date,
+    due_date: due_date,
+    team_leader_id: team_leader_id,
+    project_priority_id: project_priority_id,
+    project_status_id: project_status_id,
+    company_id: company_id
   };
 
   await util.checkBody(newProject);
 
   //! does the team leader exist in this company, for this project? Does this even matter? A team leader is someone who works for that company
 
-  const exists = await getByCompanyIdAndName(newProject.company_id, newProject.name);
+  const company = await getByCompanyIdAndName(newProject.company_id, newProject.name);
 
-  if (exists) throw new CustomError(400, 'Choose different project name');
+  if (company) throw new CustomError(400, 'Choose different project name');
 
   const result = await create(newProject);
 
@@ -72,9 +82,9 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await getById(id);
+  const project = await getById(id);
 
-  if (!exists) throw new CustomError(400, 'Project does not exist');
+  if (!project) throw new CustomError(400, 'Project does not exist');
 
   const projectBody: Partial<Project> = {
     name: req.body.name,
@@ -90,8 +100,8 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await util.checkBody(projectBody);
 
-  if (exists.name !== projectBody.name) {
-    const nameExists = await await getByCompanyIdAndName(exists.company_id, projectBody.name);
+  if (project.name !== projectBody.name) {
+    const nameExists = await await getByCompanyIdAndName(project.company_id, projectBody.name);
     if (nameExists) throw new CustomError(400, 'Please choose different project name');
   }
 
@@ -107,9 +117,9 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await getById(id);
+  const project = await getById(id);
 
-  if (!exists) throw new CustomError(400, 'Project does not exist');
+  if (!project) throw new CustomError(400, 'Project does not exist');
 
   await removeById(id);
 

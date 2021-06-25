@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {
   getAllUsers,
-  getUserByName,
   getUserById,
   getUserByEmail,
   getAllUsersByCompanyId,
@@ -12,14 +11,10 @@ import {
 import { catchAsync } from './utilities';
 
 const userRouter = Router();
-// route for admins
+
 userRouter.get('/user', catchAsync(getAllUsers));
 
-// user routes
 userRouter.get('/user/company_id/:company_id', catchAsync(getAllUsersByCompanyId));
-
-// might be useless
-userRouter.get('/user/name/:name', catchAsync(getUserByName));
 
 userRouter.get('/user/email/:email', catchAsync(getUserByEmail));
 
