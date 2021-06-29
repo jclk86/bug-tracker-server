@@ -5,7 +5,7 @@ export interface BaseChecklistItem {
 
 export type UpdateChecklist = BaseChecklistItem;
 
-export interface Checklist extends BaseChecklistItem {
+export interface ChecklistItem extends BaseChecklistItem {
   id: string;
   checklist_id: string;
 }

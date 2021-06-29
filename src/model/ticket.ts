@@ -3,64 +3,62 @@ import { Ticket, UpdateTicket } from '../schema/ticket';
 import { Priority } from '../schema/priority';
 import { Status } from '../schema/status';
 
-export async function getByProjectId(projectId: string): Promise<Ticket[]> {
+export function getByProjectId(projectId: string): Promise<Ticket[]> {
   const selector = { project_id: projectId };
 
-  return await db<Ticket>('ticket').returning('*').where(selector);
+  return db<Ticket>('ticket').returning('*').where(selector);
 }
 
-export async function getByName(ticketName: string): Promise<Ticket | undefined> {
+export function getByName(ticketName: string): Promise<Ticket | undefined> {
   const selector = { name: ticketName };
 
-  return await db<Ticket>('ticket').returning('*').where(selector).first();
+  return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-export async function getById(ticketId: string): Promise<Ticket | undefined> {
+export function getById(ticketId: string): Promise<Ticket | undefined> {
   const selector = { id: ticketId };
 
-  return await db<Ticket>('ticket').returning('*').where(selector).first();
+  return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-export async function getByProjectIdAndName(
+export function getByProjectIdAndName(
   projectId: string,
   ticketName: string
 ): Promise<Ticket | undefined> {
   const selector = { project_id: projectId, name: ticketName };
 
-  return await db<Ticket>('ticket').returning('*').where(selector).first();
+  return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-export async function create(newTicket: Ticket): Promise<Ticket> {
-  await db<Ticket>('ticket').insert(newTicket);
-  return newTicket;
+export function create(newTicket: Ticket): Promise<Ticket> {
+  return db<Ticket>('ticket').insert(newTicket);
 }
 
-export async function removeByName(ticketName: string): Promise<void> {
+export function removeByName(ticketName: string): Promise<void> {
   const selector = { name: ticketName };
 
-  return await db<Ticket>('ticket').where(selector).delete();
+  return db<Ticket>('ticket').where(selector).delete();
 }
 
-export async function removeById(ticketId: string): Promise<void> {
+export function removeById(ticketId: string): Promise<void> {
   const selector = { id: ticketId };
 
-  return await db<Ticket>('ticket').where(selector).delete();
+  return db<Ticket>('ticket').where(selector).delete();
 }
 
-export async function update(
+export function update(
   ticketId: string,
   updatedTicket: UpdateTicket
 ): Promise<UpdateTicket | undefined> {
   const selector = { id: ticketId };
 
-  await db<Ticket>('ticket').where(selector).update(updatedTicket);
-  return updatedTicket;
+  return db<Ticket>('ticket').where(selector).update(updatedTicket);
 }
 
-export async function getPriorities(): Promise<Priority[]> {
-  return await db<Priority>('ticket_priority').returning('*');
+export function getPriorities(): Promise<Priority[]> {
+  return db<Priority>('ticket_priority').returning('*');
 }
 
-export async function getStatuses(): Promise<Status[]> {
-  return await db<Status>('ticket_status').returning('*');
+export function getStatuses(): Promise<Status[]> {
+  return db<Status>('ticket_status').returning('*');
 }
