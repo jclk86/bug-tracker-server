@@ -12,13 +12,13 @@ export const getAllPermissionLevels = async (req: Request, res: Response): Promi
 };
 
 export const getPermissionById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { permissionId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(permissionId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const numId = parseInt(id);
+  const numId = parseInt(permissionId);
 
   const permission = await getById(numId);
   if (!permission) throw new CustomError(400, 'No matching permission level');

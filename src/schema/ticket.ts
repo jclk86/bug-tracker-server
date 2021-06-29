@@ -1,12 +1,18 @@
-export type Ticket = {
-  id: string;
+export interface BaseTicket {
   name: string;
   description: string;
   ticket_status_id: number;
   ticket_priority_id: number;
-  date_created: string;
   due_date: string;
   completion_date: string;
+}
+
+export interface UpdateTicket extends BaseTicket {
+  last_edited: string;
+}
+
+export interface Ticket extends BaseTicket {
+  id: string;
+  date_created: string;
   project_id: string;
-  last_edited?: string;
-};
+}

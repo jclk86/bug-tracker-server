@@ -7,26 +7,26 @@ import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
 export const getChecklist = async (req: Request, res: Response): Promise<void> => {
-  const { ticket_id } = req.params;
+  const { checklistId } = req.params;
 
-  const isValid = await isValidUUIDV4(ticket_id);
+  const isValid = await isValidUUIDV4(checklistId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const checklist = await get(ticket_id);
+  const checklist = await get(checklistId);
 
   if (!checklist) throw new CustomError(404, 'No checklists have been added');
 
   res.status(200).send(checklist);
 };
 
-// only 1 checklist per ticket
+// ! only 1 checklist per ticket?
 export const createChecklist = async (req: Request, res: Response): Promise<void> => {
   const newChecklist: Checklist = {
     id: uuidv4(),
     name: req.body.name,
     description: req.body.description,
-    completed: false,
+    completed: false, // ! should this be true? No items = completed
     ticket_id: req.body.ticket_id
   };
 
@@ -43,33 +43,32 @@ export const createChecklist = async (req: Request, res: Response): Promise<void
 };
 
 export const updateChecklist = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { checklistId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(checklistId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const checklistBody: Partial<Checklist> = {
+  const checklistBody = {
     name: req.body.name,
     description: req.body.description,
-    completed: req.body.completed,
-    ticket_id: req.body.ticket_id
+    completed: req.body.completed
   };
 
   await util.checkBody(checklistBody);
 
   // we need the checklist id to edit the checklist - test out
   // ! test out
-  const checklist = await getById(id);
+  const checklist = await getById(checklistId);
 
   if (!checklist) throw new CustomError(400, 'Checklist does not exist');
 
   if (checklist.name !== checklistBody.name) {
-    const nameExists = await getByTicketIdAndName(checklistBody.ticket_id, checklistBody.name);
+    const nameExists = await getByTicketIdAndName(checklist.ticket_id, checklistBody.name);
     if (nameExists) throw new CustomError(400, 'Checklist name already exists');
   }
 
-  await update(checklistBody.ticket_id, checklistBody);
+  await update(checklistId, checklistBody);
 
   res.status(201).send({ message: 'You have successfully updated the checklist' });
 };

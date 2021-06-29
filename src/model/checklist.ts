@@ -1,28 +1,40 @@
 import db from '../database/config';
-import { Checklist } from '../schema/checklist';
+import { Checklist, UpdateChecklist } from '../schema/checklist';
 
-export async function get(ticket_id: string): Promise<Checklist | undefined> {
-  return await db<Checklist>('checklist').returning('*').where({ ticket_id }).first();
+export async function get(ticketId: string): Promise<Checklist | undefined> {
+  const selector = { ticket_id: ticketId };
+
+  return await db<Checklist>('checklist').returning('*').where(selector).first();
 }
 
-export async function getById(id: string): Promise<Checklist | undefined> {
-  return await db<Checklist>('checklist').returning('*').where({ id }).first();
+export async function getById(checklistId: string): Promise<Checklist | undefined> {
+  const selector = { id: checklistId };
+
+  return await db<Checklist>('checklist').returning('*').where(selector).first();
 }
 
 export async function getByTicketIdAndName(
-  ticket_id: string,
+  ticketId: string,
   name: string
 ): Promise<Checklist | undefined> {
-  return await db<Checklist>('checklist').returning('*').where({ ticket_id, name }).first();
-}
-// we also need to return checklist items
+  const selector = { ticket_id: ticketId, name: name };
 
+  return await db<Checklist>('checklist').returning('*').where(selector).first();
+}
+//! we also need to return checklist items
 export async function create(newChecklist: Checklist): Promise<Checklist> {
   await db<Checklist>('checklist').insert(newChecklist);
+
   return newChecklist;
 }
 
-export async function update(id: string, data: Partial<Checklist>): Promise<Partial<Checklist>> {
-  await db<Checklist>('checklist').where({ id }).update(data);
-  return data;
+export async function update(
+  checklistId: string,
+  updatedChecklist: UpdateChecklist
+): Promise<UpdateChecklist> {
+  const selector = { id: checklistId };
+
+  await db<Checklist>('checklist').where(selector).update(updatedChecklist);
+
+  return updatedChecklist;
 }

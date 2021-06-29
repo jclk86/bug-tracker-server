@@ -14,16 +14,16 @@ const userRouter = Router();
 
 userRouter.get('/user', catchAsync(getAllUsers));
 
-userRouter.get('/user/company_id/:company_id', catchAsync(getAllUsersByCompanyId));
+userRouter.get('/user/companyId/:companyId', catchAsync(getAllUsersByCompanyId));
 
-userRouter.get('/user/email/:email', catchAsync(getUserByEmail));
+userRouter.get('/user/email/:userEmail', catchAsync(getUserByEmail));
 
-userRouter.get('/user/id/:id', catchAsync(getUserById));
+userRouter.get('/user/id/:userId', catchAsync(getUserById));
 
 userRouter.post('/user/create', catchAsync(createUser));
 
-userRouter.patch('/user/edit/:id', catchAsync(updateUser));
+userRouter.patch('/user/edit/:userId', catchAsync(updateUser));
 
-userRouter.delete('/user/delete/:id', catchAsync(deleteUser));
+userRouter.delete('/user/delete/:userId', catchAsync(deleteUser));
 
 export default userRouter;

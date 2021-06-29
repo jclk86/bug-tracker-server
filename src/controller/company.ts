@@ -1,9 +1,9 @@
 import { get, getById, getByName, create, update, remove } from '../model/company';
 import util from './utilities';
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
-import { BaseCompany } from '../schema/company';
 
 // next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
 // Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
@@ -19,9 +19,9 @@ export const getAllCompanies = async (req: Request, res: Response): Promise<void
 };
 
 export const getCompanyByName = async (req: Request, res: Response): Promise<void> => {
-  const { name } = req.params;
+  const { companyName } = req.params;
 
-  const company = await getByName(name);
+  const company = await getByName(companyName);
 
   if (!company) throw new CustomError(400, 'No such company exists');
 
@@ -29,10 +29,12 @@ export const getCompanyByName = async (req: Request, res: Response): Promise<voi
 };
 
 export const createCompany = async (req: Request, res: Response): Promise<void> => {
-  const { name } = req.body;
+  const { companyName } = req.body;
 
-  const newCompany: BaseCompany = {
-    name: name
+  const newCompany = {
+    id: uuidv4(),
+    name: companyName,
+    date_created: util.currentTimeStamp
   };
 
   // check if all fields are filled out
@@ -48,45 +50,46 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateCompany = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
-  const { name } = req.body;
+  const { companyId } = req.params;
+  const { companyName } = req.body;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(companyId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const company = await getById(id);
+  const company = await getById(companyId);
 
   if (!company) throw new CustomError(400, 'Company does not exist');
 
-  const updateCompany: BaseCompany = {
-    name: name
+  const updatedCompany = {
+    name: companyName,
+    last_edited: util.currentTimeStamp
   };
 
-  await util.checkBody(updateCompany);
+  await util.checkBody(updatedCompany);
 
-  if (company.name !== updateCompany.name) {
-    const nameExists = await getByName(updateCompany.name);
+  if (company.name !== updatedCompany.name) {
+    const nameExists = await getByName(updatedCompany.name);
     if (nameExists) throw new CustomError(400, 'Company name exists');
   }
 
-  await update(id, updateCompany);
+  await update(companyId, updatedCompany);
 
   res.status(201).send({ message: 'company successfuly updated' });
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { companyId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(companyId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const company = await getById(id);
+  const company = await getById(companyId);
 
   if (!company) throw new CustomError(400, 'Company does not exist');
 
-  await remove(id);
+  await remove(companyId);
 
   //! check if deleting a company deletes all users
 
@@ -94,13 +97,13 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 };
 
 export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { companyId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(companyId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const company = await getById(id);
+  const company = await getById(companyId);
 
   if (!company) throw new CustomError(400, 'No company exists by that ID');
 

@@ -4,7 +4,7 @@ import { getChecklist, createChecklist } from '../controller/checklist';
 
 const checklistRouter = Router();
 
-checklistRouter.get('/checklist/:ticket_id', catchAsync(getChecklist));
+checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklist));
 
 checklistRouter.post('/checklist/create', catchAsync(createChecklist));
 

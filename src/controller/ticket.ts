@@ -9,7 +9,6 @@ import {
   getPriorities,
   getStatuses
 } from '../model/ticket';
-import { Ticket } from '../schema/ticket';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,9 +24,9 @@ export const getAllTickets = async (req: Request, res: Response): Promise<void> 
 };
 
 export const getTicketByName = async (req: Request, res: Response): Promise<void> => {
-  const { name } = req.params;
+  const { ticketName } = req.params;
 
-  const ticket = await getByName(name);
+  const ticket = await getByName(ticketName);
 
   if (!ticket) throw new CustomError(400, 'No ticket exists by that name');
 
@@ -35,13 +34,13 @@ export const getTicketByName = async (req: Request, res: Response): Promise<void
 };
 
 export const getTicketById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { ticketId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const ticket = await getById(id);
+  const ticket = await getById(ticketId);
 
   if (!ticket) throw new CustomError(400, 'No ticket exists by that id');
 
@@ -51,7 +50,7 @@ export const getTicketById = async (req: Request, res: Response): Promise<void> 
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
   const ticket = req.body;
 
-  const newTicket: Ticket = {
+  const newTicket = {
     id: uuidv4(),
     name: ticket.name,
     description: ticket.description,
@@ -75,17 +74,17 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
 };
 
 export const updateTicket = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { ticketId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const ticket = await getById(id);
+  const ticket = await getById(ticketId);
 
   if (!ticket) throw new CustomError(400, 'No ticket exists by that id');
 
-  const ticketBody: Partial<Ticket> = {
+  const ticketBody = {
     name: req.body.name,
     description: req.body.description,
     ticket_status_id: req.body.ticket_status_id,
@@ -102,19 +101,19 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
     if (nameExists) throw new CustomError(400, 'PLease choose a different ticket name');
   }
 
-  await update(id, ticketBody);
+  await update(ticketId, ticketBody);
 
   res.status(201).send({ message: 'Ticket successfully updated' });
 };
 
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { ticketId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  await removeById(id);
+  await removeById(ticketId);
 
   res.status(200).send({ message: 'Ticket successfully deleted' });
 };

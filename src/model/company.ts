@@ -1,50 +1,50 @@
 // model interfaces with database. Handles all data logic and data manipulation
 import db from '../database/config';
-import { v4 as uuidv4 } from 'uuid';
-import { BaseCompany, Company } from '../schema/company';
-import util from './utilities';
+import { Company, UpdateCompany } from '../schema/company';
 
 export async function get(): Promise<Company[]> {
-  const data = await db<Company>('company').returning('*');
-  return data;
+  const companies = await db<Company>('company').returning('*');
+
+  return companies;
 }
 
-export async function getByName(name: string): Promise<Company | undefined> {
-  const data = await db<Company>('company').returning('*').where('name', name).first();
-  return data;
-}
+export async function getByName(companyName: string): Promise<Company | undefined> {
+  const selector = { name: companyName };
 
-export async function getById(id: string): Promise<Company> {
-  const data = await db<Company>('company')
-    .select('id', 'name', 'date_created AS dateCreated')
-    .where('id', id)
-    .first();
+  const data = await db<Company>('company').returning('*').where(selector).first();
 
   return data;
 }
 
-export async function create(company: { name: string }): Promise<Company> {
-  const data = {
-    id: uuidv4(),
-    name: company.name,
-    date_created: util.currentTimeStamp
-  };
+export async function getById(companyId: string): Promise<Company | undefined> {
+  const selector = { id: companyId };
 
-  await db<Company>('company').insert(data);
+  const data = await db<Company>('company').select('*').where(selector).first();
 
-  const createdCompany = await getById(data.id);
+  return data;
+}
+
+export async function create(company: Company): Promise<Company> {
+  await db<Company>('company').insert(company);
+
+  const createdCompany = await getById(company.id);
 
   return createdCompany;
 }
 
-export async function update(id: string, data: BaseCompany): Promise<Company> {
-  await db<Company>('company').where('id', id).update(data);
+export async function update(
+  companyId: string,
+  updatedCompany: UpdateCompany
+): Promise<UpdateCompany> {
+  const selector = { id: companyId };
 
-  const updatedCompany = await getById(id);
+  await db<Company>('company').where(selector).update(updatedCompany);
 
   return updatedCompany;
 }
 
-export async function remove(id: string): Promise<void> {
-  return await db<Company>('company').where('id', id).delete();
+export async function remove(companyId: string): Promise<void> {
+  const selector = { id: companyId };
+
+  return await db<Company>('company').where(selector).delete();
 }

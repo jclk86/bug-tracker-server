@@ -6,6 +6,6 @@ const permissionRouter = Router();
 
 permissionRouter.get('/permission', catchAsync(getAllPermissionLevels));
 
-permissionRouter.get('/permission/:id', catchAsync(getPermissionById));
+permissionRouter.get('/permission/:permissionId', catchAsync(getPermissionById));
 
 export default permissionRouter;

@@ -1,25 +1,33 @@
 import db from '../database/config';
-import { Ticket } from '../schema/ticket';
+import { Ticket, UpdateTicket } from '../schema/ticket';
 import { Priority } from '../schema/priority';
 import { Status } from '../schema/status';
 
-export async function getByProjectId(project_id: string): Promise<Ticket[]> {
-  return await db<Ticket>('ticket').returning('*').where({ project_id });
+export async function getByProjectId(projectId: string): Promise<Ticket[]> {
+  const selector = { project_id: projectId };
+
+  return await db<Ticket>('ticket').returning('*').where(selector);
 }
 
-export async function getByName(name: string): Promise<Ticket | undefined> {
-  return await db<Ticket>('ticket').returning('*').where({ name }).first();
+export async function getByName(ticketName: string): Promise<Ticket | undefined> {
+  const selector = { name: ticketName };
+
+  return await db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-export async function getById(id: string): Promise<Ticket | undefined> {
-  return await db<Ticket>('ticket').returning('*').where({ id }).first();
+export async function getById(ticketId: string): Promise<Ticket | undefined> {
+  const selector = { id: ticketId };
+
+  return await db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
 export async function getByProjectIdAndName(
-  project_id: string,
-  name: string
+  projectId: string,
+  ticketName: string
 ): Promise<Ticket | undefined> {
-  return await db<Ticket>('ticket').returning('*').where({ project_id, name }).first();
+  const selector = { project_id: projectId, name: ticketName };
+
+  return await db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
 export async function create(newTicket: Ticket): Promise<Ticket> {
@@ -27,20 +35,26 @@ export async function create(newTicket: Ticket): Promise<Ticket> {
   return newTicket;
 }
 
-export async function removeByName(name: string): Promise<void> {
-  return await db<Ticket>('ticket').where({ name }).delete();
+export async function removeByName(ticketName: string): Promise<void> {
+  const selector = { name: ticketName };
+
+  return await db<Ticket>('ticket').where(selector).delete();
 }
 
-export async function removeById(id: string): Promise<void> {
-  return await db<Ticket>('ticket').where({ id }).delete();
+export async function removeById(ticketId: string): Promise<void> {
+  const selector = { id: ticketId };
+
+  return await db<Ticket>('ticket').where(selector).delete();
 }
 
 export async function update(
-  id: string,
-  data: Partial<Ticket>
-): Promise<Partial<Ticket> | undefined> {
-  await db<Ticket>('ticket').where({ id }).update(data);
-  return data;
+  ticketId: string,
+  updatedTicket: UpdateTicket
+): Promise<UpdateTicket | undefined> {
+  const selector = { id: ticketId };
+
+  await db<Ticket>('ticket').where(selector).update(updatedTicket);
+  return updatedTicket;
 }
 
 export async function getPriorities(): Promise<Priority[]> {

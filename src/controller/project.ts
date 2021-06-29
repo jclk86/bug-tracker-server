@@ -8,7 +8,6 @@ import {
   getPriorities,
   getStatuses
 } from '../model/project';
-import { Project } from '../schema/project';
 import util from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,9 +15,9 @@ import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
 export const getAllProjects = async (req: Request, res: Response): Promise<void> => {
-  const { company_id } = req.params;
+  const { companyId } = req.params;
 
-  const projects = await getByCompanyId(company_id);
+  const projects = await getByCompanyId(companyId);
 
   if (!projects?.length) throw new CustomError(404, 'No projects have been added');
 
@@ -39,27 +38,27 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
   const {
     name,
     description,
-    start_date,
-    completion_date,
-    due_date,
-    team_leader_id,
-    project_priority_id,
-    project_status_id,
-    company_id
+    startDate,
+    completionDate,
+    dueDate,
+    teamLeaderId,
+    projectPriorityId,
+    projectStatusId,
+    companyId
   } = req.body;
 
-  const newProject: Project = {
+  const newProject = {
     id: uuidv4(),
     name: name,
     description: description,
-    date_created: util.currentTimeStamp,
-    start_date: start_date,
-    completion_date: completion_date,
-    due_date: due_date,
-    team_leader_id: team_leader_id,
-    project_priority_id: project_priority_id,
-    project_status_id: project_status_id,
-    company_id: company_id
+    start_date: startDate,
+    completion_date: completionDate,
+    due_date: dueDate,
+    team_leader_id: teamLeaderId,
+    project_priority_id: projectPriorityId,
+    project_status_id: projectStatusId,
+    company_id: companyId,
+    date_created: util.currentTimeStamp
   };
 
   await util.checkBody(newProject);
@@ -86,26 +85,26 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   if (!project) throw new CustomError(400, 'Project does not exist');
 
-  const projectBody: Partial<Project> = {
+  const updatedProject = {
     name: req.body.name,
     description: req.body.description,
-    start_date: req.body.start_date,
-    completion_date: req.body.completion_date,
-    due_date: req.body.due_date,
-    last_edited: util.currentTimeStamp,
-    team_leader_id: req.body.team_leader_id,
-    project_priority_id: req.body.project_priority_id,
-    project_status_id: req.body.project_status_id
+    start_date: req.body.startDate,
+    completion_date: req.body.completionDate,
+    due_date: req.body.dueDate,
+    team_leader_id: req.body.teamLeaderId,
+    project_priority_id: req.body.projectPriorityId,
+    project_status_id: req.body.projectStatusId,
+    last_edited: util.currentTimeStamp
   };
 
-  await util.checkBody(projectBody);
+  await util.checkBody(updatedProject);
 
-  if (project.name !== projectBody.name) {
-    const nameExists = await await getByCompanyIdAndName(project.company_id, projectBody.name);
+  if (project.name !== updatedProject.name) {
+    const nameExists = await await getByCompanyIdAndName(project.company_id, updatedProject.name);
     if (nameExists) throw new CustomError(400, 'Please choose different project name');
   }
 
-  await update(id, projectBody);
+  await update(id, updatedProject);
 
   res.status(201).send({ message: 'Project was sucessfully updated' });
 };
