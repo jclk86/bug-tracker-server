@@ -27,9 +27,7 @@ export function getByCompanyIdAndName(
 }
 
 export function create(newProject: Project): Promise<Project | undefined> {
-  db<Project>('project').insert(newProject);
-
-  return getById(newProject.id);
+  return db<Project>('project').insert(newProject);
 }
 
 export function update(

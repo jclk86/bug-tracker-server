@@ -62,6 +62,7 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   // For errors without status codes
   const statusCode = response.error.status || 500;
 
+  // place console.log during development to log error message
   res.status(statusCode).json(response.error.message);
 });
 

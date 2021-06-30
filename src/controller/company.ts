@@ -1,5 +1,5 @@
 import { get, getById, getByName, create, update, remove } from '../model/company';
-import util from './utilities';
+import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
@@ -29,29 +29,29 @@ export const getCompanyByName = async (req: Request, res: Response): Promise<voi
 };
 
 export const createCompany = async (req: Request, res: Response): Promise<void> => {
-  const { companyName } = req.body;
+  const { name } = req.body;
 
   const newCompany = {
     id: uuidv4(),
-    name: companyName,
-    date_created: util.currentTimeStamp
+    name: name,
+    date_created: currentTimeStamp
   };
 
   // check if all fields are filled out
-  await util.checkBody(newCompany);
+  await checkBody(newCompany);
 
   const company = await getByName(newCompany.name);
 
   if (company) throw new CustomError(400, 'Company already exists');
 
-  const result = await create(newCompany);
+  await create(newCompany);
 
-  res.status(201).send(result);
+  res.status(201).send(newCompany);
 };
 
 export const updateCompany = async (req: Request, res: Response): Promise<void> => {
   const { companyId } = req.params;
-  const { companyName } = req.body;
+  const { name } = req.body;
 
   const isValid = await isValidUUIDV4(companyId);
 
@@ -62,11 +62,11 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
   if (!company) throw new CustomError(400, 'Company does not exist');
 
   const updatedCompany = {
-    name: companyName,
-    last_edited: util.currentTimeStamp
+    name: name,
+    last_edited: currentTimeStamp
   };
 
-  await util.checkBody(updatedCompany);
+  await checkBody(updatedCompany);
 
   if (company.name !== updatedCompany.name) {
     const nameExists = await getByName(updatedCompany.name);
@@ -75,7 +75,7 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   await update(companyId, updatedCompany);
 
-  res.status(201).send({ message: 'company successfuly updated' });
+  res.status(201).send(updatedCompany);
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {

@@ -21,7 +21,7 @@ export function getByTicketIdAndName(
 
   return db<Checklist>('checklist').returning('*').where(selector).first();
 }
-//! we also need to return checklist items
+
 export function create(newChecklist: Checklist): Promise<Checklist> {
   return db<Checklist>('checklist').insert(newChecklist);
 }
@@ -33,4 +33,12 @@ export function update(
   const selector = { id: checklistId };
 
   return db<Checklist>('checklist').where(selector).update(updatedChecklist);
+}
+
+export function remove(checklistId: string): Promise<void> {
+  const selector = {
+    id: checklistId
+  };
+
+  return db<Checklist>('checklist').where(selector).delete();
 }

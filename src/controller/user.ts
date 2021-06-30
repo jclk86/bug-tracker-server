@@ -8,7 +8,7 @@ import {
   update,
   removeById
 } from '../model/user';
-import util from './utilities';
+import { checkBody, currentTimeStamp, hashPassword } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
@@ -65,8 +65,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   // hash password
   //! check what happens if no password is passed
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const hashedPassword = await hashPassword(password);
 
   const signUp = {
     id: uuidv4(),
@@ -77,10 +77,10 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     password: hashedPassword,
     company_id: companyId,
     active: true,
-    date_created: util.currentTimeStamp
+    date_created: currentTimeStamp
   };
 
-  await util.checkBody(signUp);
+  await checkBody(signUp);
 
   const userExists = await getByEmail(signUp.email);
 
@@ -97,7 +97,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   await create(signUp);
 
-  res.status(201).send({ message: 'User was sucessfully created' });
+  res.status(201).send(signUp);
 };
 
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
@@ -112,15 +112,18 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
+  const hashedPassword = await hashPassword(password);
+
+  // ! as a form on client side, these items will hold old values and be edited back in. So you require them here.
   const updatedUser = {
-    password: password,
+    password: hashedPassword,
     email: email,
     permission_id: permissionId,
     active: active,
-    last_edited: util.currentTimeStamp
+    last_edited: currentTimeStamp
   };
 
-  await util.checkBody(updatedUser);
+  await checkBody(updatedUser);
 
   if (user.email !== updatedUser.email) {
     const emailExists = await getByEmail(updatedUser.email);
@@ -135,7 +138,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   await update(userId, updatedUser);
 
-  res.status(201).send({ message: 'User successfully updated' });
+  res.status(201).send(updatedUser);
 };
 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {

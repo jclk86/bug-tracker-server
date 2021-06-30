@@ -8,7 +8,7 @@ import {
   getPriorities,
   getStatuses
 } from '../model/project';
-import util from './utilities';
+import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
@@ -58,10 +58,10 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
     project_priority_id: projectPriorityId,
     project_status_id: projectStatusId,
     company_id: companyId,
-    date_created: util.currentTimeStamp
+    date_created: currentTimeStamp
   };
 
-  await util.checkBody(newProject);
+  await checkBody(newProject);
 
   //! does the team leader exist in this company, for this project? Does this even matter? A team leader is someone who works for that company
 
@@ -69,9 +69,9 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   if (company) throw new CustomError(400, 'Choose different project name');
 
-  const result = await create(newProject);
+  await create(newProject);
 
-  res.status(201).send(result);
+  res.status(201).send(newProject);
 };
 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
@@ -94,10 +94,10 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
     team_leader_id: req.body.teamLeaderId,
     project_priority_id: req.body.projectPriorityId,
     project_status_id: req.body.projectStatusId,
-    last_edited: util.currentTimeStamp
+    last_edited: currentTimeStamp
   };
 
-  await util.checkBody(updatedProject);
+  await checkBody(updatedProject);
 
   if (project.name !== updatedProject.name) {
     const nameExists = await await getByCompanyIdAndName(project.company_id, updatedProject.name);
@@ -106,7 +106,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await update(id, updatedProject);
 
-  res.status(201).send({ message: 'Project was sucessfully updated' });
+  res.status(201).send(updatedProject);
 };
 
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {

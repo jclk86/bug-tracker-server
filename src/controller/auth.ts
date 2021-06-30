@@ -1,4 +1,4 @@
-import util from './utilities';
+import { checkBody } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -12,7 +12,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
     password: req.body.password
   };
 
-  await util.checkBody(userLogin);
+  await checkBody(userLogin);
   // change exists
   const user = await getByEmail(userLogin.email);
 

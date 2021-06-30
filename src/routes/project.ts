@@ -12,7 +12,7 @@ import { catchAsync } from './utilities';
 
 const projectRouter = Router();
 
-projectRouter.get('/project/company_id/:companyId', catchAsync(getAllProjects));
+projectRouter.get('/project/companyId/:companyId', catchAsync(getAllProjects));
 
 projectRouter.get('/project/id/:id', catchAsync(getProjectById));
 

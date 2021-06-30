@@ -9,7 +9,7 @@ import {
   getPriorities,
   getStatuses
 } from '../model/ticket';
-import util from './utilities';
+import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
@@ -48,21 +48,29 @@ export const getTicketById = async (req: Request, res: Response): Promise<void> 
 };
 
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
-  const ticket = req.body;
+  const {
+    name,
+    description,
+    ticketStatusId,
+    ticketPriorityId,
+    dueDate,
+    completionDate,
+    projectId
+  } = req.body;
 
   const newTicket = {
     id: uuidv4(),
-    name: ticket.name,
-    description: ticket.description,
-    date_created: util.currentTimeStamp,
-    ticket_status_id: ticket.ticket_status_id,
-    ticket_priority_id: ticket.ticket_priority_id,
-    due_date: ticket.due_date,
-    completion_date: ticket.completion_date,
-    project_id: ticket.project_id
+    name: name,
+    description: description,
+    date_created: currentTimeStamp,
+    ticket_status_id: ticketStatusId,
+    ticket_priority_id: ticketPriorityId,
+    due_date: dueDate,
+    completion_date: completionDate,
+    project_id: projectId
   };
 
-  await util.checkBody(newTicket);
+  await checkBody(newTicket);
 
   const project = await getByProjectIdAndName(newTicket.project_id, newTicket.name);
 
@@ -70,11 +78,12 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
 
   await create(newTicket);
 
-  res.status(201).send({ message: 'ticket successfully created' });
+  res.status(201).send(newTicket);
 };
 
 export const updateTicket = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
+  const { name, description, ticketStatusId, ticketPriorityId, dueDate, completionDate } = req.body;
 
   const isValid = await isValidUUIDV4(ticketId);
 
@@ -84,26 +93,26 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   if (!ticket) throw new CustomError(400, 'No ticket exists by that id');
 
-  const ticketBody = {
-    name: req.body.name,
-    description: req.body.description,
-    ticket_status_id: req.body.ticket_status_id,
-    ticket_priority_id: req.body.ticket_priority_id,
-    due_date: req.body.due_date,
-    completion_date: req.body.completion_date,
-    last_edited: util.currentTimeStamp
+  const updatedTicket = {
+    name: name,
+    description: description,
+    ticket_status_id: ticketStatusId,
+    ticket_priority_id: ticketPriorityId,
+    due_date: dueDate,
+    completion_date: completionDate,
+    last_edited: currentTimeStamp
   };
 
-  await util.checkBody(ticketBody);
+  await checkBody(updatedTicket);
 
-  if (ticket.name !== ticketBody.name) {
-    const nameExists = await getByProjectIdAndName(ticket.project_id, ticketBody.name);
-    if (nameExists) throw new CustomError(400, 'PLease choose a different ticket name');
+  if (ticket.name !== updatedTicket.name) {
+    const nameExists = await getByProjectIdAndName(ticket.project_id, updatedTicket.name);
+    if (nameExists) throw new CustomError(400, 'Please choose a different ticket name');
   }
 
-  await update(ticketId, ticketBody);
+  await update(ticketId, updatedTicket);
 
-  res.status(201).send({ message: 'Ticket successfully updated' });
+  res.status(201).send(updatedTicket);
 };
 
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
