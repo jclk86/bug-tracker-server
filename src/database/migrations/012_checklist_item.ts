@@ -1,10 +1,17 @@
 import { Knex } from 'knex';
-
+// ! reference checklist id
 export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
   return knex.schema.createTable('checklist_item', (table: Knex.TableBuilder) => {
     table.uuid('id').primary();
-    table.string('name', 64).notNullable().unique();
+    table.string('description', 64).notNullable();
     table.boolean('checked').defaultTo(false);
+    table
+      .uuid('checklist_id')
+      .notNullable()
+      .references('id')
+      .inTable('checklist')
+      .onUpdate('cascade')
+      .onDelete('cascade');
   });
 }
 

@@ -1,7 +1,8 @@
 import CustomError from '../errorhandler/CustomError';
-import bcrypt from 'bcrypt';
 
-export const checkBody = function (requestBody: unknown): void {
+type ReqBody = { [key: string]: unknown };
+
+const checkBody = function (requestBody: ReqBody): void {
   for (const [key, value] of Object.entries(requestBody)) {
     if (value === undefined || value === null || value === '') {
       throw new CustomError(400, key + ' is required');
@@ -9,7 +10,9 @@ export const checkBody = function (requestBody: unknown): void {
   }
 };
 
-export const currentTimeStamp = new Date().toLocaleDateString('en-US', {
+// const verify = function () {};
+
+const currentTimeStamp = new Date().toLocaleDateString('en-US', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
@@ -18,9 +21,7 @@ export const currentTimeStamp = new Date().toLocaleDateString('en-US', {
   second: '2-digit'
 });
 
-export const hashPassword = async function (password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = bcrypt.hash(password, salt);
-
-  return hashedPassword;
+export default {
+  checkBody,
+  currentTimeStamp
 };

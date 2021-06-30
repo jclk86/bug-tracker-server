@@ -1,12 +1,10 @@
-export interface ICompany {
+export interface BaseCompany {
+  name: string;
+}
+export interface UpdateCompany extends BaseCompany {
+  last_edited: string;
+}
+export interface Company extends BaseCompany {
   id: string;
-  name: string;
-}
-
-export interface IUpdateCompany {
-  name: string;
-}
-
-export interface ICompanyGeneric {
-  [key: string]: string;
+  date_created: string;
 }

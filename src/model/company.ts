@@ -1,38 +1,38 @@
 // model interfaces with database. Handles all data logic and data manipulation
 import db from '../database/config';
-import { ICompany, IUpdateCompany } from '../schema/company';
+import { Company, UpdateCompany } from '../schema/company';
 
-async function get(): Promise<ICompany[]> {
-  return await db<ICompany>('company').returning('*');
+// https://stackoverflow.com/questions/12016322/async-all-the-way-down
+// async await returns a promise. we do this in controller
+// ! The only thing to watch out for is strack trace
+export function get(): Promise<Company[]> {
+  return db<Company>('company').returning('*');
 }
 
-async function getByName(name: string): Promise<ICompany | undefined> {
-  return await db<ICompany>('company').returning('*').where({ name }).first();
+export function getByName(companyName: string): Promise<Company | undefined> {
+  const selector = { name: companyName };
+
+  return db<Company>('company').returning('*').where(selector).first();
 }
 
-async function getById(id: string): Promise<ICompany | undefined> {
-  return await db<ICompany>('company').returning('*').where({ id }).first();
+export function getById(companyId: string): Promise<Company | undefined> {
+  const selector = { id: companyId };
+
+  return db<Company>('company').select('*').where(selector).first();
 }
 
-async function create(newCompany: ICompany): Promise<ICompany> {
-  await db<ICompany>('company').insert(newCompany);
-  return newCompany;
+export function create(company: Company): Promise<Company> {
+  return db<Company>('company').insert(company);
 }
 
-async function update(id: string, data: IUpdateCompany): Promise<IUpdateCompany> {
-  await db<ICompany>('company').where({ id }).update(data);
-  return data;
+export function update(companyId: string, updatedCompany: UpdateCompany): Promise<UpdateCompany> {
+  const selector = { id: companyId };
+
+  return db<Company>('company').where(selector).update(updatedCompany);
 }
 
-async function remove(id: string): Promise<void> {
-  return await db<ICompany>('company').where('id', id).delete();
-}
+export function remove(companyId: string): Promise<void> {
+  const selector = { id: companyId };
 
-export default {
-  get,
-  getByName,
-  getById,
-  create,
-  update,
-  remove
-};
+  return db<Company>('company').where(selector).delete();
+}

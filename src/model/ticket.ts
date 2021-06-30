@@ -1,42 +1,64 @@
 import db from '../database/config';
-import { ITicket, IUpdateTicket } from '../schema/ticket';
+import { Ticket, UpdateTicket } from '../schema/ticket';
+import { Priority } from '../schema/priority';
+import { Status } from '../schema/status';
 
-async function get(): Promise<ITicket[]> {
-  return await db<ITicket>('ticket').returning('*');
+export function getByProjectId(projectId: string): Promise<Ticket[]> {
+  const selector = { project_id: projectId };
+
+  return db<Ticket>('ticket').returning('*').where(selector);
 }
 
-async function getByName(name: string): Promise<ITicket | undefined> {
-  return await db<ITicket>('ticket').returning('*').where({ name }).first();
+export function getByName(ticketName: string): Promise<Ticket | undefined> {
+  const selector = { name: ticketName };
+
+  return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-async function getById(id: string): Promise<ITicket | undefined> {
-  return await db<ITicket>('ticket').returning('*').where({ id }).first();
+export function getById(ticketId: string): Promise<Ticket | undefined> {
+  const selector = { id: ticketId };
+
+  return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-async function create(newTicket: ITicket): Promise<ITicket> {
-  await db<ITicket>('ticket').insert(newTicket);
-  return newTicket;
+export function getByProjectIdAndName(
+  projectId: string,
+  ticketName: string
+): Promise<Ticket | undefined> {
+  const selector = { project_id: projectId, name: ticketName };
+
+  return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-async function removeByName(name: string): Promise<void> {
-  return await db<ITicket>('ticket').where({ name }).delete();
+export function create(newTicket: Ticket): Promise<Ticket> {
+  return db<Ticket>('ticket').insert(newTicket);
 }
 
-async function removeById(id: string): Promise<void> {
-  return await db<ITicket>('ticket').where({ id }).delete();
+export function removeByName(ticketName: string): Promise<void> {
+  const selector = { name: ticketName };
+
+  return db<Ticket>('ticket').where(selector).delete();
 }
 
-async function update(id: string, data: IUpdateTicket): Promise<IUpdateTicket | undefined> {
-  await db<ITicket>('ticket').where({ id }).update(data);
-  return data;
+export function removeById(ticketId: string): Promise<void> {
+  const selector = { id: ticketId };
+
+  return db<Ticket>('ticket').where(selector).delete();
 }
 
-export default {
-  get,
-  create,
-  getByName,
-  getById,
-  removeByName,
-  removeById,
-  update
-};
+export function update(
+  ticketId: string,
+  updatedTicket: UpdateTicket
+): Promise<UpdateTicket | undefined> {
+  const selector = { id: ticketId };
+
+  return db<Ticket>('ticket').where(selector).update(updatedTicket);
+}
+
+export function getPriorities(): Promise<Priority[]> {
+  return db<Priority>('ticket_priority').returning('*');
+}
+
+export function getStatuses(): Promise<Status[]> {
+  return db<Status>('ticket_status').returning('*');
+}

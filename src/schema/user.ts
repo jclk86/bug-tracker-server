@@ -1,16 +1,17 @@
-export interface IUser {
-  id: string;
-  name: string;
+export interface BaseUser {
   email: string;
-  active: boolean;
   password: string;
   permission_id: number;
-  company_id: string;
+  active: boolean;
+}
+export interface UpdateUser extends BaseUser {
+  last_edited: string;
 }
 
-export interface IUpdateUser {
-  email: string;
-  active: boolean;
-  password: string;
-  permission_id: number;
+export interface User extends BaseUser {
+  id: string;
+  company_id: string;
+  first_name: string;
+  last_name: string;
+  date_created: string;
 }

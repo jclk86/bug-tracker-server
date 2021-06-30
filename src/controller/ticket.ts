@@ -1,21 +1,32 @@
-import Ticket from '../model/ticket';
-import util from './utilities';
-import { request, Request, Response } from 'express';
+import {
+  getByProjectId,
+  getById,
+  getByName,
+  getByProjectIdAndName,
+  create,
+  removeById,
+  update,
+  getPriorities,
+  getStatuses
+} from '../model/ticket';
+import { checkBody, currentTimeStamp } from './utilities';
+import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
 export const getAllTickets = async (req: Request, res: Response): Promise<void> => {
-  const tickets = await Ticket.get();
+  const { project_id } = req.params;
+  const tickets = await getByProjectId(project_id);
   if (!tickets.length) throw new CustomError(404, 'No tickets have been added');
 
   res.status(200).send(tickets);
 };
 
 export const getTicketByName = async (req: Request, res: Response): Promise<void> => {
-  const { name } = req.params;
+  const { ticketName } = req.params;
 
-  const ticket = await Ticket.getByName(name);
+  const ticket = await getByName(ticketName);
 
   if (!ticket) throw new CustomError(400, 'No ticket exists by that name');
 
@@ -23,13 +34,13 @@ export const getTicketByName = async (req: Request, res: Response): Promise<void
 };
 
 export const getTicketById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { ticketId } = req.params;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const ticket = await Ticket.getById(id);
+  const ticket = await getById(ticketId);
 
   if (!ticket) throw new CustomError(400, 'No ticket exists by that id');
 
@@ -37,74 +48,97 @@ export const getTicketById = async (req: Request, res: Response): Promise<void> 
 };
 
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
-  const ticket = req.body;
+  const {
+    name,
+    description,
+    ticketStatusId,
+    ticketPriorityId,
+    dueDate,
+    completionDate,
+    projectId
+  } = req.body;
 
   const newTicket = {
     id: uuidv4(),
-    name: ticket.name,
-    description: ticket.description,
-    start_date: ticket.start_date,
-    ticket_status_id: ticket.ticket_status_id,
-    ticket_priority_level_id: ticket.ticket_priority_level_id,
-    due_date: ticket.due_date,
-    completion_date: ticket.completion_date,
-    project_id: ticket.project_id
+    name: name,
+    description: description,
+    date_created: currentTimeStamp,
+    ticket_status_id: ticketStatusId,
+    ticket_priority_id: ticketPriorityId,
+    due_date: dueDate,
+    completion_date: completionDate,
+    project_id: projectId
   };
 
-  await util.checkBody(newTicket);
+  await checkBody(newTicket);
 
-  const exists = await Ticket.getByName(newTicket.name);
+  const project = await getByProjectIdAndName(newTicket.project_id, newTicket.name);
 
-  if (exists) throw new CustomError(400, 'Please choose a different name');
+  if (project) throw new CustomError(400, 'Please choose a different name');
 
-  await Ticket.create(newTicket);
+  await create(newTicket);
 
-  res.status(201).send({ message: 'ticket successfully created' });
+  res.status(201).send(newTicket);
 };
 
 export const updateTicket = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { ticketId } = req.params;
+  const { name, description, ticketStatusId, ticketPriorityId, dueDate, completionDate } = req.body;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const ticketBody = {
-    name: req.body.name,
-    description: req.body.description,
-    ticket_status_id: req.body.ticket_status_id,
-    ticket_priority_level_id: req.body.ticket_priority_level_id,
-    due_date: req.body.due_date,
-    completion_date: req.body.completion_date
+  const ticket = await getById(ticketId);
+
+  if (!ticket) throw new CustomError(400, 'No ticket exists by that id');
+
+  const updatedTicket = {
+    name: name,
+    description: description,
+    ticket_status_id: ticketStatusId,
+    ticket_priority_id: ticketPriorityId,
+    due_date: dueDate,
+    completion_date: completionDate,
+    last_edited: currentTimeStamp
   };
 
-  await util.checkBody(ticketBody);
+  await checkBody(updatedTicket);
 
-  const ticketNameExists = await Ticket.getByName(req.body.name);
-
-  if (ticketNameExists) throw new CustomError(400, 'Please choose different name');
-
-  const ticketIdExists = await Ticket.getById(id);
-
-  if (!ticketIdExists) throw new CustomError(400, 'No ticket exists by that id');
-
-  try {
-    await Ticket.update(id, ticketBody);
-  } catch (e) {
-    console.log(e);
+  if (ticket.name !== updatedTicket.name) {
+    const nameExists = await getByProjectIdAndName(ticket.project_id, updatedTicket.name);
+    if (nameExists) throw new CustomError(400, 'Please choose a different ticket name');
   }
 
-  res.status(201).send({ message: 'Ticket successfully updated' });
+  await update(ticketId, updatedTicket);
+
+  res.status(201).send(updatedTicket);
 };
 
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { ticketId } = req.params;
 
-  const isValid = isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  await Ticket.removeById(id);
+  await removeById(ticketId);
 
   res.status(200).send({ message: 'Ticket successfully deleted' });
+};
+
+export const getTicketPriorities = async (req: Request, res: Response): Promise<void> => {
+  const priorities = await getPriorities();
+
+  if (!priorities.length) throw new CustomError(404, 'No ticket priorities have been added ');
+
+  res.status(200).send(priorities);
+};
+
+export const getTicketStatuses = async (req: Request, res: Response): Promise<void> => {
+  const statuses = await getStatuses();
+
+  if (!statuses.length) throw new CustomError(404, 'No ticket statuses have been added ');
+
+  res.status(200).send(statuses);
 };

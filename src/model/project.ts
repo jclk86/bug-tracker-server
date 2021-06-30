@@ -1,37 +1,54 @@
 import db from '../database/config';
-import { IProject, IUpdateProject } from '../schema/project';
+import { Project, UpdateProject } from '../schema/project';
+import { Priority } from '../schema/priority';
+import { Status } from '../schema/status';
 
-async function get(): Promise<IProject[]> {
-  return await db<IProject>('project').returning('*');
+export function getByCompanyId(companyId: string): Promise<Project[]> {
+  const selector = {
+    company_id: companyId
+  };
+
+  return db<Project>('project').returning('*').where(selector);
 }
 
-async function getById(id: string): Promise<IProject | undefined> {
-  return await db<IProject>('project').returning('*').where({ id }).first();
+export function getById(projectId: string): Promise<Project | undefined> {
+  const selector = { id: projectId };
+
+  return db<Project>('project').returning('*').where(selector).first();
 }
 
-async function getByName(name: string): Promise<IProject | undefined> {
-  return await db<IProject>('project').returning('*').where({ name }).first();
+export function getByCompanyIdAndName(
+  companyId: string,
+  name: string
+): Promise<Project | undefined> {
+  const selector = { company_id: companyId, name: name };
+
+  return db<Project>('project').returning('*').where(selector).first();
 }
 
-async function create(newProject: IProject): Promise<IProject | undefined> {
-  await db<IProject>('project').insert(newProject);
-  return newProject;
+export function create(newProject: Project): Promise<Project | undefined> {
+  return db<Project>('project').insert(newProject);
 }
 
-async function update(id: string, data: IUpdateProject): Promise<IUpdateProject | undefined> {
-  await db<IProject>('project').where({ id }).update(data);
-  return data;
+export function update(
+  projectId: string,
+  updatedProject: UpdateProject
+): Promise<UpdateProject | undefined> {
+  const selector = { id: projectId };
+
+  return db<Project>('project').where(selector).update(updatedProject);
 }
 
-async function removeById(id: string): Promise<void> {
-  return db<IProject>('project').where({ id }).delete();
+export function removeById(projectId: string): Promise<void> {
+  const selector = { id: projectId };
+
+  return db<Project>('project').where(selector).delete();
 }
 
-export default {
-  get,
-  create,
-  getById,
-  getByName,
-  update,
-  removeById
-};
+export function getPriorities(): Promise<Priority[]> {
+  return db<Priority>('project_priority').returning('*');
+}
+
+export function getStatuses(): Promise<Status[]> {
+  return db<Status>('project_status').returning('*');
+}

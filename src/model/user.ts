@@ -1,59 +1,77 @@
 import db from '../database/config';
-import { IUser, IUpdateUser } from '../schema/user';
+import { User, UpdateUser } from '../schema/user';
 
-async function get(): Promise<IUser[]> {
-  return await db<IUser>('user').returning('*');
+export function get(): Promise<User[]> {
+  return db<User>('user').returning('*');
 }
 
-async function getByEmail(email: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').returning('*').where({ email }).first();
+// export function getBySelector(id?: string, email?: string): Promise<User | undefined> {
+//   const selector = {
+//     ...(id && { id: id }),
+//     ...(email && { email: email })
+//   };
+
+//   const cols = [
+//     'id',
+//     'first_name AS firstName',
+//     'last_name AS lastName',
+//     'permission_id AS permissionId',
+//     'email',
+//     'date_created AS dateCreated',
+//     'company_id AS companyId',
+//     'active'
+//   ];
+
+//   const data = db<User>('user').select(cols).where(selector).first();
+
+//   return data;
+// }
+
+export function getByEmail(userEmail: string): Promise<User | undefined> {
+  const selector = { email: userEmail };
+
+  return db<User>('user').returning('*').where(selector).first();
 }
 
-async function getByName(name: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').returning('*').where({ name }).first();
+export function getById(userId: string): Promise<User | undefined> {
+  const selector = { id: userId };
+
+  return db<User>('user').returning('*').where(selector).first();
 }
 
-async function getById(id: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').returning('*').where({ id }).first();
+export function getByCompanyId(companyId: string): Promise<User[]> {
+  const selector = { company_id: companyId };
+
+  return db<User>('user').returning('*').where(selector);
 }
 
-async function getAccountOwner(
-  company_id: string,
-  permission_id: number
-): Promise<IUser | undefined> {
-  return await db<IUser>('user')
-    .returning('*')
-    .where('company_id', company_id)
-    .andWhere('permission_id', permission_id)
-    .first();
+export function getAccountOwner(
+  companyId: string,
+  permissionId: number
+): Promise<User | undefined> {
+  const selector = { company_id: companyId, permission_id: permissionId };
+
+  return db<User>('user').returning('*').where(selector).first();
 }
 
-async function create(newUser: IUser): Promise<IUser> {
-  await db<IUser>('user').insert(newUser);
-  return newUser;
+export function create(signUp: User): Promise<User | undefined> {
+  return db<User>('user').insert(signUp);
 }
 
-async function update(id: string, data: IUpdateUser): Promise<IUpdateUser> {
-  await db<IUser>('user').where({ id }).update(data);
-  return data;
+export function update(userId: string, updatedUser: UpdateUser): Promise<UpdateUser | undefined> {
+  const selector = { id: userId };
+
+  return db<User>('user').where(selector).update(updatedUser);
 }
 
-async function removeByEmail(email: string): Promise<IUser | undefined> {
-  return await db<IUser>('user').where('email', email).delete();
+export function removeByEmail(userEmail: string): Promise<User | undefined> {
+  const selector = { email: userEmail };
+
+  return db<User>('user').where(selector).delete();
 }
 
-async function removeById(id: string): Promise<void> {
-  return await db<IUser>('user').where({ id }).delete();
-}
+export function removeById(userId: string): Promise<void> {
+  const selector = { id: userId };
 
-export default {
-  get,
-  getByEmail,
-  getById,
-  getByName,
-  create,
-  removeByEmail,
-  removeById,
-  getAccountOwner,
-  update
-};
+  return db<User>('user').where(selector).delete();
+}

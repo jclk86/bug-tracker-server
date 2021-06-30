@@ -1,5 +1,5 @@
-export interface IPermission {
-  id: string;
+export interface Permission {
+  id: number;
   order_number: number;
-  level: string;
+  level: number;
 }

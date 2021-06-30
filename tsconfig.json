@@ -10,8 +10,9 @@
     "noImplicitAny": false,
     "removeComments": true,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strictNullChecks": false
   },
-  "include": ["src/**/*.ts", "knexfile.ts"],
+  "include": ["src/**/*.ts", "knexfile.ts", "src/passport-config.txt"],
   "exclude": ["node_modules"]
 }

@@ -1,15 +1,12 @@
 import db from '../database/config';
-import { IPermission } from '../schema/permission';
+import { Permission } from '../schema/permission';
 
-async function get(): Promise<IPermission[]> {
-  return await db<IPermission>('permission').returning('*');
+export function get(): Promise<Permission[]> {
+  return db<Permission>('permission').returning('*');
 }
 
-async function getById(id: string): Promise<IPermission | undefined> {
-  return await db<IPermission>('permission').returning('*').where({ id }).first();
-}
+export function getById(permissionId: number): Promise<Permission | undefined> {
+  const selector = { id: permissionId };
 
-export default {
-  get,
-  getById
-};
+  return db<Permission>('permission').returning('*').where(selector).first();
+}

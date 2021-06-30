@@ -1,5 +1,5 @@
-import Company from '../model/company';
-import util from './utilities';
+import { get, getById, getByName, create, update, remove } from '../model/company';
+import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
@@ -11,17 +11,17 @@ import CustomError from '../errorhandler/CustomError';
 // this is admin controlled and owner
 
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
-  const companies = await Company.get();
-  // !this still needs to be tested
+  const companies = await get();
+
   if (!companies?.length) throw new CustomError(404, 'No companies have been added');
 
   res.status(200).send(companies);
 };
 
 export const getCompanyByName = async (req: Request, res: Response): Promise<void> => {
-  const { name } = req.params;
+  const { companyName } = req.params;
 
-  const company = await Company.getByName(name);
+  const company = await getByName(companyName);
 
   if (!company) throw new CustomError(400, 'No such company exists');
 
@@ -29,66 +29,67 @@ export const getCompanyByName = async (req: Request, res: Response): Promise<voi
 };
 
 export const createCompany = async (req: Request, res: Response): Promise<void> => {
-  // check for missing required item
+  const { name } = req.body;
+
   const newCompany = {
     id: uuidv4(),
-    name: req.body.name
+    name: name,
+    date_created: currentTimeStamp
   };
 
   // check if all fields are filled out
-  await util.checkBody(newCompany);
+  await checkBody(newCompany);
 
-  const exists = await Company.getByName(newCompany.name);
+  const company = await getByName(newCompany.name);
 
-  if (exists) throw new CustomError(400, 'Company already exists');
+  if (company) throw new CustomError(400, 'Company already exists');
 
-  // might want to attach a primary email to the company
+  await create(newCompany);
 
-  const result = await Company.create(newCompany);
-
-  res.status(201).send(result);
+  res.status(201).send(newCompany);
 };
 
 export const updateCompany = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { companyId } = req.params;
+  const { name } = req.body;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(companyId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const company = await Company.getById(id);
+  const company = await getById(companyId);
 
   if (!company) throw new CustomError(400, 'Company does not exist');
 
-  const companyBody = {
-    name: req.body.name
+  const updatedCompany = {
+    name: name,
+    last_edited: currentTimeStamp
   };
 
-  await util.checkBody(companyBody);
+  await checkBody(updatedCompany);
 
-  // look through database to see if any other company under that name
+  if (company.name !== updatedCompany.name) {
+    const nameExists = await getByName(updatedCompany.name);
+    if (nameExists) throw new CustomError(400, 'Company name exists');
+  }
 
-  const exists = await Company.getByName(companyBody.name);
+  await update(companyId, updatedCompany);
 
-  if (exists) throw new CustomError(400, 'Please choose a different company name');
-
-  await Company.update(id, companyBody);
-
-  res.status(201).send({ message: 'company successfuly updated' });
+  res.status(201).send(updatedCompany);
 };
 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { companyId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(companyId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const exists = await Company.getById(id);
+  const company = await getById(companyId);
 
-  if (!exists) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(400, 'Company does not exist');
 
-  await Company.remove(id);
+  await remove(companyId);
 
   //! check if deleting a company deletes all users
 
@@ -96,13 +97,13 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 };
 
 export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { companyId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(companyId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const company = await Company.getById(id);
+  const company = await getById(companyId);
 
   if (!company) throw new CustomError(400, 'No company exists by that ID');
 
