@@ -16,8 +16,14 @@ import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
 export const getAllTickets = async (req: Request, res: Response): Promise<void> => {
-  const { project_id } = req.params;
-  const tickets = await getByProjectId(project_id);
+  const { projectId } = req.params;
+
+  const isValid = await isValidUUIDV4(projectId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const tickets = await getByProjectId(projectId);
+
   if (!tickets.length) throw new CustomError(404, 'No tickets have been added');
 
   res.status(200).send(tickets);

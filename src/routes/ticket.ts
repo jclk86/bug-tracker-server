@@ -13,7 +13,7 @@ import {
 
 const ticketRouter = Router();
 
-ticketRouter.get('/ticket', catchAsync(getAllTickets));
+ticketRouter.get('/ticket/projectId/:projectId', catchAsync(getAllTickets));
 
 ticketRouter.get('/ticket/name/:ticketName', catchAsync(getTicketByName));
 
