@@ -26,14 +26,11 @@ export function getByCompanyIdAndName(
   return db<Project>('project').returning('*').where(selector).first();
 }
 
-export function create(newProject: Project): Promise<Project | undefined> {
+export function create(newProject: Project): Promise<void> {
   return db<Project>('project').insert(newProject);
 }
 
-export function update(
-  projectId: string,
-  updatedProject: UpdateProject
-): Promise<UpdateProject | undefined> {
+export function update(projectId: string, updatedProject: UpdateProject): Promise<void> {
   const selector = { id: projectId };
 
   return db<Project>('project').where(selector).update(updatedProject);

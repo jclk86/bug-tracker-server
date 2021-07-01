@@ -11,7 +11,7 @@ const checklistItemRouter = Router();
 
 checklistItemRouter.get('/checklistItem/:checklistItemId', catchAsync(getChecklistItem));
 
-checklistItemRouter.post('/checklistItem/create/:checklistId', catchAsync(createChecklistItem));
+checklistItemRouter.post('/checklistItem/create', catchAsync(createChecklistItem));
 
 checklistItemRouter.patch('/checklistItem/edit/:checklistItemId', catchAsync(updateChecklistItem));
 

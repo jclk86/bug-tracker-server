@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
-  getAllTickets,
+  getAllTicketsByProjectId,
   createTicket,
   getTicketByName,
   getTicketById,
@@ -13,7 +13,7 @@ import {
 
 const ticketRouter = Router();
 
-ticketRouter.get('/ticket/projectId/:projectId', catchAsync(getAllTickets));
+ticketRouter.get('/ticket/projectId/:projectId', catchAsync(getAllTicketsByProjectId));
 
 ticketRouter.get('/ticket/name/:ticketName', catchAsync(getTicketByName));
 

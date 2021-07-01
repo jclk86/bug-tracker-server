@@ -54,11 +54,11 @@ export function getAccountOwner(
   return db<User>('user').returning('*').where(selector).first();
 }
 
-export function create(signUp: User): Promise<User | undefined> {
+export function create(signUp: User): Promise<void> {
   return db<User>('user').insert(signUp);
 }
 
-export function update(userId: string, updatedUser: UpdateUser): Promise<UpdateUser | undefined> {
+export function update(userId: string, updatedUser: UpdateUser): Promise<void> {
   const selector = { id: userId };
 
   return db<User>('user').where(selector).update(updatedUser);

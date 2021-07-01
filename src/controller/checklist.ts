@@ -7,6 +7,7 @@ import {
   update,
   remove
 } from '../model/checklist';
+import { getById as getTicket } from '../model/ticket';
 import { Checklist } from '../schema/checklist';
 import { checkBody } from './utilities';
 import { Request, Response } from 'express';
@@ -28,12 +29,16 @@ export const getChecklist = async (req: Request, res: Response): Promise<void> =
   res.status(200).send(checklist);
 };
 
-export const getChecklistByTicketId = async (req: Request, res: Response): Promise<void> => {
+export const getAllChecklistsByTicketId = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
   const isValid = await isValidUUIDV4(ticketId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const ticketExists = await getTicket(ticketId);
+
+  if (!ticketExists) throw new CustomError(400, 'No such ticket exists');
 
   const checklists = await getByTicketId(ticketId);
 
@@ -43,6 +48,7 @@ export const getChecklistByTicketId = async (req: Request, res: Response): Promi
 };
 
 // ! only 1 checklist per ticket?
+// ! auto assign ticketId
 export const createChecklist = async (req: Request, res: Response): Promise<void> => {
   const { name, description, ticketId } = req.body;
 

@@ -8,14 +8,23 @@ import {
   getPriorities,
   getStatuses
 } from '../model/project';
+import { getById as getCompany } from '../model/company';
 import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
-export const getAllProjects = async (req: Request, res: Response): Promise<void> => {
+export const getAllProjectsByCompanyId = async (req: Request, res: Response): Promise<void> => {
   const { companyId } = req.params;
+
+  const isValid = isValidUUIDV4(companyId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid company id');
+
+  const companyExists = await getCompany(companyId);
+
+  if (!companyExists) throw new CustomError(400, 'No such company exists');
 
   const projects = await getByCompanyId(companyId);
 
@@ -25,15 +34,19 @@ export const getAllProjects = async (req: Request, res: Response): Promise<void>
 };
 
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { projectId } = req.params;
 
-  const project = await getById(id);
+  const isValid = isValidUUIDV4(projectId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid project id');
+
+  const project = await getById(projectId);
 
   if (!project) throw new CustomError(400, 'No project of that id exists');
 
   res.status(200).send(project);
 };
-
+// ! this needs to auto assign companyId. It will take from user's company_id
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   const {
     name,
@@ -75,13 +88,13 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { projectId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(projectId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const project = await getById(id);
+  const project = await getById(projectId);
 
   if (!project) throw new CustomError(400, 'Project does not exist');
 
@@ -104,23 +117,23 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
     if (nameExists) throw new CustomError(400, 'Please choose different project name');
   }
 
-  await update(id, updatedProject);
+  await update(projectId, updatedProject);
 
   res.status(201).send(updatedProject);
 };
 
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.params;
+  const { projectId } = req.params;
 
-  const isValid = await isValidUUIDV4(id);
+  const isValid = await isValidUUIDV4(projectId);
 
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
-  const project = await getById(id);
+  const project = await getById(projectId);
 
   if (!project) throw new CustomError(400, 'Project does not exist');
 
-  await removeById(id);
+  await removeById(projectId);
 
   res.status(200).send({ message: 'Project successfully deleted' });
 };

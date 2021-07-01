@@ -30,14 +30,11 @@ export function getByTicketId(ticketId: string): Promise<Checklist[]> {
   return db<Checklist>('checklist').where(selector).returning('*');
 }
 
-export function create(newChecklist: Checklist): Promise<Checklist> {
+export function create(newChecklist: Checklist): Promise<void> {
   return db<Checklist>('checklist').insert(newChecklist);
 }
 
-export function update(
-  checklistId: string,
-  updatedChecklist: UpdateChecklist
-): Promise<UpdateChecklist> {
+export function update(checklistId: string, updatedChecklist: UpdateChecklist): Promise<void> {
   const selector = { id: checklistId };
 
   return db<Checklist>('checklist').where(selector).update(updatedChecklist);
