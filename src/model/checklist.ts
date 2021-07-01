@@ -15,11 +15,19 @@ export function getById(checklistId: string): Promise<Checklist | undefined> {
 
 export function getByTicketIdAndName(
   ticketId: string,
-  name: string
+  checklistName: string
 ): Promise<Checklist | undefined> {
-  const selector = { ticket_id: ticketId, name: name };
+  const selector = { ticket_id: ticketId, name: checklistName };
 
   return db<Checklist>('checklist').returning('*').where(selector).first();
+}
+
+export function getByTicketId(ticketId: string): Promise<Checklist[]> {
+  const selector = {
+    ticket_id: ticketId
+  };
+
+  return db<Checklist>('checklist').where(selector).returning('*');
 }
 
 export function create(newChecklist: Checklist): Promise<Checklist> {
