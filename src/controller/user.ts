@@ -35,18 +35,6 @@ export const getAllUsersByCompanyId = async (req: Request, res: Response): Promi
   res.status(200).send(users);
 };
 
-export const getUserByEmail = async (req: Request, res: Response): Promise<void> => {
-  const { userEmail } = req.params;
-  // const formattedName = encodeURI(name).replace(/%20/g, ' ');
-  // add to lowerCase. I think this is Front end duty though
-  // console.log(formattedName);
-  const user = await getByEmail(userEmail);
-
-  if (!user) throw new CustomError(400, 'No such user exists');
-
-  res.status(200).send(user);
-};
-
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
@@ -55,6 +43,18 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
   if (!isValid) throw new CustomError(400, 'Invalid entry');
 
   const user = await getById(userId);
+
+  if (!user) throw new CustomError(400, 'No such user exists');
+
+  res.status(200).send(user);
+};
+
+export const getUserByEmail = async (req: Request, res: Response): Promise<void> => {
+  const { userEmail } = req.params;
+  // const formattedName = encodeURI(name).replace(/%20/g, ' ');
+  // add to lowerCase. I think this is Front end duty though
+  // console.log(formattedName);
+  const user = await getByEmail(userEmail);
 
   if (!user) throw new CustomError(400, 'No such user exists');
 

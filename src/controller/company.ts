@@ -21,6 +21,20 @@ export const getAllCompanies = async (req: Request, res: Response): Promise<void
   res.status(200).send(companies);
 };
 
+export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
+  const { companyId } = req.params;
+
+  const isValid = await isValidUUIDV4(companyId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const company = await getById(companyId);
+
+  if (!company) throw new CustomError(400, 'No company exists by that ID');
+
+  res.status(200).send(company);
+};
+
 export const getCompanyByName = async (req: Request, res: Response): Promise<void> => {
   const { companyName } = req.params;
 
@@ -97,18 +111,4 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
   //! check if deleting a company deletes all users
 
   res.status(200).send({ message: 'Company deleted' });
-};
-
-export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
-  const { companyId } = req.params;
-
-  const isValid = await isValidUUIDV4(companyId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
-
-  const company = await getById(companyId);
-
-  if (!company) throw new CustomError(400, 'No company exists by that ID');
-
-  res.status(200).send(company);
 };

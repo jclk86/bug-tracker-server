@@ -7,7 +7,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
-export const getAllChecklistItems = async (req: Request, res: Response): Promise<void> => {
+export const getAllChecklistItemsByChecklistId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { checklistId } = req.params;
 
   const isValid = isValidUUIDV4(checklistId);
@@ -25,7 +28,7 @@ export const getAllChecklistItems = async (req: Request, res: Response): Promise
   res.status(200).send(checklistItems);
 };
 
-export const getChecklistItem = async (req: Request, res: Response): Promise<void> => {
+export const getChecklistItemById = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
   const isValid = isValidUUIDV4(checklistItemId);

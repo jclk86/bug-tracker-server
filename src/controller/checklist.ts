@@ -15,20 +15,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
-export const getChecklist = async (req: Request, res: Response): Promise<void> => {
-  const { checklistId } = req.params;
-
-  const isValid = await isValidUUIDV4(checklistId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
-
-  const checklist = await get(checklistId);
-
-  if (!checklist) throw new CustomError(404, 'No such checklist exists');
-
-  res.status(200).send(checklist);
-};
-
 export const getAllChecklistsByTicketId = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
@@ -45,6 +31,20 @@ export const getAllChecklistsByTicketId = async (req: Request, res: Response): P
   if (!checklists.length) throw new CustomError(400, 'No checklists exist for this ticket');
 
   res.status(200).send(checklists);
+};
+
+export const getChecklistById = async (req: Request, res: Response): Promise<void> => {
+  const { checklistId } = req.params;
+
+  const isValid = await isValidUUIDV4(checklistId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid entry');
+
+  const checklist = await get(checklistId);
+
+  if (!checklist) throw new CustomError(404, 'No such checklist exists');
+
+  res.status(200).send(checklist);
 };
 
 // ! only 1 checklist per ticket?
