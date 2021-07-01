@@ -1,4 +1,4 @@
-import { getById, create, update } from '../model/checklistItem';
+import { getById, create, update, remove } from '../model/checklistItem';
 import { ChecklistItem } from '../schema/checklistItem';
 import { checkBody } from './utilities';
 import { Request, Response } from 'express';
@@ -21,7 +21,8 @@ export const getChecklistItem = async (req: Request, res: Response): Promise<voi
 };
 
 export const createChecklistItem = async (req: Request, res: Response): Promise<void> => {
-  const { description, checklistId } = req.body;
+  const { checklistId } = req.params;
+  const { description } = req.body;
 
   const newChecklistItem = {
     id: uuidv4(),
@@ -59,4 +60,16 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
 
 export const deleteChecklistItem = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
+
+  const isValid = isValidUUIDV4(checklistItemId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+
+  const exists = await getById(checklistItemId);
+
+  if (!exists) throw new CustomError(400, 'Checklist item does not exist');
+
+  await remove(checklistItemId);
+
+  res.status(200).send({ message: 'Checklist item deleted' });
 };
