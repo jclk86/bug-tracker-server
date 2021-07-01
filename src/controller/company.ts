@@ -10,6 +10,8 @@ import CustomError from '../errorhandler/CustomError';
 
 // this is admin controlled and owner
 
+//! You have to define types for req.body. This should give feedback to client
+
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
   const companies = await get();
 

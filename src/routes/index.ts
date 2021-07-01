@@ -5,6 +5,7 @@ import permissionRouter from './permission';
 import projectRouter from './project';
 import ticketRouter from './ticket';
 import checklistRouter from './checklist';
+import checklistItemRouter from './checklistItem';
 import authRouter from './auth';
 
 const router = Router();
@@ -15,6 +16,7 @@ router.use(permissionRouter);
 router.use(projectRouter);
 router.use(ticketRouter);
 router.use(checklistRouter);
+router.use(checklistItemRouter);
 router.use(authRouter);
 
 export = router;
