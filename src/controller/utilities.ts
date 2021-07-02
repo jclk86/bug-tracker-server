@@ -1,4 +1,5 @@
 import CustomError from '../errorhandler/CustomError';
+import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import bcrypt from 'bcrypt';
 
 export const checkBody = function (requestBody: unknown): void {
@@ -23,4 +24,10 @@ export const hashPassword = async function (password: string): Promise<string> {
   const hashedPassword = bcrypt.hash(password, salt);
 
   return hashedPassword;
+};
+
+export const validateUUID = function (uuidBody: { [key: string]: string }): void {
+  for (const [key, value] of Object.entries(uuidBody)) {
+    if (!isValidUUIDV4(value as string)) throw new CustomError(400, `Invalid ${key}`);
+  }
 };

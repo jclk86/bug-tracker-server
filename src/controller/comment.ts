@@ -1,25 +1,23 @@
 import { get, getById, create, update, remove } from '../model/comment';
 import { getById as getTicket } from '../model/ticket';
-import { checkBody, currentTimeStamp } from './utilities';
+import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
+import { Comment, UpdateComment } from '../schema/comment';
 
 export const getAllCommentsByticketId = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  const isValid = isValidUUIDV4(ticketId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ ticketId: ticketId });
 
   const ticketExists = await getTicket(ticketId);
 
-  if (!ticketExists) throw new CustomError(400, 'No such ticket exists');
+  if (!ticketExists) throw new CustomError(404, 'Ticket does not exist');
 
   const comments = await get(ticketId);
 
-  if (!comments.length) throw new CustomError(400, 'No comments exist for this ticket');
+  if (!comments.length) throw new CustomError(404, 'No comments have been added for this ticket');
 
   res.status(200).send(comments);
 };
@@ -27,13 +25,11 @@ export const getAllCommentsByticketId = async (req: Request, res: Response): Pro
 export const getCommentById = async (req: Request, res: Response): Promise<void> => {
   const { commentId } = req.params;
 
-  const isValid = isValidUUIDV4(commentId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ commentId: commentId });
 
   const comment = await getById(commentId);
 
-  if (!comment) throw new CustomError(400, 'No such comment exists');
+  if (!comment) throw new CustomError(404, 'Comment does not exist');
 
   res.status(200).send(comment);
 };
@@ -41,7 +37,7 @@ export const getCommentById = async (req: Request, res: Response): Promise<void>
 export const createComment = async (req: Request, res: Response): Promise<void> => {
   const { content, ticketId, userId } = req.body;
 
-  const newComment = {
+  const newComment: Comment = {
     id: uuidv4(),
     date_created: currentTimeStamp,
     ticket_id: ticketId,
@@ -60,15 +56,13 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
   const { commentId } = req.params;
   const { content } = req.body;
 
-  const isValid = isValidUUIDV4(commentId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ commentId: commentId });
 
   const exists = await getById(commentId);
 
-  if (!exists) throw new CustomError(400, 'No such comment exists');
+  if (!exists) throw new CustomError(404, 'Comment does not exist');
 
-  const updatedComment = {
+  const updatedComment: UpdateComment = {
     content: content,
     last_edited: currentTimeStamp
   };
@@ -83,13 +77,11 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
 export const deleteComment = async (req: Request, res: Response): Promise<void> => {
   const { commentId } = req.params;
 
-  const isValid = isValidUUIDV4(commentId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ commentId: commentId });
 
   const exists = await getById(commentId);
 
-  if (!exists) throw new CustomError(400, 'No such comment exists');
+  if (!exists) throw new CustomError(404, 'Comment does not exist');
 
   await remove(commentId);
 
