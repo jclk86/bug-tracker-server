@@ -21,7 +21,7 @@ export const getAllTicketsByProjectId = async (req: Request, res: Response): Pro
 
   const isValid = await isValidUUIDV4(projectId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const projectExists = await getProject(projectId);
 
@@ -49,7 +49,7 @@ export const getTicketById = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(ticketId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const ticket = await getById(ticketId);
 
@@ -98,7 +98,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   const isValid = await isValidUUIDV4(ticketId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const ticket = await getById(ticketId);
 
@@ -131,11 +131,11 @@ export const deleteTicket = async (req: Request, res: Response): Promise<void> =
 
   const isValid = await isValidUUIDV4(ticketId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   await removeById(ticketId);
 
-  res.status(200).send({ message: 'Ticket successfully deleted' });
+  res.status(200).send({ message: 'Ticket was successfully deleted' });
 };
 
 export const getTicketPriorities = async (req: Request, res: Response): Promise<void> => {

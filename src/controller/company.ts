@@ -26,7 +26,7 @@ export const getCompanyById = async (req: Request, res: Response): Promise<void>
 
   const isValid = await isValidUUIDV4(companyId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const company = await getById(companyId);
 
@@ -72,7 +72,7 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(companyId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const company = await getById(companyId);
 
@@ -100,7 +100,7 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(companyId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const company = await getById(companyId);
 
@@ -110,5 +110,5 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 
   //! check if deleting a company deletes all users
 
-  res.status(200).send({ message: 'Company deleted' });
+  res.status(200).send({ message: 'Company was sucessfully deleted' });
 };

@@ -21,9 +21,9 @@ export function create(newComment: Comment): Promise<void> {
   return db<Comment>('comment').insert(newComment);
 }
 
-export function update(ticketId: string, updatedComment: UpdateComment): Promise<void> {
+export function update(commentId: string, updatedComment: UpdateComment): Promise<void> {
   const selector = {
-    ticket_id: ticketId
+    id: commentId
   };
 
   return db<Comment>('comment').where(selector).update(updatedComment);

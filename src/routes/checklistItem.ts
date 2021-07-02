@@ -15,7 +15,7 @@ checklistItemRouter.get(
   catchAsync(getAllChecklistItemsByChecklistId)
 );
 
-checklistItemRouter.get('/checklistItem/:checklistItemId', catchAsync(getChecklistItemById));
+checklistItemRouter.get('/checklistItem/id/:checklistItemId', catchAsync(getChecklistItemById));
 
 checklistItemRouter.post('/checklistItem/create', catchAsync(createChecklistItem));
 

@@ -92,7 +92,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(projectId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const project = await getById(projectId);
 
@@ -127,7 +127,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(projectId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const project = await getById(projectId);
 
@@ -135,7 +135,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   await removeById(projectId);
 
-  res.status(200).send({ message: 'Project successfully deleted' });
+  res.status(200).send({ message: 'Project was successfully deleted' });
 };
 
 export const getProjectPriorities = async (req: Request, res: Response): Promise<void> => {

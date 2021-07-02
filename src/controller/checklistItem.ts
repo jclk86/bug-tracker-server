@@ -33,7 +33,7 @@ export const getChecklistItemById = async (req: Request, res: Response): Promise
 
   const isValid = isValidUUIDV4(checklistItemId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const checklistItem = await getById(checklistItemId);
 
@@ -65,7 +65,7 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
 
   const isValid = isValidUUIDV4(checklistItemId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const updatedChecklistItem = {
     description: description,
@@ -84,7 +84,7 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   const isValid = isValidUUIDV4(checklistItemId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const exists = await getById(checklistItemId);
 
@@ -92,5 +92,5 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   await remove(checklistItemId);
 
-  res.status(200).send({ message: 'Checklist item deleted' });
+  res.status(200).send({ message: 'Checklist item was successfully deleted' });
 };

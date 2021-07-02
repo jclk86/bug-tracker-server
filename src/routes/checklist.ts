@@ -10,7 +10,7 @@ import {
 
 const checklistRouter = Router();
 
-checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
+checklistRouter.get('/checklist/id/:checklistId', catchAsync(getChecklistById));
 
 checklistRouter.get('/checklist/ticketId/:ticketId', catchAsync(getAllChecklistsByTicketId));
 
