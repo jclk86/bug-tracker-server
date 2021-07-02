@@ -30,19 +30,19 @@ export function get(): Promise<User[]> {
 export function getByEmail(userEmail: string): Promise<User | undefined> {
   const selector = { email: userEmail };
 
-  return db<User>('user').returning('*').where(selector).first();
+  return db<User>('user').where(selector).returning('*').first();
 }
 
 export function getById(userId: string): Promise<User | undefined> {
   const selector = { id: userId };
 
-  return db<User>('user').returning('*').where(selector).first();
+  return db<User>('user').where(selector).returning('*').first();
 }
 
 export function getByCompanyId(companyId: string): Promise<User[]> {
   const selector = { company_id: companyId };
 
-  return db<User>('user').returning('*').where(selector);
+  return db<User>('user').where(selector).returning('*');
 }
 
 export function getAccountOwner(
@@ -51,7 +51,7 @@ export function getAccountOwner(
 ): Promise<User | undefined> {
   const selector = { company_id: companyId, permission_id: permissionId };
 
-  return db<User>('user').returning('*').where(selector).first();
+  return db<User>('user').where(selector).returning('*').first();
 }
 
 export function create(signUp: User): Promise<void> {

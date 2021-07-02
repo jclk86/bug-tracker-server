@@ -17,7 +17,7 @@ export const getPermissionById = async (req: Request, res: Response): Promise<vo
   const isValid = await isValidUUIDV4(permissionId);
 
   if (!isValid) throw new CustomError(400, 'Invalid id');
-
+  // ! number
   const numId = parseInt(permissionId);
 
   const permission = await getById(numId);

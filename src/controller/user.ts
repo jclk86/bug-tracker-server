@@ -1,5 +1,4 @@
 import {
-  get,
   getByEmail,
   getById,
   getByCompanyId,

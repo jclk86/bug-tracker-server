@@ -12,13 +12,13 @@ export function get(): Promise<Company[]> {
 export function getByName(companyName: string): Promise<Company | undefined> {
   const selector = { name: companyName };
 
-  return db<Company>('company').returning('*').where(selector).first();
+  return db<Company>('company').where(selector).returning('*').first();
 }
 
 export function getById(companyId: string): Promise<Company | undefined> {
   const selector = { id: companyId };
 
-  return db<Company>('company').select('*').where(selector).first();
+  return db<Company>('company').where(selector).returning('*').first();
 }
 
 export function create(company: Company): Promise<void> {

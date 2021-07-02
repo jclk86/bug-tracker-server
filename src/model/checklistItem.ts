@@ -4,7 +4,7 @@ import { ChecklistItem, UpdateChecklist } from '../schema/checklistItem';
 export function getById(checklistItemId: string): Promise<ChecklistItem> {
   const selector = { id: checklistItemId };
 
-  return db<ChecklistItem>('checklist_item').returning('*').where(selector).first();
+  return db<ChecklistItem>('checklist_item').where(selector).returning('*').first();
 }
 
 export function getByChecklistId(checklistId: string): Promise<ChecklistItem[]> {

@@ -6,19 +6,19 @@ import { Status } from '../schema/status';
 export function getByProjectId(projectId: string): Promise<Ticket[]> {
   const selector = { project_id: projectId };
 
-  return db<Ticket>('ticket').returning('*').where(selector);
+  return db<Ticket>('ticket').where(selector).returning('*');
 }
 
 export function getByName(ticketName: string): Promise<Ticket | undefined> {
   const selector = { name: ticketName };
 
-  return db<Ticket>('ticket').returning('*').where(selector).first();
+  return db<Ticket>('ticket').where(selector).returning('*').first();
 }
 
 export function getById(ticketId: string): Promise<Ticket | undefined> {
   const selector = { id: ticketId };
 
-  return db<Ticket>('ticket').returning('*').where(selector).first();
+  return db<Ticket>('ticket').where(selector).returning('*').first();
 }
 
 export function getByProjectIdAndName(
@@ -27,7 +27,7 @@ export function getByProjectIdAndName(
 ): Promise<Ticket | undefined> {
   const selector = { project_id: projectId, name: ticketName };
 
-  return db<Ticket>('ticket').returning('*').where(selector).first();
+  return db<Ticket>('ticket').where(selector).returning('*').first();
 }
 
 export function create(newTicket: Ticket): Promise<void> {
