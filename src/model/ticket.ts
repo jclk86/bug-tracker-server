@@ -30,7 +30,7 @@ export function getByProjectIdAndName(
   return db<Ticket>('ticket').returning('*').where(selector).first();
 }
 
-export function create(newTicket: Ticket): Promise<Ticket> {
+export function create(newTicket: Ticket): Promise<void> {
   return db<Ticket>('ticket').insert(newTicket);
 }
 
@@ -46,10 +46,7 @@ export function removeById(ticketId: string): Promise<void> {
   return db<Ticket>('ticket').where(selector).delete();
 }
 
-export function update(
-  ticketId: string,
-  updatedTicket: UpdateTicket
-): Promise<UpdateTicket | undefined> {
+export function update(ticketId: string, updatedTicket: UpdateTicket): Promise<void> {
   const selector = { id: ticketId };
 
   return db<Ticket>('ticket').where(selector).update(updatedTicket);

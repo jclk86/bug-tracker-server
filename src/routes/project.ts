@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAllProjects,
+  getAllProjectsByCompanyId,
   createProject,
   getProjectById,
   updateProject,
@@ -12,15 +12,15 @@ import { catchAsync } from './utilities';
 
 const projectRouter = Router();
 
-projectRouter.get('/project/companyId/:companyId', catchAsync(getAllProjects));
+projectRouter.get('/project/companyId/:companyId', catchAsync(getAllProjectsByCompanyId));
 
-projectRouter.get('/project/id/:id', catchAsync(getProjectById));
+projectRouter.get('/project/id/:projectId', catchAsync(getProjectById));
 
 projectRouter.post('/project/create', catchAsync(createProject));
 
-projectRouter.patch('/project/edit/:id', catchAsync(updateProject));
+projectRouter.patch('/project/edit/:projectId', catchAsync(updateProject));
 
-projectRouter.delete('/project/delete/:id', catchAsync(deleteProject));
+projectRouter.delete('/project/delete/:projectId', catchAsync(deleteProject));
 
 projectRouter.get('/project/priorities', catchAsync(getProjectPriorities));
 

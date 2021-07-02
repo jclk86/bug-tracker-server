@@ -21,11 +21,11 @@ export function getById(companyId: string): Promise<Company | undefined> {
   return db<Company>('company').select('*').where(selector).first();
 }
 
-export function create(company: Company): Promise<Company> {
+export function create(company: Company): Promise<void> {
   return db<Company>('company').insert(company);
 }
 
-export function update(companyId: string, updatedCompany: UpdateCompany): Promise<UpdateCompany> {
+export function update(companyId: string, updatedCompany: UpdateCompany): Promise<void> {
   const selector = { id: companyId };
 
   return db<Company>('company').where(selector).update(updatedCompany);

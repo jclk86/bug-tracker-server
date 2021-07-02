@@ -9,18 +9,23 @@ import {
   getPriorities,
   getStatuses
 } from '../model/ticket';
+import { getById as getProject } from '../model/project';
 import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
-export const getAllTickets = async (req: Request, res: Response): Promise<void> => {
+export const getAllTicketsByProjectId = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
   const isValid = await isValidUUIDV4(projectId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
+
+  const projectExists = await getProject(projectId);
+
+  if (!projectExists) throw new CustomError(400, 'No such project exists');
 
   const tickets = await getByProjectId(projectId);
 
@@ -44,7 +49,7 @@ export const getTicketById = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(ticketId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const ticket = await getById(ticketId);
 
@@ -52,7 +57,7 @@ export const getTicketById = async (req: Request, res: Response): Promise<void> 
 
   res.status(200).send(ticket);
 };
-
+// ! auto assign project id
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
   const {
     name,
@@ -93,7 +98,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 
   const isValid = await isValidUUIDV4(ticketId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const ticket = await getById(ticketId);
 
@@ -126,11 +131,11 @@ export const deleteTicket = async (req: Request, res: Response): Promise<void> =
 
   const isValid = await isValidUUIDV4(ticketId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   await removeById(ticketId);
 
-  res.status(200).send({ message: 'Ticket successfully deleted' });
+  res.status(200).send({ message: 'Ticket was successfully deleted' });
 };
 
 export const getTicketPriorities = async (req: Request, res: Response): Promise<void> => {

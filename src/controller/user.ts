@@ -8,30 +8,45 @@ import {
   update,
   removeById
 } from '../model/user';
+import { getById as getCompany } from '../model/company';
 import { checkBody, currentTimeStamp, hashPassword } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
-import bcrypt from 'bcrypt';
 
 //! last_active should be done on sign out
-export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
-  const users = await get();
-
-  if (!users.length) throw new CustomError(404, 'No users exist');
-
-  res.status(200).send(users);
-};
 
 export const getAllUsersByCompanyId = async (req: Request, res: Response): Promise<void> => {
   const { company_id } = req.params;
+
+  const isValid = isValidUUIDV4(company_id);
+
+  if (!isValid) throw new CustomError(400, 'Invalid company id');
+
+  const companyExists = await getCompany(company_id);
+
+  if (!companyExists) throw new CustomError(400, 'No such company exists');
 
   const users = await getByCompanyId(company_id);
 
   if (!users.length) throw new CustomError(404, 'No users exist');
 
   res.status(200).send(users);
+};
+
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.params;
+
+  const isValid = await isValidUUIDV4(userId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid id');
+
+  const user = await getById(userId);
+
+  if (!user) throw new CustomError(400, 'No such user exists');
+
+  res.status(200).send(user);
 };
 
 export const getUserByEmail = async (req: Request, res: Response): Promise<void> => {
@@ -46,26 +61,12 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
   res.status(200).send(user);
 };
 
-export const getUserById = async (req: Request, res: Response): Promise<void> => {
-  const { userId } = req.params;
-
-  const isValid = await isValidUUIDV4(userId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
-
-  const user = await getById(userId);
-
-  if (!user) throw new CustomError(400, 'No such user exists');
-
-  res.status(200).send(user);
-};
-
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   const { firstName, lastName, email, permissionId, companyId, password } = req.body;
 
   // hash password
   //! check what happens if no password is passed
-
+  // ! company should be auto assigned
   const hashedPassword = await hashPassword(password);
 
   const signUp = {
@@ -106,7 +107,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   const isValid = await isValidUUIDV4(userId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const user = await getById(userId);
 
@@ -146,7 +147,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
   const isValid = await isValidUUIDV4(userId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const user = await getById(userId);
 
@@ -154,5 +155,5 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
   await removeById(userId);
 
-  res.status(200).send({ message: 'User successfully deleted' });
+  res.status(200).send({ message: 'User was successfully deleted' });
 };

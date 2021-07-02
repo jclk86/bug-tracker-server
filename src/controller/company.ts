@@ -11,13 +11,28 @@ import CustomError from '../errorhandler/CustomError';
 // this is admin controlled and owner
 
 //! You have to define types for req.body. This should give feedback to client
-
+// ! ensure the function names are all consistent across all controllers
+//! checking project, ticket, company to see if an item exists under those
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
   const companies = await get();
 
   if (!companies?.length) throw new CustomError(404, 'No companies have been added');
 
   res.status(200).send(companies);
+};
+
+export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
+  const { companyId } = req.params;
+
+  const isValid = await isValidUUIDV4(companyId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid id');
+
+  const company = await getById(companyId);
+
+  if (!company) throw new CustomError(400, 'No company exists by that ID');
+
+  res.status(200).send(company);
 };
 
 export const getCompanyByName = async (req: Request, res: Response): Promise<void> => {
@@ -57,7 +72,7 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(companyId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const company = await getById(companyId);
 
@@ -85,7 +100,7 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 
   const isValid = await isValidUUIDV4(companyId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const company = await getById(companyId);
 
@@ -95,19 +110,5 @@ export const deleteCompany = async (req: Request, res: Response): Promise<void> 
 
   //! check if deleting a company deletes all users
 
-  res.status(200).send({ message: 'Company deleted' });
-};
-
-export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
-  const { companyId } = req.params;
-
-  const isValid = await isValidUUIDV4(companyId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid entry');
-
-  const company = await getById(companyId);
-
-  if (!company) throw new CustomError(400, 'No company exists by that ID');
-
-  res.status(200).send(company);
+  res.status(200).send({ message: 'Company was sucessfully deleted' });
 };

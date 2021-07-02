@@ -1,4 +1,5 @@
-import { getById, create, update, remove } from '../model/checklistItem';
+import { getById, getByChecklistId, create, update, remove } from '../model/checklistItem';
+import { getById as getChecklist } from '../model/checklist';
 import { ChecklistItem } from '../schema/checklistItem';
 import { checkBody } from './utilities';
 import { Request, Response } from 'express';
@@ -6,12 +7,33 @@ import { v4 as uuidv4 } from 'uuid';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import CustomError from '../errorhandler/CustomError';
 
-export const getChecklistItem = async (req: Request, res: Response): Promise<void> => {
+export const getAllChecklistItemsByChecklistId = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { checklistId } = req.params;
+
+  const isValid = isValidUUIDV4(checklistId);
+
+  if (!isValid) throw new CustomError(400, 'Invalid checklist id');
+
+  const checklistExists = await getChecklist(checklistId);
+
+  if (!checklistExists) throw new CustomError(400, 'No such checklist exists');
+
+  const checklistItems = await getByChecklistId(checklistId);
+
+  if (!checklistItems.length) throw new CustomError(400, 'No such checklist item exists');
+
+  res.status(200).send(checklistItems);
+};
+
+export const getChecklistItemById = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
   const isValid = isValidUUIDV4(checklistItemId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const checklistItem = await getById(checklistItemId);
 
@@ -21,8 +43,7 @@ export const getChecklistItem = async (req: Request, res: Response): Promise<voi
 };
 
 export const createChecklistItem = async (req: Request, res: Response): Promise<void> => {
-  const { checklistId } = req.params;
-  const { description } = req.body;
+  const { description, checklistId } = req.body;
 
   const newChecklistItem = {
     id: uuidv4(),
@@ -44,7 +65,7 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
 
   const isValid = isValidUUIDV4(checklistItemId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const updatedChecklistItem = {
     description: description,
@@ -63,7 +84,7 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   const isValid = isValidUUIDV4(checklistItemId);
 
-  if (!isValid) throw new CustomError(400, 'Invalid Entry');
+  if (!isValid) throw new CustomError(400, 'Invalid id');
 
   const exists = await getById(checklistItemId);
 
@@ -71,5 +92,5 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   await remove(checklistItemId);
 
-  res.status(200).send({ message: 'Checklist item deleted' });
+  res.status(200).send({ message: 'Checklist item was successfully deleted' });
 };
