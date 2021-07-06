@@ -2,24 +2,16 @@
 // ! prevents just anyone creating admin accounts.
 
 import db from '../database/config';
-import { Admin, UpdateAdmin } from '../schema/admin';
+import { User } from '../schema/user';
 
-export function get(): Promise<Admin[]> {
-  return db<Admin>('admin').returning('*');
+export function get(): Promise<User[]> {
+  return db<User>('user').returning('*');
 }
 
-export function update(adminId: string, updatedAdmin: UpdateAdmin): Promise<void> {
+export function getOwners(): Promise<User[]> {
   const selector = {
-    id: adminId
+    permission_id: 1
   };
 
-  return db<Admin>('admin').where(selector).update(updatedAdmin);
-}
-
-export function remove(adminId: string): Promise<void> {
-  const selector = {
-    id: adminId
-  };
-
-  return db<Admin>('admin').where(selector).delete();
+  return db<User>('user').where(selector).returning('*');
 }

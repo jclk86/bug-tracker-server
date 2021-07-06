@@ -5,6 +5,7 @@ import morgan from './loggers/config/morgan';
 import routes from './routes';
 import CustomError from './errorhandler/CustomError';
 import passport from 'passport';
+
 // initalizePassport (passport, email => users.find(user => user.email === email), id=> user.find( user => user.id === id))
 
 // need app.use to show server how to use passport

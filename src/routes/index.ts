@@ -8,6 +8,7 @@ import checklistRouter from './checklist';
 import checklistItemRouter from './checklistItem';
 import commentRouter from './comment';
 import authRouter from './auth';
+import adminRouter from './admin';
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.use(ticketRouter);
 router.use(checklistRouter);
 router.use(checklistItemRouter);
 router.use(commentRouter);
+router.use(adminRouter);
 router.use(authRouter);
 
 export = router;

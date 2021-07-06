@@ -11,7 +11,7 @@
     "knex:migrate:make": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:make",
     "knex:migrate:latest": "node -r  ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest",
     "knex:migrate:up": "node -r  ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:up",
-        "knex:migrate:down": "node -r  ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:down",
+    "knex:migrate:down": "node -r  ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:down",
     "knex:migrate:rollback": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback",
     "knex:seed:make": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js seed:make",
     "knex:seed:run": "node -r ts-node/register -r dotenv/config ./node_modules/knex/bin/cli.js seed:run",

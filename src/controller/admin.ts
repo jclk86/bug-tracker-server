@@ -1,18 +1,19 @@
-import { get, update, remove } from '../model/admin';
-import { checkBody, currentTimeStamp, hashPassword, validateUUID } from './utilities';
+import { get, getOwners } from '../model/admin';
 import { Request, Response } from 'express';
 import CustomError from '../errorhandler/CustomError';
-import { Admin, UpdateAdmin } from '../schema/admin';
 
-export const getAllAdmins = async (req: Request, res: Response): Promise<void> => {
-  const admins = await get();
+export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
+  const users = await get();
 
-  if (!admins.length) throw new CustomError(400, 'No admin accounts have been created');
+  if (!users.length) throw new CustomError(400, 'No users have been added');
 
-  res.status(200).send(admins);
+  res.status(200).send(users);
 };
 
-export const updateAdmin = async (req: Request, res: Response): Promise<void> => {
-  // this needs to go through auth. The req.admin or req.role must equal admin to get here
-  // Don't do this through params
+export const getAllOwners = async (req: Request, res: Response): Promise<void> => {
+  const owners = await getOwners();
+
+  if (!owners.length) throw new CustomError(400, 'No owners have been added');
+
+  res.status(200).send(owners);
 };
