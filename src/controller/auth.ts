@@ -7,9 +7,11 @@ import { UserLogin } from '../schema/auth';
 import CustomError from '../errorhandler/CustomError';
 
 export const signin = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+
   const userLogin: UserLogin = {
-    email: req.body.email,
-    password: req.body.password
+    email: email,
+    password: password
   };
 
   await checkBody(userLogin);
@@ -18,17 +20,21 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
-  await bcrypt.compare(user.password, user.password).then((isMatch) => {
-    if (!isMatch) {
-      throw new CustomError(400, 'Incorrect email or password');
-    }
-    const payload = {
-      id: user.id,
-      email: user.email
-    };
+  const isMatch = await bcrypt.compare(userLogin.password, user.password);
 
-    const token = jwt.sign(payload, process.env.JWT_KEY);
+  if (!isMatch) throw new CustomError(400, 'Incorrect email or password');
 
-    res.json({ token: token });
-  });
+  // exp uses seconds. Date.now() uses milliseconds. Must divide value by 1000 to get seconds.
+  const limit = 60 * 3; // 180 seconds
+  const expires = Math.floor(Date.now() / 1000) + limit;
+
+  const payload = {
+    id: user.id,
+    email: user.email,
+    exp: expires
+  };
+
+  const token = await jwt.sign(payload, process.env.JWT_KEY);
+
+  res.json({ token: token });
 };

@@ -5,6 +5,7 @@ import morgan from './loggers/config/morgan';
 import routes from './routes';
 import CustomError from './errorhandler/CustomError';
 import passport from 'passport';
+// import passportConfig from './passport-config.ts';
 
 // initalizePassport (passport, email => users.find(user => user.email === email), id=> user.find( user => user.id === id))
 
@@ -42,6 +43,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(morgan);
 app.use(passport.initialize());
+
+// passportConfig(passport);
 
 app.use(routes);
 
