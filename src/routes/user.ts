@@ -8,6 +8,7 @@ import {
   deleteUser
 } from '../controller/user';
 import { catchAsync } from './utilities';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const userRouter = Router();
 
@@ -21,6 +22,6 @@ userRouter.post('/user/create', catchAsync(createUser));
 
 userRouter.patch('/user/edit/:userId', catchAsync(updateUser));
 
-userRouter.delete('/user/delete/:userId', catchAsync(deleteUser));
+userRouter.delete('/user/delete/:userId', catchAsync(requireAuth), catchAsync(deleteUser));
 
 export default userRouter;
