@@ -1,5 +1,5 @@
 import db from '../database/config';
-import { User, UpdateUser } from '../schema/user';
+import { User, UpdateUser } from '../types/user';
 
 export function get(): Promise<User[]> {
   return db<User>('user').returning('*');

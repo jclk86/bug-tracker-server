@@ -11,8 +11,8 @@ import { getById as getCompany } from '../model/company';
 import { checkBody, currentTimeStamp, hashPassword, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { User, UpdateUser } from '../schema/user';
+import CustomError from '../errorHandler/CustomError';
+import { User, UpdateUser } from '../types/user';
 
 //! last_active should be done on sign out
 
@@ -36,7 +36,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
   const { userId } = req.params;
 
   await validateUUID({ userId: userId });
-
+  //! change to userExists
   const user = await getById(userId);
 
   if (!user) throw new CustomError(404, 'User does not exist');

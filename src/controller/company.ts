@@ -2,8 +2,8 @@ import { get, getById, getByName, create, update, remove } from '../model/compan
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { Company, UpdateCompany } from '../schema/company';
+import CustomError from '../errorHandler/CustomError';
+import { Company, UpdateCompany } from '../types/company';
 
 // next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
 // Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.

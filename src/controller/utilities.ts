@@ -1,4 +1,4 @@
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
 import bcrypt from 'bcrypt';
 

@@ -1,7 +1,7 @@
 import db from '../database/config';
-import { Project, UpdateProject } from '../schema/project';
-import { Priority } from '../schema/priority';
-import { Status } from '../schema/status';
+import { Project, UpdateProject } from '../types/project';
+import { Priority } from '../types/priority';
+import { Status } from '../types/status';
 
 export function getByCompanyId(companyId: string): Promise<Project[]> {
   const selector = {

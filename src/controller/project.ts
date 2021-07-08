@@ -12,8 +12,8 @@ import { getById as getCompany } from '../model/company';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { Project, UpdateProject } from '../schema/project';
+import CustomError from '../errorHandler/CustomError';
+import { Project, UpdateProject } from '../types/project';
 
 export const getAllProjectsByCompanyId = async (req: Request, res: Response): Promise<void> => {
   const { companyId } = req.params;

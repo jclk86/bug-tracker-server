@@ -1,5 +1,5 @@
 import db from '../database/config';
-import { ChecklistItem, UpdateChecklistItem } from '../schema/checklistItem';
+import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
 export function getById(checklistItemId: string): Promise<ChecklistItem> {
   const selector = { id: checklistItemId };

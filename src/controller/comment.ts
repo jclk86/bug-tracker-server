@@ -3,8 +3,8 @@ import { getById as getTicket } from '../model/ticket';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { Comment, UpdateComment } from '../schema/comment';
+import CustomError from '../errorHandler/CustomError';
+import { Comment, UpdateComment } from '../types/comment';
 
 export const getAllCommentsByticketId = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;

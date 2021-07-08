@@ -1,5 +1,5 @@
 import db from '../database/config';
-import { Comment, UpdateComment } from '../schema/comment';
+import { Comment, UpdateComment } from '../types/comment';
 
 export function get(ticketId: string): Promise<Comment[]> {
   const selector = {

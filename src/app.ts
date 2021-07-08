@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from './loggers/config/morgan';
-import routes from './routes';
-import CustomError from './errorhandler/CustomError';
+import routes from './route';
+import CustomError from './errorHandler/CustomError';
 import passport from 'passport';
 // import passportConfig from './passport-config.ts';
 

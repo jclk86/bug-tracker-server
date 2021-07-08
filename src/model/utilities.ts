@@ -1,4 +1,4 @@
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
 
 type ReqBody = { [key: string]: unknown };
 

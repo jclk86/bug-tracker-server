@@ -1,7 +1,7 @@
 import db from '../database/config';
-import { Ticket, UpdateTicket } from '../schema/ticket';
-import { Priority } from '../schema/priority';
-import { Status } from '../schema/status';
+import { Ticket, UpdateTicket } from '../types/ticket';
+import { Priority } from '../types/priority';
+import { Status } from '../types/status';
 
 export function getByProjectId(projectId: string): Promise<Ticket[]> {
   const selector = { project_id: projectId };

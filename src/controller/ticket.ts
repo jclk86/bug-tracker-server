@@ -13,8 +13,8 @@ import { getById as getProject } from '../model/project';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { Ticket, UpdateTicket } from '../schema/ticket';
+import CustomError from '../errorHandler/CustomError';
+import { Ticket, UpdateTicket } from '../types/ticket';
 
 export const getAllTicketsByProjectId = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;

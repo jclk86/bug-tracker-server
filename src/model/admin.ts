@@ -2,7 +2,7 @@
 // ! prevents just anyone creating admin accounts.
 
 import db from '../database/config';
-import { User } from '../schema/user';
+import { User } from '../types/user';
 
 export function get(): Promise<User[]> {
   return db<User>('user').returning('*');

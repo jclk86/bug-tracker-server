@@ -1,6 +1,6 @@
 import { get, getOwners } from '../model/admin';
 import { Request, Response } from 'express';
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await get();

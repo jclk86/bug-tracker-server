@@ -1,7 +1,7 @@
 import { get, getById } from '../model/permission';
 import { Request, Response } from 'express';
 import { isValidUUIDV4 } from 'is-valid-uuid-v4';
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
 
 export const getAllPermissionLevels = async (req: Request, res: Response): Promise<void> => {
   const permissionLevels = await get();

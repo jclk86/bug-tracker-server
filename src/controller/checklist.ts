@@ -11,8 +11,8 @@ import { getById as getTicket } from '../model/ticket';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { Checklist, UpdateChecklist } from '../schema/checklist';
+import CustomError from '../errorHandler/CustomError';
+import { Checklist, UpdateChecklist } from '../types/checklist';
 
 export const getAllChecklistsByTicketId = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;

@@ -1,6 +1,6 @@
 // model interfaces with database. Handles all data logic and data manipulation
 import db from '../database/config';
-import { Company, UpdateCompany } from '../schema/company';
+import { Company, UpdateCompany } from '../types/company';
 
 // https://stackoverflow.com/questions/12016322/async-all-the-way-down
 // async await returns a promise. we do this in controller

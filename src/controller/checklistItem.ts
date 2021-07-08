@@ -3,8 +3,8 @@ import { getById as getChecklist } from '../model/checklist';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import CustomError from '../errorhandler/CustomError';
-import { ChecklistItem, UpdateChecklistItem } from '../schema/checklistItem';
+import CustomError from '../errorHandler/CustomError';
+import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
 export const getAllChecklistItemsByChecklistId = async (
   req: Request,
