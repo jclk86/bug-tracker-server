@@ -24,6 +24,8 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .inTable('company')
       .onUpdate('cascade')
       .onDelete('cascade');
+    table.string('refresh_token');
+    table.boolean('blacklisted').defaultTo(false);
   });
 }
 

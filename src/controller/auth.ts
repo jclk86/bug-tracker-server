@@ -3,7 +3,8 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { getByEmail } from '../model/user';
-import { UserLogin } from '../types/auth';
+import { updateRefreshToken, getRefreshToken } from '../model/auth';
+import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 
 export const signin = async (req: Request, res: Response): Promise<void> => {
@@ -24,19 +25,48 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
   if (!isMatch) throw new CustomError(400, 'Incorrect email or password');
 
-  // exp uses seconds. Date.now() uses milliseconds. Must divide value by 1000 to get seconds.
-  const limit = 60 * 3; // 180 seconds
-  const expiresInSeconds = Math.floor(Date.now() / 1000) + limit;
-
   const payload = {
     id: user.id,
     email: user.email,
-    exp: expiresInSeconds
+    permission_id: user.permission_id
   };
 
-  const token = await jwt.sign(payload, process.env.JWT_KEY);
+  const accessToken = await generateAccessToken(payload, process.env.ACCESS_JWT_KEY);
+  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY);
 
-  if (!token) throw new CustomError(400, 'Invalid user info');
+  // add refresh token to database
 
-  res.json({ token: token });
+  if (!accessToken || !refreshToken) throw new CustomError(401, 'Invalid token');
+
+  await updateRefreshToken(user.id, refreshToken);
+
+  res.json({ accessToken: accessToken, refreshToken: refreshToken });
+};
+
+export const signRefreshToken = async (req: Request, res: Response): Promise<void> => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) throw new CustomError(401, 'Invalid token');
+
+  const { refresh_token, blacklisted } = await getRefreshToken(refreshToken);
+
+  if (blacklisted) throw new CustomError(403, 'Denied');
+
+  if (!refresh_token) throw new CustomError(403, 'Invalid token');
+
+  jwt.verify(refresh_token, process.env.REFRESH_JWT_KEY, (err, user) => {
+    if (err) throw new CustomError(403, 'Invalid token');
+
+    const accessToken = generateAccessToken({ email: user.email }, process.env.ACCESS_JWT_KEY);
+
+    res.json({ accessToken: accessToken });
+  });
+};
+// ! create an intermediary table?
+export const signOut = async (req: Request, res: Response): Promise<void> => {
+  res.status(204);
+};
+
+const generateAccessToken = (user: UserPayload, token: string) => {
+  return jwt.sign(user, token, { expiresIn: '60s' });
 };
