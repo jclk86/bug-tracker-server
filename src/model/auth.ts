@@ -2,7 +2,7 @@ import db from '../database/config';
 import { UserRefreshToken } from '../types/user';
 import { Token } from '../types/auth';
 
-export function updateRefreshToken(userId: string, refreshToken: Token | undefined): Promise<void> {
+export function updateRefreshToken(userId: string, refreshToken: Token | null): Promise<void> {
   const selector = {
     id: userId
   };

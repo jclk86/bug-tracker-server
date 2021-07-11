@@ -1,4 +1,4 @@
-import { checkBody } from './utilities';
+import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -62,9 +62,17 @@ export const signRefreshToken = async (req: Request, res: Response): Promise<voi
     res.json({ accessToken: accessToken });
   });
 };
-// ! create an intermediary table?
+
 export const signOut = async (req: Request, res: Response): Promise<void> => {
-  res.status(204);
+  // revoke refresh token
+  // await updateRefreshToken()
+  const { id } = req.body;
+
+  await validateUUID(id);
+
+  await updateRefreshToken(id, null);
+
+  res.status(204).send({ message: "You've signed out." });
 };
 
 const generateAccessToken = (user: UserPayload, token: string) => {
