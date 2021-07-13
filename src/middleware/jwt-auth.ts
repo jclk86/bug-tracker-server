@@ -6,7 +6,7 @@ import { UserPayload } from '../types/auth';
 // https://stackoverflow.com/questions/54578203/creating-a-middleware-function-to-check-if-user-role-is-equal-to-admin
 
 // define admin or other users in middleware req.ROLE = 'admin'
-
+//! https://dev.to/perrydbucs/using-jwts-for-authentication-in-restful-applications-55hc
 export const requireAuth = async (
   req: Request,
   res: Response,
@@ -25,6 +25,7 @@ export const requireAuth = async (
     req['user'] = user;
     next();
   });
+
   // res.locals.jwt = payload;
 
   /*
@@ -42,5 +43,3 @@ export const requireAuth = async (
 
   // return null;
 };
-
-//get token, verify correct user, and return user for routes this mw is placed on

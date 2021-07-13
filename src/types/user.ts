@@ -15,8 +15,3 @@ export interface User extends BaseUser {
   last_name: string;
   date_created: string;
 }
-
-export interface UserRefreshToken extends User {
-  refresh_token: string;
-  blacklisted: boolean;
-}

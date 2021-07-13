@@ -12,6 +12,7 @@ export interface UserPayload {
 }
 
 export interface UserToken extends User {
+  access_token: string;
   refresh_token: string;
   blacklisted: boolean;
 }

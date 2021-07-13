@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { getByEmail } from '../model/user';
-import { updateRefreshToken, getRefreshToken } from '../model/auth';
+// import { updateRefreshToken, getRefreshToken } from '../model/auth';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 
@@ -25,56 +25,49 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
   if (!isMatch) throw new CustomError(400, 'Incorrect email or password');
 
-  const payload = {
+  // if (user.blacklisted) throw new CustomError(403, 'Denied');
+
+  const payload: UserPayload = {
     id: user.id,
     email: user.email,
     permission_id: user.permission_id
   };
 
-  const accessToken = await generateAccessToken(payload, process.env.ACCESS_JWT_KEY);
-  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY);
-
-  // add refresh token to database
+  const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, { expiresIn: '60s' });
+  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY, { expiresIn: '7d' });
 
   if (!accessToken || !refreshToken) throw new CustomError(401, 'Invalid token');
+  //! samesite requires cors header to be set
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict'
+  });
 
-  await updateRefreshToken(user.id, refreshToken);
-
-  res.json({ accessToken: accessToken, refreshToken: refreshToken });
+  res.json({ accessToken, refreshToken });
 };
 
 export const signRefreshToken = async (req: Request, res: Response): Promise<void> => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookies;
 
-  if (!refreshToken) throw new CustomError(401, 'Invalid token');
+  // ! just return nothing - give as little as possible
+  if (!refreshToken) throw new CustomError(401, 'User is not authenticated');
+  // store token
 
-  const { refresh_token, blacklisted } = await getRefreshToken(refreshToken);
-
-  if (blacklisted) throw new CustomError(403, 'Denied');
-
-  if (!refresh_token) throw new CustomError(403, 'Invalid token');
-
-  jwt.verify(refresh_token, process.env.REFRESH_JWT_KEY, (err, user) => {
+  // const { refresh_token, blacklisted } = await getRefreshToken(refreshToken);
+  jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY, (err, user) => {
     if (err) throw new CustomError(403, 'Invalid token');
-
-    const accessToken = generateAccessToken({ email: user.email }, process.env.ACCESS_JWT_KEY);
-
+    // destructures email from user to override expiresIn from user
+    const accessToken = jwt.sign({ email: user.email }, process.env.ACCESS_JWT_KEY, {
+      expiresIn: '20s'
+    });
+    // place into header on client side
     res.json({ accessToken: accessToken });
   });
 };
 
 export const signOut = async (req: Request, res: Response): Promise<void> => {
-  // revoke refresh token
-  // await updateRefreshToken()
-  const { id } = req.body;
-
-  await validateUUID(id);
-
-  await updateRefreshToken(id, null);
-
-  res.status(204).send({ message: "You've signed out." });
-};
-
-const generateAccessToken = (user: UserPayload, token: string) => {
-  return jwt.sign(user, token, { expiresIn: '60s' });
+  // clear the access token in client end by setting the in-memory variable for accessToken = null
+  res.clearCookie('refreshToken');
+  res.redirect('/login');
 };
