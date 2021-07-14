@@ -11,13 +11,5 @@
   "rules": {
     "no-console": 1,
     "prettier/prettier": ["error", { "endOfLine": "auto" }]
-  },
-  "overrides": [
-    {
-      "files": ["*tedis.ts"],
-      "rules": {
-        "no-console": 0
-      }
-    }
-  ]
+  }
 }
