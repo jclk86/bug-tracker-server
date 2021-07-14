@@ -29,6 +29,7 @@ app.use(
     credentials: true
   })
 );
+
 app.use(morgan);
 
 app.use(routes);

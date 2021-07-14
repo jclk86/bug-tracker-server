@@ -1,4 +1,4 @@
-import { checkBody, validateUUID } from './utilities';
+import { checkBody } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -6,6 +6,7 @@ import { getByEmail } from '../model/user';
 // import { updateRefreshToken, getRefreshToken } from '../model/auth';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
+import client from '../database/tedis';
 
 export const signin = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
@@ -46,7 +47,8 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
   res.json({ accessToken, refreshToken });
 };
-
+// ! https://marmelab.com/blog/2020/07/02/manage-your-jwt-react-admin-authentication-in-memory.html
+// ! then do redis
 export const signRefreshToken = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.cookies;
 
