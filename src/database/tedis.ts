@@ -1,9 +1,4 @@
-/* eslint-disable */
 import { Tedis } from 'tedis';
-
-// on(event: 'connect' | 'timeout', listener: () => void): void;
-// on(event: "error", listener: (err: Error) => void): void;
-// on(event: "close", listener: (had_error: boolean) => void): void;
 
 //! use production url or port and host when pushing up to production
 // https://github.com/silkjs/tedis#readme
@@ -15,19 +10,23 @@ const client = new Tedis({
 });
 
 client.on('connect', () => {
-  console.log('Client connected to redis...');
+  console.log('connect');
 });
 
-client.on('ready', () => {
-  console.log('Client connected to redis and ready to use...');
+client.on('timeout', () => {
+  console.log('timeout');
 });
 
 client.on('error', (err) => {
-  console.log(err.message);
+  console.log(err);
 });
 
-client.on('end', () => {
-  console.log('Client disconnected from redis');
+client.on('close', (had_error) => {
+  console.log('close with err: ', had_error);
+});
+// catches ctrl + c events
+process.on('SIGINT', () => {
+  client.close();
 });
 
 export default client;
