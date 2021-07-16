@@ -43,8 +43,6 @@ export const getChecklistById = async (req: Request, res: Response): Promise<voi
   res.status(200).send(checklist);
 };
 
-// ! only 1 checklist per ticket?
-// ! auto assign ticketId
 export const createChecklist = async (req: Request, res: Response): Promise<void> => {
   const { name, description, ticketId } = req.body;
 
@@ -52,7 +50,7 @@ export const createChecklist = async (req: Request, res: Response): Promise<void
     id: uuidv4(),
     name: name,
     description: description,
-    completed: false, // ! should this be true? No items = completed
+    completed: false,
     ticket_id: ticketId
   };
 
@@ -81,8 +79,6 @@ export const updateChecklist = async (req: Request, res: Response): Promise<void
 
   await checkBody(updatedChecklist);
 
-  // we need the checklist id to edit the checklist - test out
-  // ! test out
   const checklist = await getById(checklistId);
 
   if (!checklist) throw new CustomError(404, 'Checklist does not exist');

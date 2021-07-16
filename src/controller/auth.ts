@@ -35,7 +35,7 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
   };
 
   const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, { expiresIn: '60s' });
-  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY, { expiresIn: '1y' });
+  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY, { expiresIn: '3d' });
 
   if (!accessToken || !refreshToken) throw new CustomError(401, 'Invalid token');
 
@@ -54,17 +54,19 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 // !execute on front end when client makes request but access token is expired
 export const postRefreshToken = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.cookies;
-  const user = req['user'];
-
   // or we can check the refresh token first and if not found, then use cookie
 
   // ! just return nothing - give as little as possible
   if (!refreshToken) throw new CustomError(401, 'User is not authenticated');
 
-  const blacklistedTokens = await client.lrange(user.id, 0, 999999);
+  // LIST
+  // const blacklistedTokens = await client.lrange(user.id, 0, 999999);
+  // if (blacklistedTokens.indexOf(refreshToken) > -1) throw new CustomError(401, 'Unauthorized');
 
   // check if token exists among blacklisted tokens
-  if (blacklistedTokens.indexOf(refreshToken) > -1) throw new CustomError(401, 'Unauthorized');
+  const isBlackListedToken = await client.get(refreshToken);
+
+  if (isBlackListedToken) throw new CustomError(401, 'blacklisted');
 
   // https://dev.to/chukwutosin_/how-to-invalidate-a-jwt-using-a-blacklist-28dl
   //  https://dev.to/mr_cea/using-redis-for-token-blacklisting-in-node-js-42g7
@@ -90,8 +92,12 @@ export const signOut = async (req: Request, res: Response): Promise<void> => {
     if (err) throw new CustomError(403, 'Invalid token');
 
     const userId = user.id;
+
+    // await client.lpush(user.id, refreshToken)
     // blacklist
-    await client.lpush(userId, refreshToken);
+    await client.set(refreshToken, userId);
+
+    await client.expire(refreshToken, 259200);
   });
 
   res.clearCookie('refreshToken');
