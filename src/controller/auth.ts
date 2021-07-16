@@ -26,8 +26,6 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
   if (!isMatch) throw new CustomError(400, 'Incorrect email or password');
 
-  // if (user.blacklisted) throw new CustomError(403, 'Denied');
-
   const payload: UserPayload = {
     id: user.id,
     email: user.email,
@@ -49,29 +47,17 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
   res.json({ accessToken, refreshToken });
 };
-// ! https://marmelab.com/blog/2020/07/02/manage-your-jwt-react-admin-authentication-in-memory.html
-// ! then do redis
-// !execute on front end when client makes request but access token is expired
+
 export const postRefreshToken = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.cookies;
-  // or we can check the refresh token first and if not found, then use cookie
 
-  // ! just return nothing - give as little as possible
   if (!refreshToken) throw new CustomError(401, 'User is not authenticated');
-
-  // LIST
-  // const blacklistedTokens = await client.lrange(user.id, 0, 999999);
-  // if (blacklistedTokens.indexOf(refreshToken) > -1) throw new CustomError(401, 'Unauthorized');
 
   // check if token exists among blacklisted tokens
   const isBlackListedToken = await client.get(refreshToken);
 
   if (isBlackListedToken) throw new CustomError(401, 'blacklisted');
 
-  // https://dev.to/chukwutosin_/how-to-invalidate-a-jwt-using-a-blacklist-28dl
-  //  https://dev.to/mr_cea/using-redis-for-token-blacklisting-in-node-js-42g7
-
-  // const { refresh_token, blacklisted } = await getRefreshToken(refreshToken);
   await jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY, async (err, user) => {
     if (err) throw new CustomError(403, 'Invalid token');
 
@@ -93,10 +79,10 @@ export const signOut = async (req: Request, res: Response): Promise<void> => {
 
     const userId = user.id;
 
-    // await client.lpush(user.id, refreshToken)
-    // blacklist
+    // blacklists the refreshToken
     await client.set(refreshToken, userId);
 
+    // TTL for refreshToken is set to 3 days
     await client.expire(refreshToken, 259200);
   });
 
