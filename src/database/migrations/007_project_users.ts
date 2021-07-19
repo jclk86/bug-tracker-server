@@ -10,7 +10,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .onUpdate('cascade')
       .onDelete('cascade');
     table
-      .uuid('team_leader_id')
+      .uuid('user_id')
       .notNullable()
       .references('id')
       .inTable('user')

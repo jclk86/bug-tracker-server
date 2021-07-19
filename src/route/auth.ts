@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
-import { signin, postRefreshToken, signOut } from '../controller/auth';
-import { requireAuth } from '../middleware/jwt-auth';
+import { login, postRefreshToken, logout } from '../controller/auth';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const authRouter = Router();
 
-authRouter.post('/login', catchAsync(signin));
-
-authRouter.delete('/logout', catchAsync(signOut));
+authRouter.post('/login', catchAsync(login));
 
 authRouter.use(catchAsync(requireAuth));
+
+authRouter.delete('/logout', catchAsync(logout));
 
 authRouter.post('/refresh', catchAsync(postRefreshToken));
 

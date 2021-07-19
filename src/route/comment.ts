@@ -7,6 +7,7 @@ import {
   createComment,
   deleteComment
 } from '../controller/comment';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const commentRouter = Router();
 

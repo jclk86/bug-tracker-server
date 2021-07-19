@@ -8,7 +8,7 @@ import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 import client from '../database/tedis';
 
-export const signin = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   const userLogin: UserLogin = {
@@ -70,7 +70,7 @@ export const postRefreshToken = async (req: Request, res: Response): Promise<voi
   });
 };
 
-export const signOut = async (req: Request, res: Response): Promise<void> => {
+export const logout = async (req: Request, res: Response): Promise<void> => {
   // clear the access token in client end by setting the in-memory variable for accessToken = null
   const { refreshToken } = req.cookies;
 

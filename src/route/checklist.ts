@@ -7,8 +7,11 @@ import {
   updateChecklist,
   deleteChecklist
 } from '../controller/checklist';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistRouter = Router();
+
+checklistRouter.use(catchAsync(requireAuth));
 
 checklistRouter.get('/checklist/id/:checklistId', catchAsync(getChecklistById));
 

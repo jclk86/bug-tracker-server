@@ -9,6 +9,7 @@ import {
   getProjectStatuses
 } from '../controller/project';
 import { catchAsync } from './utilities';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const projectRouter = Router();
 

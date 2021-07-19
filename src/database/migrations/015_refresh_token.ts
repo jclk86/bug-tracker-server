@@ -11,12 +11,12 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .uuid('user_id')
       .notNullable()
       .references('id')
-      .inTable('company')
+      .inTable('user')
       .onUpdate('cascade')
       .onDelete('cascade');
   });
 }
 
 export async function down(knex: Knex): Promise<Knex.SchemaBuilder> {
-  return knex.schema.dropTable('user');
+  return knex.schema.dropTable('token');
 }

@@ -8,6 +8,7 @@ import {
   deleteCompany
 } from '../controller/company';
 import { catchAsync } from './utilities';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const companyRouter = Router();
 
