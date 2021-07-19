@@ -12,8 +12,8 @@ import adminRouter from './admin';
 
 const router = Router();
 
-router.use(companyRouter);
 router.use(userRouter);
+router.use(companyRouter);
 router.use(permissionRouter);
 router.use(projectRouter);
 router.use(ticketRouter);

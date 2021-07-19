@@ -20,8 +20,12 @@ companyRouter.get('/company/id/:companyId', catchAsync(getCompanyById));
 
 companyRouter.post('/company/create', catchAsync(createCompany));
 
-companyRouter.patch('/company/edit/:companyId', catchAsync(updateCompany));
+companyRouter.patch('/company/edit/:companyId', catchAsync(requireAuth), catchAsync(updateCompany));
 
-companyRouter.delete('/company/delete/:companyId', catchAsync(deleteCompany));
+companyRouter.delete(
+  '/company/delete/:companyId',
+  catchAsync(requireAuth),
+  catchAsync(deleteCompany)
+);
 
 export default companyRouter;

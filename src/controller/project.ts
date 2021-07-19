@@ -44,6 +44,8 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 };
 // ! this needs to auto assign companyId. It will take from user's company_id
 export const createProject = async (req: Request, res: Response): Promise<void> => {
+  // const belongsToCompany? = await -- or just don't even allow client to see this interface on front side -- like not a shown option rendered
+
   const {
     name,
     description,

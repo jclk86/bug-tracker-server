@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
 import { getAllPermissionLevels, getPermissionById } from '../controller/permission';
-import { requireAuth } from '../middleware/jwtAuth';
 
 const permissionRouter = Router();
 

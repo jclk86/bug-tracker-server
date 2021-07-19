@@ -11,6 +11,8 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const commentRouter = Router();
 
+commentRouter.all('/comment', catchAsync(requireAuth));
+
 commentRouter.get('/comment/ticketId/:ticketId', catchAsync(getAllCommentsByticketId));
 
 commentRouter.get('/comment/id/:commentId', catchAsync(getCommentById));

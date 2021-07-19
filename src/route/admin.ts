@@ -6,9 +6,7 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const adminRouter = Router();
 
-adminRouter.use(catchAsync(requireAuth));
-
-adminRouter.use(requireAuthRole('admin'));
+adminRouter.all('/admin/*', catchAsync(requireAuth), requireAuthRole('admin'));
 
 adminRouter.get('/admin/users', catchAsync(getAllUsers));
 
