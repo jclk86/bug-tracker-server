@@ -1,5 +1,4 @@
 import {
-  get,
   getByEmail,
   getById,
   getByCompanyId,
@@ -9,28 +8,26 @@ import {
   removeById
 } from '../model/user';
 import { getById as getCompany } from '../model/company';
-import { checkBody, currentTimeStamp, hashPassword } from './utilities';
+import { checkBody, currentTimeStamp, hashPassword, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { isValidUUIDV4 } from 'is-valid-uuid-v4';
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
+import { User, UpdateUser } from '../types/user';
 
 //! last_active should be done on sign out
 
 export const getAllUsersByCompanyId = async (req: Request, res: Response): Promise<void> => {
-  const { company_id } = req.params;
+  const { companyId } = req.params;
 
-  const isValid = isValidUUIDV4(company_id);
+  await validateUUID({ companyId: companyId });
 
-  if (!isValid) throw new CustomError(400, 'Invalid company id');
+  const companyExists = await getCompany(companyId);
 
-  const companyExists = await getCompany(company_id);
+  if (!companyExists) throw new CustomError(404, 'Company does not exist');
 
-  if (!companyExists) throw new CustomError(400, 'No such company exists');
+  const users = await getByCompanyId(companyId);
 
-  const users = await getByCompanyId(company_id);
-
-  if (!users.length) throw new CustomError(404, 'No users exist');
+  if (!users.length) throw new CustomError(404, 'Users have not been added');
 
   res.status(200).send(users);
 };
@@ -38,13 +35,11 @@ export const getAllUsersByCompanyId = async (req: Request, res: Response): Promi
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
-  const isValid = await isValidUUIDV4(userId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
-
+  await validateUUID({ userId: userId });
+  //! change to userExists
   const user = await getById(userId);
 
-  if (!user) throw new CustomError(400, 'No such user exists');
+  if (!user) throw new CustomError(404, 'User does not exist');
 
   res.status(200).send(user);
 };
@@ -56,7 +51,7 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
   // console.log(formattedName);
   const user = await getByEmail(userEmail);
 
-  if (!user) throw new CustomError(400, 'No such user exists');
+  if (!user) throw new CustomError(404, 'User does not exist');
 
   res.status(200).send(user);
 };
@@ -69,7 +64,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   // ! company should be auto assigned
   const hashedPassword = await hashPassword(password);
 
-  const signUp = {
+  const signUp: User = {
     id: uuidv4(),
     first_name: firstName,
     last_name: lastName,
@@ -85,15 +80,15 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   const userExists = await getByEmail(signUp.email);
 
-  if (userExists) throw new CustomError(400, 'User is already registered');
+  if (userExists) throw new CustomError(409, 'User is already registered');
 
   if (signUp.permission_id > 3 || signUp.permission_id < 0)
-    throw new CustomError(400, 'Non-existent permission level');
+    throw new CustomError(404, 'Permission level does not exist');
 
   if (signUp.permission_id === 1) {
     // Ensures only 1 owner per company
     const owner = await getAccountOwner(signUp.company_id, 1);
-    if (owner) throw new CustomError(400, 'Company already has owner');
+    if (owner) throw new CustomError(409, 'Company already has owner');
   }
 
   await create(signUp);
@@ -105,18 +100,16 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   const { userId } = req.params;
   const { password, email, permissionId, active } = req.body;
 
-  const isValid = await isValidUUIDV4(userId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ userId: userId });
 
   const user = await getById(userId);
 
-  if (!user) throw new CustomError(400, 'User does not exist');
+  if (!user) throw new CustomError(404, 'User does not exist');
 
   const hashedPassword = await hashPassword(password);
 
   // ! as a form on client side, these items will hold old values and be edited back in. So you require them here.
-  const updatedUser = {
+  const updatedUser: UpdateUser = {
     password: hashedPassword,
     email: email,
     permission_id: permissionId,
@@ -128,11 +121,11 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   if (user.email !== updatedUser.email) {
     const emailExists = await getByEmail(updatedUser.email);
-    if (emailExists) throw new CustomError(400, 'Email already exists');
+    if (emailExists) throw new CustomError(409, 'Email already exists');
   }
 
   if (updatedUser.permission_id > 3 || updatedUser.permission_id < 0)
-    throw new CustomError(400, 'Non-existent permission level');
+    throw new CustomError(400, 'Permission level does not exist');
 
   if (updatedUser.permission_id !== user.permission_id && updatedUser.permission_id <= 1)
     throw new CustomError(400, 'Can only change permission level between Manager and Developer');
@@ -145,13 +138,11 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
-  const isValid = await isValidUUIDV4(userId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ userId: userId });
 
   const user = await getById(userId);
 
-  if (!user) throw new CustomError(400, 'User does not exist');
+  if (!user) throw new CustomError(404, 'User does not exist');
 
   await removeById(userId);
 

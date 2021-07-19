@@ -1,10 +1,10 @@
 import db from '../database/config';
-import { ChecklistItem, UpdateChecklist } from '../schema/checklistItem';
+import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
 export function getById(checklistItemId: string): Promise<ChecklistItem> {
   const selector = { id: checklistItemId };
 
-  return db<ChecklistItem>('checklist_item').returning('*').where(selector).first();
+  return db<ChecklistItem>('checklist_item').where(selector).returning('*').first();
 }
 
 export function getByChecklistId(checklistId: string): Promise<ChecklistItem[]> {
@@ -19,7 +19,7 @@ export function create(checklistItem: ChecklistItem): Promise<void> {
   return db<ChecklistItem>('checklist_item').insert(checklistItem);
 }
 
-export function update(checklistItemId: string, checklistItem: UpdateChecklist): Promise<void> {
+export function update(checklistItemId: string, checklistItem: UpdateChecklistItem): Promise<void> {
   const selector = { id: checklistItemId };
 
   return db<ChecklistItem>('checklist_item').where(selector).update(checklistItem);

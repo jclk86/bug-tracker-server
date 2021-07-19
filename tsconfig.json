@@ -13,6 +13,6 @@
     "esModuleInterop": true,
     "strictNullChecks": false
   },
-  "include": ["src/**/*.ts", "knexfile.ts", "src/passport-config.txt"],
+  "include": ["src/**/*.ts", "knexfile.ts", "src/passport-config.ts"],
   "exclude": ["node_modules"]
 }

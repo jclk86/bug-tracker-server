@@ -10,8 +10,11 @@ import {
   getTicketPriorities,
   getTicketStatuses
 } from '../controller/ticket';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const ticketRouter = Router();
+
+ticketRouter.all('/ticket', catchAsync(requireAuth));
 
 ticketRouter.get('/ticket/projectId/:projectId', catchAsync(getAllTicketsByProjectId));
 

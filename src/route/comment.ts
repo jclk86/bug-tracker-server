@@ -7,8 +7,11 @@ import {
   createComment,
   deleteComment
 } from '../controller/comment';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const commentRouter = Router();
+
+commentRouter.all('/comment', catchAsync(requireAuth));
 
 commentRouter.get('/comment/ticketId/:ticketId', catchAsync(getAllCommentsByticketId));
 

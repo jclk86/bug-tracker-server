@@ -9,8 +9,11 @@ import {
   getProjectStatuses
 } from '../controller/project';
 import { catchAsync } from './utilities';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const projectRouter = Router();
+
+projectRouter.all('/project', catchAsync(requireAuth));
 
 projectRouter.get('/project/companyId/:companyId', catchAsync(getAllProjectsByCompanyId));
 

@@ -9,22 +9,20 @@ import {
   getStatuses
 } from '../model/project';
 import { getById as getCompany } from '../model/company';
-import { checkBody, currentTimeStamp } from './utilities';
+import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { isValidUUIDV4 } from 'is-valid-uuid-v4';
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
+import { Project, UpdateProject } from '../types/project';
 
 export const getAllProjectsByCompanyId = async (req: Request, res: Response): Promise<void> => {
   const { companyId } = req.params;
 
-  const isValid = isValidUUIDV4(companyId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid company id');
+  await validateUUID({ companyId: companyId });
 
   const companyExists = await getCompany(companyId);
 
-  if (!companyExists) throw new CustomError(400, 'No such company exists');
+  if (!companyExists) throw new CustomError(404, 'Company does not exist');
 
   const projects = await getByCompanyId(companyId);
 
@@ -36,18 +34,18 @@ export const getAllProjectsByCompanyId = async (req: Request, res: Response): Pr
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
-  const isValid = isValidUUIDV4(projectId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid project id');
+  await validateUUID({ projectId: projectId });
 
   const project = await getById(projectId);
 
-  if (!project) throw new CustomError(400, 'No project of that id exists');
+  if (!project) throw new CustomError(404, 'Project does not exist');
 
   res.status(200).send(project);
 };
 // ! this needs to auto assign companyId. It will take from user's company_id
 export const createProject = async (req: Request, res: Response): Promise<void> => {
+  // const belongsToCompany? = await -- or just don't even allow client to see this interface on front side -- like not a shown option rendered
+
   const {
     name,
     description,
@@ -60,7 +58,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
     companyId
   } = req.body;
 
-  const newProject = {
+  const newProject: Project = {
     id: uuidv4(),
     name: name,
     description: description,
@@ -80,7 +78,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   const company = await getByCompanyIdAndName(newProject.company_id, newProject.name);
 
-  if (company) throw new CustomError(400, 'Choose different project name');
+  if (company) throw new CustomError(409, 'Project name already exists');
 
   await create(newProject);
 
@@ -90,15 +88,13 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
-  const isValid = await isValidUUIDV4(projectId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ projectId: projectId });
 
   const project = await getById(projectId);
 
-  if (!project) throw new CustomError(400, 'Project does not exist');
+  if (!project) throw new CustomError(404, 'Project does not exist');
 
-  const updatedProject = {
+  const updatedProject: UpdateProject = {
     name: req.body.name,
     description: req.body.description,
     start_date: req.body.startDate,
@@ -114,7 +110,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   if (project.name !== updatedProject.name) {
     const nameExists = await await getByCompanyIdAndName(project.company_id, updatedProject.name);
-    if (nameExists) throw new CustomError(400, 'Please choose different project name');
+    if (nameExists) throw new CustomError(409, 'Project name already exists');
   }
 
   await update(projectId, updatedProject);
@@ -125,13 +121,11 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
-  const isValid = await isValidUUIDV4(projectId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ projectId: projectId });
 
   const project = await getById(projectId);
 
-  if (!project) throw new CustomError(400, 'Project does not exist');
+  if (!project) throw new CustomError(404, 'Project does not exist');
 
   await removeById(projectId);
 
@@ -149,7 +143,7 @@ export const getProjectPriorities = async (req: Request, res: Response): Promise
 export const getProjectStatuses = async (req: Request, res: Response): Promise<void> => {
   const statuses = await getStatuses();
 
-  if (!statuses.length) throw new CustomError(400, 'No project statuses have been added');
+  if (!statuses.length) throw new CustomError(404, 'No project statuses have been added');
 
   res.status(200).send(statuses);
 };

@@ -1,6 +1,6 @@
 // model interfaces with database. Handles all data logic and data manipulation
 import db from '../database/config';
-import { Company, UpdateCompany } from '../schema/company';
+import { Company, UpdateCompany } from '../types/company';
 
 // https://stackoverflow.com/questions/12016322/async-all-the-way-down
 // async await returns a promise. we do this in controller
@@ -12,13 +12,13 @@ export function get(): Promise<Company[]> {
 export function getByName(companyName: string): Promise<Company | undefined> {
   const selector = { name: companyName };
 
-  return db<Company>('company').returning('*').where(selector).first();
+  return db<Company>('company').where(selector).returning('*').first();
 }
 
 export function getById(companyId: string): Promise<Company | undefined> {
   const selector = { id: companyId };
 
-  return db<Company>('company').select('*').where(selector).first();
+  return db<Company>('company').where(selector).returning('*').first();
 }
 
 export function create(company: Company): Promise<void> {

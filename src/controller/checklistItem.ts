@@ -1,11 +1,10 @@
 import { getById, getByChecklistId, create, update, remove } from '../model/checklistItem';
 import { getById as getChecklist } from '../model/checklist';
-import { ChecklistItem } from '../schema/checklistItem';
-import { checkBody } from './utilities';
+import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { isValidUUIDV4 } from 'is-valid-uuid-v4';
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
+import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
 export const getAllChecklistItemsByChecklistId = async (
   req: Request,
@@ -13,17 +12,15 @@ export const getAllChecklistItemsByChecklistId = async (
 ): Promise<void> => {
   const { checklistId } = req.params;
 
-  const isValid = isValidUUIDV4(checklistId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid checklist id');
+  await validateUUID({ checklistId: checklistId });
 
   const checklistExists = await getChecklist(checklistId);
 
-  if (!checklistExists) throw new CustomError(400, 'No such checklist exists');
+  if (!checklistExists) throw new CustomError(404, 'No such checklist exists');
 
   const checklistItems = await getByChecklistId(checklistId);
 
-  if (!checklistItems.length) throw new CustomError(400, 'No such checklist item exists');
+  if (!checklistItems.length) throw new CustomError(404, 'No such checklist item exists');
 
   res.status(200).send(checklistItems);
 };
@@ -31,13 +28,11 @@ export const getAllChecklistItemsByChecklistId = async (
 export const getChecklistItemById = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
-  const isValid = isValidUUIDV4(checklistItemId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ checklistItemId: checklistItemId });
 
   const checklistItem = await getById(checklistItemId);
 
-  if (!checklistItem) throw new CustomError(400, 'No such checklist item exists');
+  if (!checklistItem) throw new CustomError(404, 'No such checklist item exists');
 
   res.status(200).send(checklistItem);
 };
@@ -45,7 +40,7 @@ export const getChecklistItemById = async (req: Request, res: Response): Promise
 export const createChecklistItem = async (req: Request, res: Response): Promise<void> => {
   const { description, checklistId } = req.body;
 
-  const newChecklistItem = {
+  const newChecklistItem: ChecklistItem = {
     id: uuidv4(),
     description: description,
     checklist_id: checklistId,
@@ -63,11 +58,9 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
   const { checklistItemId } = req.params;
   const { description, checked } = req.body;
 
-  const isValid = isValidUUIDV4(checklistItemId);
+  await validateUUID({ checklistItemId: checklistItemId });
 
-  if (!isValid) throw new CustomError(400, 'Invalid id');
-
-  const updatedChecklistItem = {
+  const updatedChecklistItem: UpdateChecklistItem = {
     description: description,
     checked: checked
   };
@@ -82,13 +75,11 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
 export const deleteChecklistItem = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
-  const isValid = isValidUUIDV4(checklistItemId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ checklistItemId: checklistItemId });
 
   const exists = await getById(checklistItemId);
 
-  if (!exists) throw new CustomError(400, 'Checklist item does not exist');
+  if (!exists) throw new CustomError(404, 'Checklist item does not exist');
 
   await remove(checklistItemId);
 

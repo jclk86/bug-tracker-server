@@ -3,7 +3,7 @@ export interface BaseChecklistItem {
   checked: boolean;
 }
 
-export type UpdateChecklist = BaseChecklistItem;
+export type UpdateChecklistItem = BaseChecklistItem;
 
 export interface ChecklistItem extends BaseChecklistItem {
   id: string;

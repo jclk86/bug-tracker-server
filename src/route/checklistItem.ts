@@ -7,8 +7,11 @@ import {
   updateChecklistItem,
   deleteChecklistItem
 } from '../controller/checklistItem';
+import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistItemRouter = Router();
+
+checklistItemRouter.all('/checklistItem', catchAsync(requireAuth));
 
 checklistItemRouter.get(
   '/checklistItem/checklistId/:checklistId',

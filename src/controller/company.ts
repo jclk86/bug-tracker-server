@@ -1,9 +1,9 @@
 import { get, getById, getByName, create, update, remove } from '../model/company';
-import { checkBody, currentTimeStamp } from './utilities';
+import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { isValidUUIDV4 } from 'is-valid-uuid-v4';
-import CustomError from '../errorhandler/CustomError';
+import CustomError from '../errorHandler/CustomError';
+import { Company, UpdateCompany } from '../types/company';
 
 // next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
 // Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
@@ -16,7 +16,7 @@ import CustomError from '../errorhandler/CustomError';
 export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
   const companies = await get();
 
-  if (!companies?.length) throw new CustomError(404, 'No companies have been added');
+  if (!companies?.length) throw new CustomError(404, 'Companies have not been added');
 
   res.status(200).send(companies);
 };
@@ -24,13 +24,11 @@ export const getAllCompanies = async (req: Request, res: Response): Promise<void
 export const getCompanyById = async (req: Request, res: Response): Promise<void> => {
   const { companyId } = req.params;
 
-  const isValid = await isValidUUIDV4(companyId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ companyId: companyId });
 
   const company = await getById(companyId);
 
-  if (!company) throw new CustomError(400, 'No company exists by that ID');
+  if (!company) throw new CustomError(404, 'Company does not exist');
 
   res.status(200).send(company);
 };
@@ -40,7 +38,7 @@ export const getCompanyByName = async (req: Request, res: Response): Promise<voi
 
   const company = await getByName(companyName);
 
-  if (!company) throw new CustomError(400, 'No such company exists');
+  if (!company) throw new CustomError(404, 'Company does not exist');
 
   res.status(200).send(company);
 };
@@ -48,7 +46,7 @@ export const getCompanyByName = async (req: Request, res: Response): Promise<voi
 export const createCompany = async (req: Request, res: Response): Promise<void> => {
   const { name } = req.body;
 
-  const newCompany = {
+  const newCompany: Company = {
     id: uuidv4(),
     name: name,
     date_created: currentTimeStamp
@@ -59,7 +57,7 @@ export const createCompany = async (req: Request, res: Response): Promise<void> 
 
   const company = await getByName(newCompany.name);
 
-  if (company) throw new CustomError(400, 'Company already exists');
+  if (company) throw new CustomError(409, 'Company name already exists');
 
   await create(newCompany);
 
@@ -70,15 +68,13 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
   const { companyId } = req.params;
   const { name } = req.body;
 
-  const isValid = await isValidUUIDV4(companyId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ companyId: companyId });
 
   const company = await getById(companyId);
 
-  if (!company) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(404, 'Company does not exist');
 
-  const updatedCompany = {
+  const updatedCompany: UpdateCompany = {
     name: name,
     last_edited: currentTimeStamp
   };
@@ -87,7 +83,7 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 
   if (company.name !== updatedCompany.name) {
     const nameExists = await getByName(updatedCompany.name);
-    if (nameExists) throw new CustomError(400, 'Company name exists');
+    if (nameExists) throw new CustomError(409, 'Company name already exists');
   }
 
   await update(companyId, updatedCompany);
@@ -98,13 +94,11 @@ export const updateCompany = async (req: Request, res: Response): Promise<void> 
 export const deleteCompany = async (req: Request, res: Response): Promise<void> => {
   const { companyId } = req.params;
 
-  const isValid = await isValidUUIDV4(companyId);
-
-  if (!isValid) throw new CustomError(400, 'Invalid id');
+  await validateUUID({ companyId: companyId });
 
   const company = await getById(companyId);
 
-  if (!company) throw new CustomError(400, 'Company does not exist');
+  if (!company) throw new CustomError(404, 'Company does not exist');
 
   await remove(companyId);
 
