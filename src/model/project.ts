@@ -1,5 +1,5 @@
 import db from '../database/config';
-import { Project, UpdateProject } from '../types/project';
+import { Project, UpdateProject, ProjectUser } from '../types/project';
 import { Priority } from '../types/priority';
 import { Status } from '../types/status';
 
@@ -26,8 +26,29 @@ export function getByCompanyIdAndName(
   return db<Project>('project').where(selector).returning('*').first();
 }
 
+export function getByProjectUserByIds(
+  projectId: string,
+  userId: string
+): Promise<ProjectUser | undefined> {
+  const selector = { project_id: projectId, user_id: userId };
+
+  return db<ProjectUser>('project_users').where(selector).returning('*').first();
+}
+
+export function getPriorities(): Promise<Priority[]> {
+  return db<Priority>('project_priority').returning('*');
+}
+
+export function getStatuses(): Promise<Status[]> {
+  return db<Status>('project_status').returning('*');
+}
+
 export function create(newProject: Project): Promise<void> {
   return db<Project>('project').insert(newProject);
+}
+
+export function addProjectUser(newProjectUser: ProjectUser): Promise<void> {
+  return db<ProjectUser>('project_users').insert(newProjectUser);
 }
 
 export function update(projectId: string, updatedProject: UpdateProject): Promise<void> {
@@ -42,10 +63,8 @@ export function removeById(projectId: string): Promise<void> {
   return db<Project>('project').where(selector).delete();
 }
 
-export function getPriorities(): Promise<Priority[]> {
-  return db<Priority>('project_priority').returning('*');
-}
+export function removeProjectUser(projectId: string, userId: string): Promise<void> {
+  const selector = { project_id: projectId, user_id: userId };
 
-export function getStatuses(): Promise<Status[]> {
-  return db<Status>('project_status').returning('*');
+  return db<ProjectUser>('project_users').where(selector).delete();
 }

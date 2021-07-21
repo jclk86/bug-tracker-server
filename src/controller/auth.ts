@@ -32,8 +32,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     permission_id: user.permission_id
   };
 
-  const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, { expiresIn: '60s' });
-  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY, { expiresIn: '3d' });
+  const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, { expiresIn: '5m' });
+  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY, { expiresIn: '1d' });
 
   if (!accessToken || !refreshToken) throw new CustomError(401, 'Invalid token');
 
@@ -51,20 +51,16 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 export const postRefreshToken = async (req: Request, res: Response): Promise<void> => {
   const { refreshToken } = req.cookies;
 
-  if (!refreshToken) throw new CustomError(401, 'User is not authenticated');
-
   // check if token exists among blacklisted tokens
   const isBlackListedToken = await client.get(refreshToken);
 
   if (isBlackListedToken) throw new CustomError(401, 'blacklisted');
 
-  await jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY, async (err, user) => {
+  await jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY, async (err, user: UserPayload) => {
     if (err) throw new CustomError(403, 'Invalid token');
 
     // destructures email from user to override expiresIn from user
-    const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_JWT_KEY, {
-      expiresIn: '20s'
-    });
+    const accessToken = jwt.sign(user, process.env.ACCESS_JWT_KEY);
 
     res.json({ accessToken: accessToken });
   });

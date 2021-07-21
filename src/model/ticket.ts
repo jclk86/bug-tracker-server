@@ -30,8 +30,22 @@ export function getByProjectIdAndName(
   return db<Ticket>('ticket').where(selector).returning('*').first();
 }
 
+export function getPriorities(): Promise<Priority[]> {
+  return db<Priority>('ticket_priority').returning('*');
+}
+
+export function getStatuses(): Promise<Status[]> {
+  return db<Status>('ticket_status').returning('*');
+}
+
 export function create(newTicket: Ticket): Promise<void> {
   return db<Ticket>('ticket').insert(newTicket);
+}
+
+export function update(ticketId: string, updatedTicket: UpdateTicket): Promise<void> {
+  const selector = { id: ticketId };
+
+  return db<Ticket>('ticket').where(selector).update(updatedTicket);
 }
 
 export function removeByName(ticketName: string): Promise<void> {
@@ -44,18 +58,4 @@ export function removeById(ticketId: string): Promise<void> {
   const selector = { id: ticketId };
 
   return db<Ticket>('ticket').where(selector).delete();
-}
-
-export function update(ticketId: string, updatedTicket: UpdateTicket): Promise<void> {
-  const selector = { id: ticketId };
-
-  return db<Ticket>('ticket').where(selector).update(updatedTicket);
-}
-
-export function getPriorities(): Promise<Priority[]> {
-  return db<Priority>('ticket_priority').returning('*');
-}
-
-export function getStatuses(): Promise<Status[]> {
-  return db<Status>('ticket_status').returning('*');
 }

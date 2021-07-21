@@ -16,16 +16,12 @@ companyRouter.get('/company', catchAsync(getAllCompanies));
 
 companyRouter.get('/company/name/:companyName', catchAsync(getCompanyByName));
 
-companyRouter.get('/company/id/:companyId', catchAsync(getCompanyById));
+companyRouter.get('/company/:companyId', catchAsync(getCompanyById));
 
-companyRouter.post('/company/create', catchAsync(createCompany));
+companyRouter.post('/company', catchAsync(createCompany));
 
-companyRouter.patch('/company/edit/:companyId', catchAsync(requireAuth), catchAsync(updateCompany));
+companyRouter.patch('/company/:companyId', catchAsync(requireAuth), catchAsync(updateCompany));
 
-companyRouter.delete(
-  '/company/delete/:companyId',
-  catchAsync(requireAuth),
-  catchAsync(deleteCompany)
-);
+companyRouter.delete('/company/:companyId', catchAsync(requireAuth), catchAsync(deleteCompany));
 
 export default companyRouter;

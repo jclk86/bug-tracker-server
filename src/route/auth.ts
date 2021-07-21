@@ -7,8 +7,8 @@ const authRouter = Router();
 
 authRouter.post('/login', catchAsync(login));
 
-authRouter.delete('/logout', catchAsync(requireAuth), catchAsync(logout));
-
 authRouter.post('/refresh', catchAsync(requireAuth), catchAsync(postRefreshToken));
+
+authRouter.delete('/logout', catchAsync(requireAuth), catchAsync(logout));
 
 export default authRouter;

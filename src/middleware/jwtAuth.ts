@@ -20,7 +20,7 @@ export const requireAuth = async (
 
   // const payload = (await jwt.verify(accessToken, process.env.ACCESS_JWT_KEY)) as UserPayload;
 
-  await jwt.verify(accessToken, process.env.ACCESS_JWT_KEY, (err, user) => {
+  await jwt.verify(accessToken, process.env.ACCESS_JWT_KEY, (err, user: UserPayload) => {
     if (err) return res.redirect(403, '/login');
     req['user'] = user;
     next();

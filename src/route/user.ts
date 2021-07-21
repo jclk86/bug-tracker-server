@@ -12,20 +12,20 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const userRouter = Router();
 
-userRouter.post('/user/create', catchAsync(createUser));
-
 userRouter.get(
-  '/user/companyId/:companyId',
+  '/user/company/:companyId',
   catchAsync(requireAuth),
   catchAsync(getAllUsersByCompanyId)
 );
 
 userRouter.get('/user/email/:userEmail', catchAsync(requireAuth), catchAsync(getUserByEmail));
 
-userRouter.get('/user/id/:userId', catchAsync(requireAuth), catchAsync(getUserById));
+userRouter.get('/user/:userId', catchAsync(requireAuth), catchAsync(getUserById));
 
-userRouter.patch('/user/edit/:userId', catchAsync(requireAuth), catchAsync(updateUser));
+userRouter.post('/user', catchAsync(createUser));
 
-userRouter.delete('/user/delete/:userId', catchAsync(requireAuth), catchAsync(deleteUser));
+userRouter.patch('/user/:userId', catchAsync(requireAuth), catchAsync(updateUser));
+
+userRouter.delete('/user/:userId', catchAsync(requireAuth), catchAsync(deleteUser));
 
 export default userRouter;

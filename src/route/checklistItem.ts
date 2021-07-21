@@ -11,22 +11,19 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistItemRouter = Router();
 
-checklistItemRouter.all('/checklistItem', catchAsync(requireAuth));
+checklistItemRouter.all('/checklist-item', catchAsync(requireAuth));
 
 checklistItemRouter.get(
-  '/checklistItem/checklistId/:checklistId',
+  '/checklist-item/checklist/:checklistId',
   catchAsync(getAllChecklistItemsByChecklistId)
 );
 
-checklistItemRouter.get('/checklistItem/id/:checklistItemId', catchAsync(getChecklistItemById));
+checklistItemRouter.get('/checklist-item/:checklistItemId', catchAsync(getChecklistItemById));
 
-checklistItemRouter.post('/checklistItem/create', catchAsync(createChecklistItem));
+checklistItemRouter.post('/checklist-item', catchAsync(createChecklistItem));
 
-checklistItemRouter.patch('/checklistItem/edit/:checklistItemId', catchAsync(updateChecklistItem));
+checklistItemRouter.patch('/checklist-item/:checklistItemId', catchAsync(updateChecklistItem));
 
-checklistItemRouter.delete(
-  '/checklistItem/delete/:checklistItemId',
-  catchAsync(deleteChecklistItem)
-);
+checklistItemRouter.delete('/checklist-item/:checklistItemId', catchAsync(deleteChecklistItem));
 
 export default checklistItemRouter;

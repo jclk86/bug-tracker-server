@@ -7,8 +7,6 @@ export function get(): Promise<User[]> {
 
 // export function getBySelector(id?: string, email?: string): Promise<User | undefined> {
 //   const selector = {
-//     ...(id && { id: id }),
-//     ...(email && { email: email })
 //   };
 
 //   const cols = [

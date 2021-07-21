@@ -18,3 +18,8 @@ export interface Project extends BaseProject {
   date_created: string;
   company_id: string;
 }
+
+export interface ProjectUser {
+  project_id: string;
+  user_id: string;
+}
