@@ -13,7 +13,7 @@ const checklistRouter = Router();
 
 // !replace checklistId with setChecklist?
 
-checklistRouter.all('/checklist', catchAsync(requireAuth));
+checklistRouter.use('/checklist', catchAsync(requireAuth));
 
 checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
 

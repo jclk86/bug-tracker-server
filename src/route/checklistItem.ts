@@ -11,7 +11,7 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistItemRouter = Router();
 
-checklistItemRouter.all('/checklist-item', catchAsync(requireAuth));
+checklistItemRouter.use('/checklist-item', catchAsync(requireAuth));
 
 checklistItemRouter.get(
   '/checklist-item/checklist/:checklistId',

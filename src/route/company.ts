@@ -12,6 +12,8 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const companyRouter = Router();
 
+companyRouter.use('/company', catchAsync(requireAuth));
+
 companyRouter.get('/company', catchAsync(getAllCompanies));
 
 companyRouter.get('/company/name/:companyName', catchAsync(getCompanyByName));

@@ -2,6 +2,14 @@ import { get, getOwners } from '../model/admin';
 import { Request, Response } from 'express';
 import CustomError from '../errorHandler/CustomError';
 
+export const getAllCompanies = async (req: Request, res: Response): Promise<void> => {
+  const companies = await get();
+
+  if (!companies?.length) throw new CustomError(404, 'Companies have not been added');
+
+  res.status(200).send(companies);
+};
+
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   const users = await get();
 
