@@ -1,5 +1,5 @@
-import { getById, getByChecklistId, create, update, remove } from '../model/checklistItem';
-import { getById as getChecklist } from '../model/checklist';
+import { retrieve, retrieveById, create, update, remove } from '../model/checklistItem';
+import { retrieveById as retrieveByChecklistId } from '../model/checklist';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,11 +14,11 @@ export const getAllChecklistItemsByChecklistId = async (
 
   await validateUUID({ checklistId: checklistId });
 
-  const checklistExists = await getChecklist(checklistId);
+  const checklistExists = await retrieveByChecklistId(checklistId);
 
   if (!checklistExists) throw new CustomError(404, 'No such checklist exists');
 
-  const checklistItems = await getByChecklistId(checklistId);
+  const checklistItems = await retrieve(checklistId);
 
   if (!checklistItems.length) throw new CustomError(404, 'No such checklist item exists');
 
@@ -30,7 +30,7 @@ export const getChecklistItemById = async (req: Request, res: Response): Promise
 
   await validateUUID({ checklistItemId: checklistItemId });
 
-  const checklistItem = await getById(checklistItemId);
+  const checklistItem = await retrieveById(checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'No such checklist item exists');
 
@@ -77,7 +77,7 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   await validateUUID({ checklistItemId: checklistItemId });
 
-  const exists = await getById(checklistItemId);
+  const exists = await retrieveById(checklistItemId);
 
   if (!exists) throw new CustomError(404, 'Checklist item does not exist');
 

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
   getUserById,
   getUserByEmail,
-  getAllUsersByCompanyId,
+  getAllUsersByAccountId,
   createUser,
   updateUser,
   deleteUser
@@ -13,9 +13,9 @@ import { requireAuth } from '../middleware/jwtAuth';
 const userRouter = Router();
 
 userRouter.get(
-  '/user/company/:companyId',
+  '/user/account/:accountId',
   catchAsync(requireAuth),
-  catchAsync(getAllUsersByCompanyId)
+  catchAsync(getAllUsersByAccountId)
 );
 
 userRouter.get('/user/email/:userEmail', catchAsync(requireAuth), catchAsync(getUserByEmail));

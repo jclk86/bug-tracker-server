@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAllProjectsByCompanyId,
+  getAllProjectsByAccountId,
   createProject,
   getProjectById,
   updateProject,
@@ -15,7 +15,7 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const projectRouter = Router();
 
-projectRouter.get('/project/company/:companyId', catchAsync(getAllProjectsByCompanyId));
+projectRouter.get('/project/account/:accountId', catchAsync(getAllProjectsByAccountId));
 
 projectRouter.get('/project/:projectId', catchAsync(getProjectById));
 

@@ -1,5 +1,5 @@
-import { get, getById, create, update, remove } from '../model/comment';
-import { getById as getTicket } from '../model/ticket';
+import { retrieve, retrieveById, create, update, remove } from '../model/comment';
+import { retrieveById as retrieveByTicketId } from '../model/ticket';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,11 +11,11 @@ export const getAllCommentsByticketId = async (req: Request, res: Response): Pro
 
   await validateUUID({ ticketId: ticketId });
 
-  const ticketExists = await getTicket(ticketId);
+  const ticketExists = await retrieveByTicketId(ticketId);
 
   if (!ticketExists) throw new CustomError(404, 'Ticket does not exist');
 
-  const comments = await get(ticketId);
+  const comments = await retrieve(ticketId);
 
   if (!comments.length) throw new CustomError(404, 'No comments have been added for this ticket');
 
@@ -27,7 +27,7 @@ export const getCommentById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ commentId: commentId });
 
-  const comment = await getById(commentId);
+  const comment = await retrieveById(commentId);
 
   if (!comment) throw new CustomError(404, 'Comment does not exist');
 
@@ -58,7 +58,7 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ commentId: commentId });
 
-  const exists = await getById(commentId);
+  const exists = await retrieveById(commentId);
 
   if (!exists) throw new CustomError(404, 'Comment does not exist');
 
@@ -79,7 +79,7 @@ export const deleteComment = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ commentId: commentId });
 
-  const exists = await getById(commentId);
+  const exists = await retrieveById(commentId);
 
   if (!exists) throw new CustomError(404, 'Comment does not exist');
 

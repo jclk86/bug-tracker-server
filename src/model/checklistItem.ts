@@ -1,18 +1,17 @@
 import db from '../database/config';
 import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
-export function getById(checklistItemId: string): Promise<ChecklistItem> {
-  const selector = { id: checklistItemId };
-
-  return db<ChecklistItem>('checklist_item').where(selector).returning('*').first();
-}
-
-export function getByChecklistId(checklistId: string): Promise<ChecklistItem[]> {
+export function retrieve(checklistId: string): Promise<ChecklistItem[]> {
   const selector = {
     checklist_id: checklistId
   };
 
   return db<ChecklistItem>('checklist_item').where(selector).returning('*');
+}
+export function retrieveById(checklistItemId: string): Promise<ChecklistItem> {
+  const selector = { id: checklistItemId };
+
+  return db<ChecklistItem>('checklist_item').where(selector).returning('*').first();
 }
 
 export function create(checklistItem: ChecklistItem): Promise<void> {

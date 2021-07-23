@@ -3,25 +3,25 @@ import { Ticket, UpdateTicket } from '../types/ticket';
 import { Priority } from '../types/priority';
 import { Status } from '../types/status';
 
-export function getByProjectId(projectId: string): Promise<Ticket[]> {
+export function retrieve(projectId: string): Promise<Ticket[]> {
   const selector = { project_id: projectId };
 
   return db<Ticket>('ticket').where(selector).returning('*');
 }
 
-export function getByName(ticketName: string): Promise<Ticket | undefined> {
-  const selector = { name: ticketName };
-
-  return db<Ticket>('ticket').where(selector).returning('*').first();
-}
-
-export function getById(ticketId: string): Promise<Ticket | undefined> {
+export function retrieveById(ticketId: string): Promise<Ticket | undefined> {
   const selector = { id: ticketId };
 
   return db<Ticket>('ticket').where(selector).returning('*').first();
 }
+// ! replace with filter or find?
+export function retrieveByName(ticketName: string): Promise<Ticket | undefined> {
+  const selector = { name: ticketName };
 
-export function getByProjectIdAndName(
+  return db<Ticket>('ticket').where(selector).returning('*').first();
+}
+// ! replace with filter or find?
+export function retrieveByProjectIdAndName(
   projectId: string,
   ticketName: string
 ): Promise<Ticket | undefined> {
@@ -30,11 +30,11 @@ export function getByProjectIdAndName(
   return db<Ticket>('ticket').where(selector).returning('*').first();
 }
 
-export function getPriorities(): Promise<Priority[]> {
+export function retrievePriorities(): Promise<Priority[]> {
   return db<Priority>('ticket_priority').returning('*');
 }
 
-export function getStatuses(): Promise<Status[]> {
+export function retrieveStatuses(): Promise<Status[]> {
   return db<Status>('ticket_status').returning('*');
 }
 
@@ -48,13 +48,7 @@ export function update(ticketId: string, updatedTicket: UpdateTicket): Promise<v
   return db<Ticket>('ticket').where(selector).update(updatedTicket);
 }
 
-export function removeByName(ticketName: string): Promise<void> {
-  const selector = { name: ticketName };
-
-  return db<Ticket>('ticket').where(selector).delete();
-}
-
-export function removeById(ticketId: string): Promise<void> {
+export function remove(ticketId: string): Promise<void> {
   const selector = { id: ticketId };
 
   return db<Ticket>('ticket').where(selector).delete();

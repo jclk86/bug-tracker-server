@@ -18,10 +18,10 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .onUpdate('cascade')
       .onDelete('set null');
     table
-      .uuid('company_id')
+      .uuid('account_id')
       .notNullable()
       .references('id')
-      .inTable('company')
+      .inTable('account')
       .onUpdate('cascade')
       .onDelete('cascade');
     table

@@ -1,7 +1,7 @@
 import db from '../database/config';
 import { Comment, UpdateComment } from '../types/comment';
 
-export function get(ticketId: string): Promise<Comment[]> {
+export function retrieve(ticketId: string): Promise<Comment[]> {
   const selector = {
     ticket_id: ticketId
   };
@@ -9,7 +9,7 @@ export function get(ticketId: string): Promise<Comment[]> {
   return db<Comment>('comment').where(selector).returning('*');
 }
 
-export function getById(commentId: string): Promise<Comment> {
+export function retrieveById(commentId: string): Promise<Comment> {
   const selector = {
     id: commentId
   };

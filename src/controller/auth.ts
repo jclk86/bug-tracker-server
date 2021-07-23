@@ -2,8 +2,7 @@ import { checkBody } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { getByEmail } from '../model/user';
-// import { updateRefreshToken, getRefreshToken } from '../model/auth';
+import { retrieveByEmail } from '../model/user';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 import client from '../database/tedis';
@@ -18,7 +17,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   await checkBody(userLogin);
 
-  const user = await getByEmail(userLogin.email);
+  const user = await retrieveByEmail(userLogin.email);
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
@@ -29,7 +28,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   const payload: UserPayload = {
     id: user.id,
     email: user.email,
-    permission_id: user.permission_id
+    role: user.role
   };
 
   const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, { expiresIn: '5m' });

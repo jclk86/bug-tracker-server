@@ -9,6 +9,8 @@ export function get(): Promise<User[]> {
 //   const selector = {
 //   };
 
+// ! email ? (selector['account.email'] = email) : (selector['account.id'] = id);
+
 //   const cols = [
 //     'id',
 //     'first_name AS firstName',
@@ -16,7 +18,7 @@ export function get(): Promise<User[]> {
 //     'permission_id AS permissionId',
 //     'email',
 //     'date_created AS dateCreated',
-//     'company_id AS companyId',
+//     'account_id AS accountId',
 //     'active'
 //   ];
 
@@ -25,29 +27,27 @@ export function get(): Promise<User[]> {
 //   return data;
 // }
 
-export function getByEmail(userEmail: string): Promise<User | undefined> {
+// ! there should be a list of members in each project
+export function retrieve(accountId: string): Promise<User[]> {
+  const selector = { account_id: accountId };
+
+  return db<User>('user').where(selector).returning('*');
+}
+
+export function retrieveByEmail(userEmail: string): Promise<User | undefined> {
   const selector = { email: userEmail };
 
   return db<User>('user').where(selector).returning('*').first();
 }
 
-export function getById(userId: string): Promise<User | undefined> {
+export function retrieveById(userId: string): Promise<User | undefined> {
   const selector = { id: userId };
 
   return db<User>('user').where(selector).returning('*').first();
 }
 
-export function getByCompanyId(companyId: string): Promise<User[]> {
-  const selector = { company_id: companyId };
-
-  return db<User>('user').where(selector).returning('*');
-}
-
-export function getAccountOwner(
-  companyId: string,
-  permissionId: number
-): Promise<User | undefined> {
-  const selector = { company_id: companyId, permission_id: permissionId };
+export function retrieveAccountOwner(accountId: string, role: string): Promise<User | undefined> {
+  const selector = { account_id: accountId, role: role };
 
   return db<User>('user').where(selector).returning('*').first();
 }
@@ -62,13 +62,7 @@ export function update(userId: string, updatedUser: UpdateUser): Promise<void> {
   return db<User>('user').where(selector).update(updatedUser);
 }
 
-export function removeByEmail(userEmail: string): Promise<User | undefined> {
-  const selector = { email: userEmail };
-
-  return db<User>('user').where(selector).delete();
-}
-
-export function removeById(userId: string): Promise<void> {
+export function remove(userId: string): Promise<void> {
   const selector = { id: userId };
 
   return db<User>('user').where(selector).delete();
