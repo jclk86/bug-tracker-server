@@ -16,7 +16,7 @@ import { Checklist, UpdateChecklist } from '../types/checklist';
 export const getChecklists = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
   const ticketExists = await retrieveTicket(ticketId);
 
@@ -33,7 +33,7 @@ export const getChecklists = async (req: Request, res: Response): Promise<void> 
 export const getChecklistById = async (req: Request, res: Response): Promise<void> => {
   const { checklistId } = req.params;
 
-  await validateUUID({ checklistId: checklistId });
+  await validateUUID({ checklistId });
 
   const checklist = await retrieveById(checklistId);
 
@@ -68,7 +68,7 @@ export const updateChecklist = async (req: Request, res: Response): Promise<void
   const { checklistId } = req.params;
   const { name, description, completed } = req.body;
 
-  await validateUUID({ checklistId: checklistId });
+  await validateUUID({ checklistId });
 
   const updatedChecklist: UpdateChecklist = {
     name: name,
@@ -95,7 +95,7 @@ export const updateChecklist = async (req: Request, res: Response): Promise<void
 export const deleteChecklist = async (req: Request, res: Response): Promise<void> => {
   const { checklistId } = req.params;
 
-  await validateUUID({ checklistId: checklistId });
+  await validateUUID({ checklistId });
 
   const checklist = await retrieveById(checklistId);
 

@@ -12,7 +12,7 @@ export const getAllChecklistItemsByChecklistId = async (
 ): Promise<void> => {
   const { checklistId } = req.params;
 
-  await validateUUID({ checklistId: checklistId });
+  await validateUUID({ checklistId });
 
   const checklistExists = await retrieveByChecklistId(checklistId);
 
@@ -28,7 +28,7 @@ export const getAllChecklistItemsByChecklistId = async (
 export const getChecklistItemById = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
-  await validateUUID({ checklistItemId: checklistItemId });
+  await validateUUID({ checklistItemId });
 
   const checklistItem = await retrieveById(checklistItemId);
 
@@ -58,7 +58,7 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
   const { checklistItemId } = req.params;
   const { description, checked } = req.body;
 
-  await validateUUID({ checklistItemId: checklistItemId });
+  await validateUUID({ checklistItemId });
 
   const updatedChecklistItem: UpdateChecklistItem = {
     description: description,
@@ -75,7 +75,7 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
 export const deleteChecklistItem = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
-  await validateUUID({ checklistItemId: checklistItemId });
+  await validateUUID({ checklistItemId });
 
   const exists = await retrieveById(checklistItemId);
 

@@ -31,7 +31,7 @@ export const getAccounts = async (req: Request, res: Response): Promise<void> =>
 export const getAccountById = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
-  await validateUUID({ accountId: accountId });
+  await validateUUID({ accountId });
 
   const account = await retrieveById(accountId);
 
@@ -76,7 +76,7 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
   const { accountId } = req.params;
   const { name, email } = req.body;
 
-  await validateUUID({ accountId: accountId });
+  await validateUUID({ accountId });
 
   const account = await retrieveById(accountId);
 
@@ -103,7 +103,7 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
 export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
-  await validateUUID({ accountId: accountId });
+  await validateUUID({ accountId });
 
   const account = await retrieveById(accountId);
 

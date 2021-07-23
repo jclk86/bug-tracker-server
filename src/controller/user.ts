@@ -20,7 +20,7 @@ import { ROLE } from '../middleware/permission/role';
 export const getAllUsersByAccountId = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
-  await validateUUID({ accountId: accountId });
+  await validateUUID({ accountId });
 
   const accountExists = await retrieveAccount(accountId);
 
@@ -36,7 +36,7 @@ export const getAllUsersByAccountId = async (req: Request, res: Response): Promi
 export const getUserById = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
-  await validateUUID({ userId: userId });
+  await validateUUID({ userId });
   //! change to userExists
   const user = await retrieveById(userId);
 
@@ -100,7 +100,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   const { userId } = req.params;
   const { password, email, roleTitle, active } = req.body;
 
-  await validateUUID({ userId: userId });
+  await validateUUID({ userId });
 
   const user = await retrieveById(userId);
 
@@ -137,7 +137,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   const { userId } = req.params;
 
-  await validateUUID({ userId: userId });
+  await validateUUID({ userId });
 
   const user = await retrieveById(userId);
 

@@ -19,7 +19,7 @@ import { Ticket, UpdateTicket } from '../types/ticket';
 export const getAllTicketsByProjectId = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
-  await validateUUID({ projectId: projectId });
+  await validateUUID({ projectId });
 
   const projectExists = await retrieveProject(projectId);
 
@@ -45,7 +45,7 @@ export const getTicketByName = async (req: Request, res: Response): Promise<void
 export const getTicketById = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
   const ticket = await retrieveById(ticketId);
 
@@ -109,7 +109,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
   const { ticketId } = req.params;
   const { name, description, ticketStatusId, ticketPriorityId, dueDate, completionDate } = req.body;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
   const ticket = await retrieveById(ticketId);
 
@@ -140,7 +140,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
   await remove(ticketId);
 

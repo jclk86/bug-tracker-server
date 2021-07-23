@@ -9,7 +9,7 @@ import { Comment, UpdateComment } from '../types/comment';
 export const getAllCommentsByticketId = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
   const ticketExists = await retrieveByTicketId(ticketId);
 
@@ -25,7 +25,7 @@ export const getAllCommentsByticketId = async (req: Request, res: Response): Pro
 export const getCommentById = async (req: Request, res: Response): Promise<void> => {
   const { commentId } = req.params;
 
-  await validateUUID({ commentId: commentId });
+  await validateUUID({ commentId });
 
   const comment = await retrieveById(commentId);
 
@@ -56,7 +56,7 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
   const { commentId } = req.params;
   const { content } = req.body;
 
-  await validateUUID({ commentId: commentId });
+  await validateUUID({ commentId });
 
   const exists = await retrieveById(commentId);
 
@@ -77,7 +77,7 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
 export const deleteComment = async (req: Request, res: Response): Promise<void> => {
   const { commentId } = req.params;
 
-  await validateUUID({ commentId: commentId });
+  await validateUUID({ commentId });
 
   const exists = await retrieveById(commentId);
 

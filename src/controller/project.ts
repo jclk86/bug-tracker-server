@@ -111,9 +111,9 @@ export const addUserToProject = async (req: Request, res: Response): Promise<voi
   const { projectId } = req.params;
   const { userId } = req.body;
 
-  await validateUUID({ projectId: projectId });
+  await validateUUID({ projectId });
 
-  await validateUUID({ userId: userId });
+  await validateUUID({ userId });
 
   const newProjectUser: ProjectUser = {
     project_id: projectId,
@@ -145,7 +145,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
     projectStatusId
   } = req.body;
 
-  await validateUUID({ projectId: projectId });
+  await validateUUID({ projectId });
 
   const project = await retrieveById(projectId);
 
@@ -179,9 +179,9 @@ export const deleteProjectUser = async (req: Request, res: Response): Promise<vo
   const { projectId } = req.params;
   const { userId } = req.body;
 
-  await validateUUID({ projectId: projectId });
+  await validateUUID({ projectId });
 
-  await validateUUID({ userId: userId });
+  await validateUUID({ userId });
 
   const exists = await retrieveByProjectUserByIds(projectId, userId);
 
@@ -195,7 +195,7 @@ export const deleteProjectUser = async (req: Request, res: Response): Promise<vo
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
-  await validateUUID({ projectId: projectId });
+  await validateUUID({ projectId });
 
   const project = await retrieveById(projectId);
 

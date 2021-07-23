@@ -61,7 +61,7 @@ export const postRefreshToken = async (req: Request, res: Response): Promise<voi
     // destructures email from user to override expiresIn from user
     const accessToken = jwt.sign(user, process.env.ACCESS_JWT_KEY);
 
-    res.json({ accessToken: accessToken });
+    res.json({ accessToken });
   });
 };
 
