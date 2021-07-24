@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
   getChecklistById,
-  getAllChecklistsByTicketId,
+  getChecklists,
   createChecklist,
   updateChecklist,
   deleteChecklist
@@ -17,7 +17,7 @@ checklistRouter.use('/checklist', catchAsync(requireAuth));
 
 checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
 
-checklistRouter.get('/checklist/ticket/:ticketId', catchAsync(getAllChecklistsByTicketId));
+checklistRouter.get('/checklist/ticket/:ticketId', catchAsync(getChecklists));
 
 checklistRouter.post('/checklist/create', catchAsync(createChecklist));
 

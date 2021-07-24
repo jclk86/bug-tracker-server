@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAllAccounts,
+  getAccounts,
   getAccountByName,
   getAccountById,
   createAccount,
@@ -14,7 +14,7 @@ const accountRouter = Router();
 
 accountRouter.use('/account', catchAsync(requireAuth));
 
-accountRouter.get('/account', catchAsync(getAllAccounts));
+accountRouter.get('/account', catchAsync(getAccounts));
 
 accountRouter.get('/account/name/:accountName', catchAsync(getAccountByName));
 

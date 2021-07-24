@@ -25,12 +25,12 @@ projectRouter.get('/project/statuses', catchAsync(getProjectStatuses));
 
 projectRouter.post('/project', catchAsync(requireAuth), catchAsync(createProject));
 
-projectRouter.post('/project/add-user/:projectId', catchAsync(addUserToProject));
+projectRouter.post('/project/project-user/:projectId', catchAsync(addUserToProject));
 
 projectRouter.patch('/project/:projectId', catchAsync(updateProject));
 
 projectRouter.delete(
-  '/project/delete-user/:projectId',
+  '/project/project-user/:projectId',
   catchAsync(requireAuth),
   catchAsync(deleteProjectUser)
 );
