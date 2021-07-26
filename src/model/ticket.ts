@@ -3,24 +3,20 @@ import { Ticket, UpdateTicket } from '../types/ticket';
 import { Priority } from '../types/priority';
 import { Status } from '../types/status';
 
-export function retrieve(projectId: string): Promise<Ticket[]> {
-  const selector = { project_id: projectId };
+export function retrieve(
+  projectId?: string,
+  ticketId?: string,
+  ticketName?: string
+): Promise<Ticket[]> {
+  const selector = {
+    ...(projectId && { project_id: projectId }),
+    ...(ticketId && { id: ticketId }),
+    ...(ticketName && { name: ticketName })
+  };
 
   return db<Ticket>('ticket').where(selector).returning('*');
 }
 
-export function retrieveById(ticketId: string): Promise<Ticket | undefined> {
-  const selector = { id: ticketId };
-
-  return db<Ticket>('ticket').where(selector).returning('*').first();
-}
-// ! replace with filter or find?
-export function retrieveByName(ticketName: string): Promise<Ticket | undefined> {
-  const selector = { name: ticketName };
-
-  return db<Ticket>('ticket').where(selector).returning('*').first();
-}
-// ! replace with filter or find?
 export function retrieveByProjectIdAndName(
   projectId: string,
   ticketName: string

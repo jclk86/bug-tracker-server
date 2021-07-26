@@ -2,17 +2,21 @@
 // ! prevents just anyone creating admin accounts.
 
 import db from '../database/config';
-import { User } from '../types/user';
+import { Account } from '../types/account';
 
-export function retrieve(): Promise<User[]> {
-  return db<User>('user').returning('*');
-}
-
-// !replace with filter or find?
-export function retrieveByRole(role: string): Promise<User[]> {
+// Accounts
+export function retrieve(accountId?: string): Promise<Account[]> {
   const selector = {
-    role
+    ...(accountId && { id: accountId })
   };
 
-  return db<User>('user').where(selector).returning('*');
+  return db<Account>('account').where(selector).returning('*');
+}
+
+export function remove(accountId: string): Promise<void> {
+  const selector = {
+    id: accountId
+  };
+
+  return db<Account>('account').where(selector).delete();
 }

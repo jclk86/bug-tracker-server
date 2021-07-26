@@ -6,10 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
-export const getAllChecklistItemsByChecklistId = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+// ! change into 1 get
+export const getChecklistItems = async (req: Request, res: Response): Promise<void> => {
   const { checklistId } = req.params;
 
   await validateUUID({ checklistId });

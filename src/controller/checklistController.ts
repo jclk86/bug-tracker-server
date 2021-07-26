@@ -6,13 +6,14 @@ import {
   update,
   remove
 } from '../model/checklist';
-import { retrieveById as retrieveTicket } from '../model/ticket';
+import { retrieve as retrieveTicket } from '../model/ticket';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Checklist, UpdateChecklist } from '../types/checklist';
 
+// ! change into 1 get
 export const getChecklists = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 

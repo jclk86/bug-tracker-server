@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
-import { login, postRefreshToken, logout } from '../controller/auth';
+import { login, postRefreshToken, logout } from '../controller/authController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const authRouter = Router();

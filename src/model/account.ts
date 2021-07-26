@@ -5,18 +5,17 @@ import { Account, UpdateAccount } from '../types/account';
 // https://stackoverflow.com/questions/12016322/async-all-the-way-down
 // async await returns a promise. we do this in controller
 // ! The only thing to watch out for is strack trace
-export function retrieve(): Promise<Account[]> {
-  return db<Account>('account').returning('*');
-}
 
-export function retrieveById(accountId: string): Promise<Account | undefined> {
-  const selector = { id: accountId };
-
-  return db<Account>('account').where(selector).returning('*').first();
-}
-// ! replace with filter or find?
-export function retrieveByCompanyName(companyName: string): Promise<Account | undefined> {
-  const selector = { company_name: companyName };
+export function retrieve(
+  accountId?: string,
+  accountEmail?: string,
+  companyName?: string
+): Promise<Account | undefined> {
+  const selector = {
+    ...(accountId && { id: accountId }),
+    ...(accountEmail && { email: accountEmail }),
+    ...(companyName && { company_name: companyName })
+  };
 
   return db<Account>('account').where(selector).returning('*').first();
 }

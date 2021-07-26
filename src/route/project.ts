@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  getAllProjectsByAccountId,
+  getProjects,
   createProject,
   getProjectById,
   updateProject,
@@ -9,13 +9,13 @@ import {
   getProjectStatuses,
   addUserToProject,
   deleteProjectUser
-} from '../controller/project';
+} from '../controller/projectController';
 import { catchAsync } from './utilities';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const projectRouter = Router();
 
-projectRouter.get('/project/account/:accountId', catchAsync(getAllProjectsByAccountId));
+projectRouter.get('/project/account/:accountId', catchAsync(getProjects));
 
 projectRouter.get('/project/:projectId', catchAsync(getProjectById));
 

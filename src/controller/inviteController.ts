@@ -6,6 +6,7 @@ import { Invite } from '../types/invite';
 import { currentTimeStamp } from './utilities';
 
 // show user that is already in db
+// ! change into 1 get
 export const createInvite = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
   let inviteData: Invite;

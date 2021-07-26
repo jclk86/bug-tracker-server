@@ -6,7 +6,7 @@ import {
   createChecklist,
   updateChecklist,
   deleteChecklist
-} from '../controller/checklist';
+} from '../controller/checklistController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistRouter = Router();
@@ -15,9 +15,9 @@ const checklistRouter = Router();
 
 checklistRouter.use('/checklist', catchAsync(requireAuth));
 
-checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
-
 checklistRouter.get('/checklist/ticket/:ticketId', catchAsync(getChecklists));
+
+checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
 
 checklistRouter.post('/checklist/create', catchAsync(createChecklist));
 

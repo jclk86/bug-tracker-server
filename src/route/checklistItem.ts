@@ -2,21 +2,18 @@ import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
   getChecklistItemById,
-  getAllChecklistItemsByChecklistId,
+  getChecklistItems,
   createChecklistItem,
   updateChecklistItem,
   deleteChecklistItem
-} from '../controller/checklistItem';
+} from '../controller/checklistItemController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistItemRouter = Router();
 
 checklistItemRouter.use('/checklist-item', catchAsync(requireAuth));
 
-checklistItemRouter.get(
-  '/checklist-item/checklist/:checklistId',
-  catchAsync(getAllChecklistItemsByChecklistId)
-);
+checklistItemRouter.get('/checklist-item/checklist/:checklistId', catchAsync(getChecklistItems));
 
 checklistItemRouter.get('/checklist-item/:checklistItemId', catchAsync(getChecklistItemById));
 

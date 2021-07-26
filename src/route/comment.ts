@@ -1,19 +1,19 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
-  getAllCommentsByticketId,
+  getComments,
   getCommentById,
   updateComment,
   createComment,
   deleteComment
-} from '../controller/comment';
+} from '../controller/commentController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const commentRouter = Router();
 
 commentRouter.use('/comment', catchAsync(requireAuth));
 
-commentRouter.get('/comment/ticket/:ticketId', catchAsync(getAllCommentsByticketId));
+commentRouter.get('/comment/ticket/:ticketId', catchAsync(getComments));
 
 commentRouter.get('/comment/:commentId', catchAsync(getCommentById));
 

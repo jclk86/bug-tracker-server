@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createInvite, deleteInvite } from '../controller/invite';
+import { createInvite, deleteInvite } from '../controller/inviteController';
 import { catchAsync } from './utilities';
 import { requireAuthRole } from '../middleware/roleAuth';
 import { requireAuth } from '../middleware/jwtAuth';

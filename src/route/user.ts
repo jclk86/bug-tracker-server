@@ -2,21 +2,17 @@ import { Router } from 'express';
 import {
   getUserById,
   getUserByEmail,
-  getAllUsersByAccountId,
+  getUsers,
   createUser,
   updateUser,
   deleteUser
-} from '../controller/user';
+} from '../controller/userController';
 import { catchAsync } from './utilities';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const userRouter = Router();
 
-userRouter.get(
-  '/user/account/:accountId',
-  catchAsync(requireAuth),
-  catchAsync(getAllUsersByAccountId)
-);
+userRouter.get('/user/account/:accountId', catchAsync(requireAuth), catchAsync(getUsers));
 
 userRouter.get('/user/email/:userEmail', catchAsync(requireAuth), catchAsync(getUserByEmail));
 

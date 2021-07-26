@@ -3,9 +3,15 @@ import { Project, UpdateProject, ProjectUser } from '../types/project';
 import { Priority } from '../types/priority';
 import { Status } from '../types/status';
 
-export function retrieve(accountId: string): Promise<Project[]> {
+export function retrieve(
+  accountId?: string,
+  projectId?: string,
+  projectName?: string
+): Promise<Project[]> {
   const selector = {
-    account_id: accountId
+    ...(accountId && { account_id: accountId }),
+    ...(projectId && { id: projectId }),
+    ...(projectName && { name: projectName })
   };
 
   return db<Project>('project').where(selector).returning('*');
@@ -16,16 +22,7 @@ export function retrieveById(projectId: string): Promise<Project | undefined> {
 
   return db<Project>('project').where(selector).returning('*').first();
 }
-// ! replace with filter or find?
-export function retrieveByAccountIdAndName(
-  accountId: string,
-  name: string
-): Promise<Project | undefined> {
-  const selector = { account_id: accountId, name: name };
 
-  return db<Project>('project').where(selector).returning('*').first();
-}
-// ! replace with filter or find?
 export function retrieveByProjectUserByIds(
   projectId: string,
   userId: string

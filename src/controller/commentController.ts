@@ -1,12 +1,13 @@
 import { retrieve, retrieveById, create, update, remove } from '../model/comment';
-import { retrieveById as retrieveByTicketId } from '../model/ticket';
+import { retrieve as retrieveByTicketId } from '../model/ticket';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Comment, UpdateComment } from '../types/comment';
 
-export const getAllCommentsByticketId = async (req: Request, res: Response): Promise<void> => {
+// ! change into 1 get
+export const getComments = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
   await validateUUID({ ticketId });

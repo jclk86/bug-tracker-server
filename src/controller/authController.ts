@@ -2,7 +2,7 @@ import { checkBody } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { retrieveByEmail } from '../model/user';
+import { retrieve } from '../model/user';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 import client from '../database/tedis';
@@ -17,7 +17,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   await checkBody(userLogin);
 
-  const user = await retrieveByEmail(userLogin.email);
+  const user = await retrieve(null, null, userLogin.email)[0];
 
   if (!user) throw new CustomError(400, 'User does not exist');
 

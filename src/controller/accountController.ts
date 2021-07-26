@@ -1,11 +1,4 @@
-import {
-  retrieve,
-  retrieveById,
-  retrieveByCompanyName,
-  create,
-  update,
-  remove
-} from '../model/account';
+import { retrieve, create, update, remove } from '../model/account';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,30 +13,50 @@ import { Account, UpdateAccount } from '../types/account';
 //! You have to define types for req.body. This should give feedback to client
 // ! ensure the function names are all consistent across all controllers
 //! checking project, ticket, account to see if an item exists under those
-export const getAccounts = async (req: Request, res: Response): Promise<void> => {
-  const companies = await retrieve();
 
-  if (!companies?.length) throw new CustomError(404, 'Companies have not been added');
+// const { checklistId } = req.params;
+// // validate UUID
+// if (checklistId) {
+//   await utility.validateUUID({ checklistId: checklistId });
+// }
 
-  res.status(200).send(companies);
-};
+// const checklistData = await checklist.get(req.accountId, checklistId || null);
+
+// // get signup count for the checklist
+// if (checklistId) {
+//   checklistData.signupCount = await signup.count(req.accountId, checklistId);
+// } else {
+//   checklistData.forEach(async (checklist) => {
+//     checklist.signupCount = await signup.count(req.accountId, checklist.id);
+//   });
+// }
 
 export const getAccountById = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
   await validateUUID({ accountId });
 
-  const account = await retrieveById(accountId);
+  const account = await retrieve(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
   res.status(200).send(account);
 };
 
-export const getAccountByName = async (req: Request, res: Response): Promise<void> => {
-  const { accountName } = req.params;
+export const getAccountByEmail = async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.params;
 
-  const account = await retrieveByCompanyName(accountName);
+  const account = await retrieve(null, email);
+
+  if (!account) throw new CustomError(404, 'Account does not exist');
+
+  res.status(200).send(account);
+};
+
+export const getAccountByCompanyName = async (req: Request, res: Response): Promise<void> => {
+  const { companyName } = req.params;
+
+  const account = await retrieve(null, null, companyName);
 
   if (!account) throw new CustomError(404, 'account does not exist');
 
@@ -51,21 +64,25 @@ export const getAccountByName = async (req: Request, res: Response): Promise<voi
 };
 
 export const createAccount = async (req: Request, res: Response): Promise<void> => {
-  const { name, email } = req.body;
+  const { company_name, email } = req.body;
 
   const newAccount: Account = {
     id: uuidv4(),
     email: email,
-    company_name: name,
+    company_name: company_name,
     date_created: currentTimeStamp
   };
 
   // check if all fields are filled out
   await checkBody(newAccount);
 
-  const account = await retrieveByCompanyName(newAccount.company_name);
+  const companyNameExists = await retrieve(null, null, newAccount.company_name);
 
-  if (account) throw new CustomError(409, 'Account name already exists');
+  if (companyNameExists) throw new CustomError(409, 'Account name already exists');
+
+  const emailExists = await retrieve(null, email);
+
+  if (emailExists) throw new CustomError(409, 'Account email already exists');
 
   await create(newAccount);
 
@@ -74,16 +91,16 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
 
 export const updateAccount = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
-  const { name, email } = req.body;
+  const { company_name, email } = req.body;
 
   await validateUUID({ accountId });
 
-  const account = await retrieveById(accountId);
+  const account = await retrieve(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
   const updatedAccount: UpdateAccount = {
-    company_name: name,
+    company_name: company_name,
     email: email,
     last_edited: currentTimeStamp
   };
@@ -91,8 +108,11 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
   await checkBody(updatedAccount);
 
   if (account.company_name !== updatedAccount.company_name) {
-    const nameExists = await retrieveByCompanyName(updatedAccount.company_name);
+    const nameExists = await retrieve(null, null, updatedAccount.company_name);
     if (nameExists) throw new CustomError(409, 'Account name already exists');
+  } else if (account.email !== updatedAccount.email) {
+    const emailExists = await retrieve(null, updatedAccount.email);
+    if (emailExists) throw new CustomError(409, 'Account email already exists');
   }
 
   await update(accountId, updatedAccount);
@@ -105,7 +125,7 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ accountId });
 
-  const account = await retrieveById(accountId);
+  const account = await retrieve(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 

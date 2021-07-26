@@ -1,12 +1,14 @@
 import { Knex } from 'knex';
 
 // admin access required
+// add plans
 // what if update email and the owner changes?
 export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
-  return knex.schema.createTable('Account', (table: Knex.TableBuilder) => {
+  return knex.schema.createTable('account', (table: Knex.TableBuilder) => {
     table.uuid('id').primary();
-    table.string('account_name', 64).notNullable().unique();
+    table.string('company_name', 64).notNullable().unique();
     table.string('email', 64).notNullable().unique();
+    table.string('plan', 64).nullable();
     table.timestamp('date_created');
     table.timestamp('last_edited');
   });

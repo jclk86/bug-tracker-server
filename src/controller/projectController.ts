@@ -1,6 +1,4 @@
 import {
-  retrieveById,
-  retrieveByAccountIdAndName,
   retrieve,
   create,
   update,
@@ -11,21 +9,21 @@ import {
   retrieveByProjectUserByIds,
   removeProjectUser
 } from '../model/project';
-import { retrieveById as retrieveAccount } from '../model/account';
+import { retrieve as retrieveAccount } from '../model/account';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Project, UpdateProject, ProjectUser } from '../types/project';
 
-export const getAllProjectsByAccountId = async (req: Request, res: Response): Promise<void> => {
+export const getProjects = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
   await validateUUID({ accountId });
 
-  const accountExists = await retrieveAccount(accountId);
+  const account = await retrieveAccount(accountId);
 
-  if (!accountExists) throw new CustomError(404, 'Account does not exist');
+  if (!account) throw new CustomError(404, 'Account does not exist');
 
   const projects = await retrieve(accountId);
 
@@ -39,7 +37,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ projectId });
 
-  const project = await retrieveById(projectId);
+  const project = await retrieve(null, projectId)[0];
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
@@ -96,9 +94,9 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   //! does the team leader exist in this account, for this project? Does this even matter? A team leader is someone who works for that account
 
-  const account = await retrieveByAccountIdAndName(newProject.account_id, newProject.name);
+  const accountExists = await retrieve(newProject.account_id, null, newProject.name);
 
-  if (account) throw new CustomError(409, 'Project name already exists');
+  if (accountExists) throw new CustomError(409, 'Project name already exists');
 
   await create(newProject);
 
@@ -147,7 +145,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ projectId });
 
-  const project = await retrieveById(projectId);
+  const project = await retrieve(null, projectId)[0];
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
@@ -166,7 +164,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   await checkBody(updatedProject);
 
   if (project.name !== updatedProject.name) {
-    const nameExists = await retrieveByAccountIdAndName(project.account_id, updatedProject.name);
+    const nameExists = await retrieve(project.account_id, null, updatedProject.name);
     if (nameExists) throw new CustomError(409, 'Project name already exists');
   }
 
@@ -197,7 +195,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ projectId });
 
-  const project = await retrieveById(projectId);
+  const project = await retrieve(null, projectId)[0];
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
