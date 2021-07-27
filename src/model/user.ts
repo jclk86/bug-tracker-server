@@ -1,12 +1,48 @@
 import db from '../database/config';
 import { User, UpdateUser } from '../types/user';
 
+// ** FUNCTION OVERLOADS **//
+export function retrieve(
+  accountId: string,
+  userId: null,
+  userEmail: null,
+  userRole: null
+): Promise<User[]>;
+
+export function retrieve(
+  accountId: string,
+  userId: null,
+  userEmail: null,
+  userRole: string
+): Promise<User>;
+
+export function retrieve(
+  accountId: null,
+  userId: null,
+  userEmail: string,
+  userRole: null
+): Promise<User>;
+
+export function retrieve(
+  accountId: null,
+  userId: string,
+  userEmail: null,
+  userRole: null
+): Promise<User>;
+
+export function retrieve(
+  accountId: null,
+  userId: null,
+  userEmail: string,
+  userRole: null
+): Promise<User>;
+
 export function retrieve(
   accountId?: string,
   userId?: string,
   userEmail?: string,
   userRole?: string
-): Promise<User[]> {
+): Promise<User[] | User | undefined> {
   const selector = {
     ...(accountId && { account_id: accountId }),
     ...(userId && { id: userId }),
@@ -14,7 +50,12 @@ export function retrieve(
     ...(userRole && { role: userRole })
   };
 
-  return db<User>('user').where(selector).returning('*');
+  const query = db<User>('user').where(selector).returning('*');
+
+  return (
+    (accountId && !userRole && query) ||
+    ((userId || userEmail || (accountId && userRole)) && query.first())
+  );
 }
 
 export function create(signUp: User): Promise<void> {

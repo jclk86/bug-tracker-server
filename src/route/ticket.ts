@@ -14,7 +14,7 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const ticketRouter = Router();
 
-ticketRouter.all('/ticket', catchAsync(requireAuth));
+// ticketRouter.all('/ticket', catchAsync(requireAuth));
 
 ticketRouter.get('/ticket/project/:projectId', catchAsync(getTickets));
 

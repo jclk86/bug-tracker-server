@@ -90,9 +90,9 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
     if (accountEmailExists) throw new CustomError(409, 'Account email already exists');
 
     // Checks if the new email matches with an existing user
-    const user = await retrieveUser(accountId, null, updatedAccount.email)[0];
+    const user = await retrieveUser(null, null, updatedAccount.email, null);
 
-    if (!user) throw new CustomError(404, 'User does not exist for this account');
+    if (!user) throw new CustomError(404, 'User does not exist');
 
     // Checks if the role is owner
     if (user.role !== 'owner')

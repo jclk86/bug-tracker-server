@@ -4,14 +4,20 @@
 import db from '../database/config';
 import { Account } from '../types/account';
 
+export function retrieve(accountId: string): Promise<Account>;
+
+export function retrieve(): Promise<Account[]>;
+
 // Accounts
-export function retrieve(accountId?: string): Promise<Account[]> {
+export function retrieve(accountId?: string): Promise<Account[] | Account> {
   // If accountId is not provided, returns all accounts.
   const selector = {
     ...(accountId && { id: accountId })
   };
 
-  return db<Account>('account').where(selector).returning('*');
+  const query = db<Account>('account').where(selector).returning('*');
+
+  return (accountId && query.first()) || query;
 }
 
 export function remove(accountId: string): Promise<void> {

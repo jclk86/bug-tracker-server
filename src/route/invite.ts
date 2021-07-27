@@ -7,7 +7,7 @@ import { ROLE } from '../middleware/permission/role';
 
 const inviteRouter = Router();
 // ! untested
-inviteRouter.use('/invite', catchAsync(requireAuth), requireAuthRole(ROLE.OWNER));
+// inviteRouter.use('/invite', catchAsync(requireAuth), requireAuthRole(ROLE.OWNER));
 
 inviteRouter.post('/invite/:accountId', catchAsync(createInvite));
 

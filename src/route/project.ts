@@ -23,18 +23,14 @@ projectRouter.get('/project/priorities', catchAsync(getProjectPriorities));
 
 projectRouter.get('/project/statuses', catchAsync(getProjectStatuses));
 
-projectRouter.post('/project', catchAsync(requireAuth), catchAsync(createProject));
+projectRouter.post('/project', catchAsync(createProject));
 
 projectRouter.post('/project/project-user/:projectId', catchAsync(addUserToProject));
 
 projectRouter.patch('/project/:projectId', catchAsync(updateProject));
 
-projectRouter.delete(
-  '/project/project-user/:projectId',
-  catchAsync(requireAuth),
-  catchAsync(deleteProjectUser)
-);
+projectRouter.delete('/project/project-user/:projectId', catchAsync(deleteProjectUser));
 
-projectRouter.delete('/project/:projectId', catchAsync(requireAuth), catchAsync(deleteProject));
+projectRouter.delete('/project/:projectId', catchAsync(deleteProject));
 
 export default projectRouter;

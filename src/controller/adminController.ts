@@ -17,7 +17,7 @@ export const getAccountById = async (req: Request, res: Response): Promise<void>
 
   if (accountId) await validateUUID({ accountId });
 
-  const account = await retrieve(accountId)[0];
+  const account = await retrieve(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
@@ -29,7 +29,7 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ accountId });
 
-  const account = await retrieve(accountId)[0];
+  const account = await retrieve(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 

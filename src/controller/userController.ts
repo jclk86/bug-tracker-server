@@ -18,7 +18,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
-  const users = await retrieve(accountId);
+  const users = await retrieve(accountId, null, null, null);
 
   if (!users.length) throw new CustomError(404, 'Users have not been added');
 
@@ -30,7 +30,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
 
   await validateUUID({ userId });
 
-  const user = await retrieve(null, userId)[0];
+  const user = await retrieve(null, userId, null, null);
 
   if (!user) throw new CustomError(404, 'User does not exist');
 
@@ -42,7 +42,7 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
   // const formattedName = encodeURI(name).replace(/%20/g, ' ');
   // add to lowerCase. I think this is Front end duty though
   // console.log(formattedName);
-  const user = await retrieve(null, null, userEmail)[0];
+  const user = await retrieve(null, null, userEmail, null);
 
   if (!user) throw new CustomError(404, 'User does not exist');
 
@@ -71,13 +71,13 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   await checkBody(signUp);
 
-  const user = await retrieve(null, null, signUp.email)[0];
+  const user = await retrieve(null, null, signUp.email, null);
 
   if (user) throw new CustomError(409, 'User is already registered');
 
   if (signUp.role === ROLE.OWNER) {
     // Ensures only 1 owner per account
-    const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER)[0];
+    const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER);
     if (ownerExists) throw new CustomError(409, 'Account already has owner');
   }
 
@@ -92,7 +92,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
 
   await validateUUID({ userId });
 
-  const user = await retrieve(null, userId)[0];
+  const user = await retrieve(null, userId, null, null);
 
   if (!user) throw new CustomError(404, 'User does not exist');
 
@@ -110,7 +110,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   await checkBody(updatedUser);
 
   if (user.email !== updatedUser.email) {
-    const emailExists = await retrieve(null, null, updatedUser.email)[0];
+    const emailExists = await retrieve(null, null, updatedUser.email, null);
     if (emailExists) throw new CustomError(409, 'Email already exists');
   }
 
@@ -127,7 +127,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
   await validateUUID({ userId });
 
-  const user = await retrieve(null, userId)[0];
+  const user = await retrieve(null, userId, null, null);
 
   if (!user) throw new CustomError(404, 'User does not exist');
 
