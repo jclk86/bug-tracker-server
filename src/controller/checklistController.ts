@@ -1,11 +1,4 @@
-import {
-  retrieve,
-  retrieveById,
-  retrieveByTicketIdAndName,
-  create,
-  update,
-  remove
-} from '../model/checklist';
+import { retrieve, create, update, remove } from '../model/checklist';
 import { retrieve as retrieveTicket } from '../model/ticket';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
@@ -13,15 +6,14 @@ import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Checklist, UpdateChecklist } from '../types/checklist';
 
-// ! change into 1 get
 export const getChecklists = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
   await validateUUID({ ticketId });
 
-  const ticketExists = await retrieveTicket(ticketId);
+  const ticket = await retrieveTicket(null, ticketId)[0];
 
-  if (!ticketExists) throw new CustomError(404, 'Ticket does not exist');
+  if (!ticket) throw new CustomError(404, 'Ticket does not exist');
 
   const checklists = await retrieve(ticketId);
 
@@ -36,7 +28,7 @@ export const getChecklistById = async (req: Request, res: Response): Promise<voi
 
   await validateUUID({ checklistId });
 
-  const checklist = await retrieveById(checklistId);
+  const checklist = await retrieve(null, checklistId)[0];
 
   if (!checklist) throw new CustomError(404, 'Checklist does not exist');
 
@@ -56,9 +48,9 @@ export const createChecklist = async (req: Request, res: Response): Promise<void
 
   await checkBody(newChecklist);
 
-  const nameExists = await retrieveByTicketIdAndName(newChecklist.ticket_id, newChecklist.name);
+  const checklistNameExists = await retrieve(newChecklist.ticket_id, null, newChecklist.name)[0];
 
-  if (nameExists) throw new CustomError(409, 'Checklist name already exists');
+  if (checklistNameExists) throw new CustomError(409, 'Checklist name already exists');
 
   await create(newChecklist);
 
@@ -79,13 +71,13 @@ export const updateChecklist = async (req: Request, res: Response): Promise<void
 
   await checkBody(updatedChecklist);
 
-  const checklist = await retrieveById(checklistId);
+  const checklist = await retrieve(null, checklistId)[0];
 
   if (!checklist) throw new CustomError(404, 'Checklist does not exist');
 
   if (checklist.name !== updatedChecklist.name) {
-    const nameExists = await retrieveByTicketIdAndName(checklist.ticket_id, updatedChecklist.name);
-    if (nameExists) throw new CustomError(409, 'Checklist name already exists');
+    const checklistNameExists = await retrieve(checklist.ticket_id, null, updatedChecklist.name)[0];
+    if (checklistNameExists) throw new CustomError(409, 'Checklist name already exists');
   }
 
   await update(checklistId, updatedChecklist);
@@ -98,7 +90,7 @@ export const deleteChecklist = async (req: Request, res: Response): Promise<void
 
   await validateUUID({ checklistId });
 
-  const checklist = await retrieveById(checklistId);
+  const checklist = await retrieve(null, checklistId)[0];
 
   if (!checklist) throw new CustomError(404, 'Checklist does not exist');
 

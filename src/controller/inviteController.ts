@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
-import { retrieveByEmail, create, update, remove } from '../model/invite';
+import { retrieve, create, update, remove } from '../model/invite';
 import { Invite } from '../types/invite';
 import { currentTimeStamp } from './utilities';
 
@@ -10,14 +10,14 @@ import { currentTimeStamp } from './utilities';
 export const createInvite = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
   let inviteData: Invite;
-  // remove whitespace more than 1 and split emails
+  // ! remove whitespace more than 1 and split emails - front end duty?
   const emails = req.body.email.replace(/\s+/g, ' ').split(' ');
 
   // check length
   if (emails.length > 10) throw new CustomError(400, 'Only 10 emails max per invite');
 
   for (const email of emails) {
-    inviteData = await retrieveByEmail(email);
+    inviteData = await retrieve(email);
 
     if (inviteData) {
       await update(inviteData.id, currentTimeStamp);
@@ -40,9 +40,9 @@ export const createInvite = async (req: Request, res: Response): Promise<void> =
 export const deleteInvite = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
 
-  const exists = await retrieveByEmail(email);
+  const invite = await retrieve(email);
 
-  if (!exists) throw new CustomError(404, 'Invite does not exist');
+  if (!invite) throw new CustomError(404, 'Invite does not exist');
 
   await remove(email);
 

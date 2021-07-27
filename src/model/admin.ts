@@ -6,6 +6,7 @@ import { Account } from '../types/account';
 
 // Accounts
 export function retrieve(accountId?: string): Promise<Account[]> {
+  // If accountId is not provided, returns all accounts.
   const selector = {
     ...(accountId && { id: accountId })
   };

@@ -1,20 +1,19 @@
-import { retrieve, retrieveById, create, update, remove } from '../model/comment';
-import { retrieve as retrieveByTicketId } from '../model/ticket';
+import { retrieve, create, update, remove } from '../model/comment';
+import { retrieve as retrieveTicket } from '../model/ticket';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Comment, UpdateComment } from '../types/comment';
 
-// ! change into 1 get
 export const getComments = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
   await validateUUID({ ticketId });
 
-  const ticketExists = await retrieveByTicketId(ticketId);
+  const ticket = await retrieveTicket(null, ticketId)[0];
 
-  if (!ticketExists) throw new CustomError(404, 'Ticket does not exist');
+  if (!ticket) throw new CustomError(404, 'Ticket does not exist');
 
   const comments = await retrieve(ticketId);
 
@@ -28,7 +27,7 @@ export const getCommentById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ commentId });
 
-  const comment = await retrieveById(commentId);
+  const comment = await retrieve(null, commentId)[0];
 
   if (!comment) throw new CustomError(404, 'Comment does not exist');
 
@@ -59,9 +58,9 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ commentId });
 
-  const exists = await retrieveById(commentId);
+  const comment = await retrieve(null, commentId)[0];
 
-  if (!exists) throw new CustomError(404, 'Comment does not exist');
+  if (!comment) throw new CustomError(404, 'Comment does not exist');
 
   const updatedComment: UpdateComment = {
     content: content,
@@ -80,9 +79,9 @@ export const deleteComment = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ commentId });
 
-  const exists = await retrieveById(commentId);
+  const comment = await retrieve(null, commentId)[0];
 
-  if (!exists) throw new CustomError(404, 'Comment does not exist');
+  if (!comment) throw new CustomError(404, 'Comment does not exist');
 
   await remove(commentId);
 

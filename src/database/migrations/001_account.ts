@@ -16,5 +16,5 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
 // !should we reference the user table, if so, user needs to be created first
 // !updates and deletes are main areas of concern - account and user primarily
 export async function down(knex: Knex): Promise<Knex.SchemaBuilder> {
-  return knex.schema.dropTable('Account');
+  return knex.schema.dropTable('account');
 }

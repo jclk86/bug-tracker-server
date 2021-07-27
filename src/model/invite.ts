@@ -1,7 +1,7 @@
 import db from '../database/config';
 import { Invite } from '../types/invite';
 
-export function retrieveByEmail(email: string): Promise<Invite | undefined> {
+export function retrieve(email: string): Promise<Invite | undefined> {
   const selector = {
     email: email
   };

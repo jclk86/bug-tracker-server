@@ -17,15 +17,6 @@ export function retrieve(
   return db<Ticket>('ticket').where(selector).returning('*');
 }
 
-export function retrieveByProjectIdAndName(
-  projectId: string,
-  ticketName: string
-): Promise<Ticket | undefined> {
-  const selector = { project_id: projectId, name: ticketName };
-
-  return db<Ticket>('ticket').where(selector).returning('*').first();
-}
-
 export function retrievePriorities(): Promise<Priority[]> {
   return db<Priority>('ticket_priority').returning('*');
 }

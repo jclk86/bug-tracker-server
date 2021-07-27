@@ -6,6 +6,7 @@ import { Account, UpdateAccount } from '../types/account';
 // async await returns a promise. we do this in controller
 // ! The only thing to watch out for is strack trace
 
+// Retrieves specific account
 export function retrieve(
   accountId?: string,
   accountEmail?: string,

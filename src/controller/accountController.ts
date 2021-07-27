@@ -1,35 +1,10 @@
 import { retrieve, create, update, remove } from '../model/account';
+import { retrieve as retrieveUser } from '../model/user';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Account, UpdateAccount } from '../types/account';
-
-// next(e): passes thrown error message to created errorhandler in app.ts. Value must be passed into next.
-// Any value passed in, will pass it to errorhandler. Without a value, it wil pass to next middleware.
-
-// this is admin controlled and owner
-
-//! You have to define types for req.body. This should give feedback to client
-// ! ensure the function names are all consistent across all controllers
-//! checking project, ticket, account to see if an item exists under those
-
-// const { checklistId } = req.params;
-// // validate UUID
-// if (checklistId) {
-//   await utility.validateUUID({ checklistId: checklistId });
-// }
-
-// const checklistData = await checklist.get(req.accountId, checklistId || null);
-
-// // get signup count for the checklist
-// if (checklistId) {
-//   checklistData.signupCount = await signup.count(req.accountId, checklistId);
-// } else {
-//   checklistData.forEach(async (checklist) => {
-//     checklist.signupCount = await signup.count(req.accountId, checklist.id);
-//   });
-// }
 
 export const getAccountById = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
@@ -73,7 +48,6 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
     date_created: currentTimeStamp
   };
 
-  // check if all fields are filled out
   await checkBody(newAccount);
 
   const companyNameExists = await retrieve(null, null, newAccount.company_name);
@@ -108,11 +82,21 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
   await checkBody(updatedAccount);
 
   if (account.company_name !== updatedAccount.company_name) {
-    const nameExists = await retrieve(null, null, updatedAccount.company_name);
-    if (nameExists) throw new CustomError(409, 'Account name already exists');
+    const companyNameExists = await retrieve(null, null, updatedAccount.company_name);
+    if (companyNameExists) throw new CustomError(409, 'Account name already exists');
   } else if (account.email !== updatedAccount.email) {
-    const emailExists = await retrieve(null, updatedAccount.email);
-    if (emailExists) throw new CustomError(409, 'Account email already exists');
+    // Checks if a current account has same email
+    const accountEmailExists = await retrieve(null, updatedAccount.email);
+    if (accountEmailExists) throw new CustomError(409, 'Account email already exists');
+
+    // Checks if the new email matches with an existing user
+    const user = await retrieveUser(accountId, null, updatedAccount.email)[0];
+
+    if (!user) throw new CustomError(404, 'User does not exist for this account');
+
+    // Checks if the role is owner
+    if (user.role !== 'owner')
+      throw new CustomError(403, 'Non-owners cannot become account owners');
   }
 
   await update(accountId, updatedAccount);

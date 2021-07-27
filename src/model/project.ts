@@ -17,19 +17,13 @@ export function retrieve(
   return db<Project>('project').where(selector).returning('*');
 }
 
-export function retrieveById(projectId: string): Promise<Project | undefined> {
-  const selector = { id: projectId };
+export function retrieveProjectUser(projectId?: string, userId?: string): Promise<ProjectUser[]> {
+  const selector = {
+    ...(projectId && { project_id: projectId }),
+    ...(userId && { user_id: userId })
+  };
 
-  return db<Project>('project').where(selector).returning('*').first();
-}
-
-export function retrieveByProjectUserByIds(
-  projectId: string,
-  userId: string
-): Promise<ProjectUser | undefined> {
-  const selector = { project_id: projectId, user_id: userId };
-
-  return db<ProjectUser>('project_users').where(selector).returning('*').first();
+  return db<ProjectUser>('project_users').where(selector).returning('*');
 }
 
 export function retrievePriorities(): Promise<Priority[]> {
@@ -43,7 +37,7 @@ export function retrieveStatuses(): Promise<Status[]> {
 export function create(newProject: Project): Promise<void> {
   return db<Project>('project').insert(newProject);
 }
-// ! rename to create? create a new model?
+
 export function addProjectUser(newProjectUser: ProjectUser): Promise<void> {
   return db<ProjectUser>('project_users').insert(newProjectUser);
 }

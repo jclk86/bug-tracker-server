@@ -6,14 +6,13 @@ import {
   retrievePriorities,
   retrieveStatuses
 } from '../model/ticket';
-import { retrieveById as retrieveProject } from '../model/project';
+import { retrieve as retrieveProject } from '../model/project';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Ticket, UpdateTicket } from '../types/ticket';
 
-// ! change into 1 get
 export const getTickets = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
@@ -94,9 +93,9 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
 
   await checkBody(newTicket);
 
-  const project = await retrieve(newTicket.project_id, null, newTicket.name)[0];
+  const ticketNameExists = await retrieve(newTicket.project_id, null, newTicket.name)[0];
 
-  if (project) throw new CustomError(409, 'Project already exists');
+  if (ticketNameExists) throw new CustomError(409, 'Ticket already exists');
 
   await create(newTicket);
 
@@ -126,8 +125,8 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
   await checkBody(updatedTicket);
 
   if (ticket.name !== updatedTicket.name) {
-    const nameExists = await retrieve(ticket.project_id, null, updatedTicket.name)[0];
-    if (nameExists) throw new CustomError(409, 'Ticket name already exists');
+    const ticketNameExists = await retrieve(ticket.project_id, null, updatedTicket.name)[0];
+    if (ticketNameExists) throw new CustomError(409, 'Ticket name already exists');
   }
 
   await update(ticketId, updatedTicket);

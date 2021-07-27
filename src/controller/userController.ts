@@ -8,7 +8,7 @@ import { User, UpdateUser } from '../types/user';
 import { ROLE } from '../middleware/permission/role';
 
 //! last_active should be done on sign out
-// gets all users for account
+
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
@@ -71,13 +71,13 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   await checkBody(signUp);
 
-  const userExists = await retrieve(null, null, signUp.email);
+  const user = await retrieve(null, null, signUp.email)[0];
 
-  if (userExists) throw new CustomError(409, 'User is already registered');
+  if (user) throw new CustomError(409, 'User is already registered');
 
   if (signUp.role === ROLE.OWNER) {
     // Ensures only 1 owner per account
-    const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER);
+    const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER)[0];
     if (ownerExists) throw new CustomError(409, 'Account already has owner');
   }
 
@@ -110,12 +110,12 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   await checkBody(updatedUser);
 
   if (user.email !== updatedUser.email) {
-    const emailExists = await retrieve(null, null, updatedUser.email);
+    const emailExists = await retrieve(null, null, updatedUser.email)[0];
     if (emailExists) throw new CustomError(409, 'Email already exists');
   }
 
   if (updatedUser.role !== user.role || updatedUser.role === ROLE.OWNER)
-    throw new CustomError(400, 'Can only roles between Manager and Developer');
+    throw new CustomError(400, 'Can only change roles between Manager and Developer');
 
   await update(userId, updatedUser);
 

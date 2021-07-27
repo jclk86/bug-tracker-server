@@ -6,10 +6,12 @@ import {
   retrievePriorities,
   retrieveStatuses,
   addProjectUser,
-  retrieveByProjectUserByIds,
+  retrieveProjectUser,
   removeProjectUser
 } from '../model/project';
 import { retrieve as retrieveAccount } from '../model/account';
+import { retrieve as retrieveUser } from '../model/user';
+import { retrieve as retrieveProject } from '../model/project';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -60,9 +62,24 @@ export const getProjectStatuses = async (req: Request, res: Response): Promise<v
   res.status(200).send(statuses);
 };
 
+export const getProjectUsers = async (req: Request, res: Response): Promise<void> => {
+  const { projectId } = req.params;
+
+  await validateUUID({ projectId });
+
+  const project = await retrieveProject(null, projectId)[0];
+
+  if (!project) throw new CustomError(404, 'Project does not exist');
+
+  const projectUsers = await retrieveProjectUser(projectId);
+
+  if (!projectUsers.length) throw new CustomError(404, 'No users have been added to project');
+
+  res.status(200).send(projectUsers);
+};
+
 // ! this needs to auto assign accountId. It will take from user's account_id
 export const createProject = async (req: Request, res: Response): Promise<void> => {
-  // const belongsToAccount? = await -- or just don't even allow client to see this interface on front side -- like not a shown option rendered
   // ! person who creates project is team leader. Automatically filled in on front end
   const {
     name,
@@ -92,15 +109,19 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   await checkBody(newProject);
 
-  //! does the team leader exist in this account, for this project? Does this even matter? A team leader is someone who works for that account
+  const projectNameExists = await retrieve(newProject.account_id, null, newProject.name)[0];
 
-  const accountExists = await retrieve(newProject.account_id, null, newProject.name);
-
-  if (accountExists) throw new CustomError(409, 'Project name already exists');
+  if (projectNameExists) throw new CustomError(409, 'Project name already exists');
 
   await create(newProject);
 
-  await addProjectUser({ project_id: newProject.id, user_id: newProject.team_leader_id });
+  // Adds the team leader to project user
+  const newProjectUser: ProjectUser = {
+    project_id: newProject.id,
+    user_id: newProject.team_leader_id
+  };
+
+  await addProjectUser(newProjectUser);
 
   res.status(201).send(newProject);
 };
@@ -118,10 +139,10 @@ export const addUserToProject = async (req: Request, res: Response): Promise<voi
     user_id: userId
   };
 
-  const userAlreadyAdded = await retrieveByProjectUserByIds(
+  const userAlreadyAdded = await retrieveProjectUser(
     newProjectUser.project_id,
     newProjectUser.user_id
-  );
+  )[0];
 
   if (userAlreadyAdded) throw new CustomError(409, 'User is already added to project');
 
@@ -164,8 +185,8 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
   await checkBody(updatedProject);
 
   if (project.name !== updatedProject.name) {
-    const nameExists = await retrieve(project.account_id, null, updatedProject.name);
-    if (nameExists) throw new CustomError(409, 'Project name already exists');
+    const projectNameExists = await retrieve(project.account_id, null, updatedProject.name);
+    if (projectNameExists) throw new CustomError(409, 'Project name already exists');
   }
 
   await update(projectId, updatedProject);
@@ -181,9 +202,9 @@ export const deleteProjectUser = async (req: Request, res: Response): Promise<vo
 
   await validateUUID({ userId });
 
-  const exists = await retrieveByProjectUserByIds(projectId, userId);
+  const user = await retrieveProjectUser(projectId, userId)[0];
 
-  if (!exists) throw new CustomError(404, 'User does not exist for project');
+  if (!user) throw new CustomError(404, 'User does not exist for project');
 
   await removeProjectUser(projectId, userId);
 
