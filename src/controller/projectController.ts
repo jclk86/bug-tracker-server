@@ -10,8 +10,6 @@ import {
   removeProjectUser
 } from '../model/project';
 import { retrieve as retrieveAccount } from '../model/account';
-import { retrieve as retrieveUser } from '../model/user';
-import { retrieve as retrieveProject } from '../model/project';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,11 +21,11 @@ export const getProjects = async (req: Request, res: Response): Promise<void> =>
 
   await validateUUID({ accountId });
 
-  const account = await retrieveAccount(accountId);
+  const account = await retrieveAccount(accountId, null, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
-  const projects = await retrieve(accountId);
+  const projects = await retrieve(accountId, null, null);
 
   if (!projects?.length) throw new CustomError(404, 'No projects have been added');
 
@@ -39,7 +37,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId)[0];
+  const project = await retrieve(null, projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
@@ -67,11 +65,11 @@ export const getProjectUsers = async (req: Request, res: Response): Promise<void
 
   await validateUUID({ projectId });
 
-  const project = await retrieveProject(null, projectId)[0];
+  const project = await retrieve(null, projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
-  const projectUsers = await retrieveProjectUser(projectId);
+  const projectUsers = await retrieveProjectUser(projectId, null);
 
   if (!projectUsers.length) throw new CustomError(404, 'No users have been added to project');
 
@@ -109,7 +107,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   await checkBody(newProject);
 
-  const projectNameExists = await retrieve(newProject.account_id, null, newProject.name)[0];
+  const projectNameExists = await retrieve(newProject.account_id, null, newProject.name);
 
   if (projectNameExists) throw new CustomError(409, 'Project name already exists');
 
@@ -142,7 +140,7 @@ export const addUserToProject = async (req: Request, res: Response): Promise<voi
   const userAlreadyAdded = await retrieveProjectUser(
     newProjectUser.project_id,
     newProjectUser.user_id
-  )[0];
+  );
 
   if (userAlreadyAdded) throw new CustomError(409, 'User is already added to project');
 
@@ -166,7 +164,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId)[0];
+  const project = await retrieve(null, projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
@@ -202,7 +200,7 @@ export const deleteProjectUser = async (req: Request, res: Response): Promise<vo
 
   await validateUUID({ userId });
 
-  const user = await retrieveProjectUser(projectId, userId)[0];
+  const user = await retrieveProjectUser(projectId, userId);
 
   if (!user) throw new CustomError(404, 'User does not exist for project');
 
@@ -216,7 +214,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId)[0];
+  const project = await retrieve(null, projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 

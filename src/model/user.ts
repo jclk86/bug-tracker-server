@@ -37,6 +37,8 @@ export function retrieve(
   userRole: null
 ): Promise<User>;
 
+// ** END ** //
+
 export function retrieve(
   accountId?: string,
   userId?: string,

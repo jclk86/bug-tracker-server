@@ -1,8 +1,8 @@
-import { checkBody } from './utilities';
+import { checkBody, currentTimeStamp } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { retrieve } from '../model/user';
+import { retrieve, update } from '../model/user';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 import client from '../database/tedis';
@@ -17,7 +17,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   await checkBody(userLogin);
 
-  const user = await retrieve(null, null, userLogin.email)[0];
+  const user = await retrieve(null, null, userLogin.email, null);
 
   if (!user) throw new CustomError(400, 'User does not exist');
 
@@ -64,7 +64,7 @@ export const postRefreshToken = async (req: Request, res: Response): Promise<voi
     res.json({ accessToken });
   });
 };
-
+// ! add last active - requires type
 export const logout = async (req: Request, res: Response): Promise<void> => {
   // clear the access token in client end by setting the in-memory variable for accessToken = null
   const { refreshToken } = req.cookies;

@@ -11,11 +11,11 @@ export const getChecklistItems = async (req: Request, res: Response): Promise<vo
 
   await validateUUID({ checklistId });
 
-  const checklist = await retrieveChecklist(null, checklistId)[0];
+  const checklist = await retrieveChecklist(null, checklistId, null);
 
   if (!checklist) throw new CustomError(404, 'Checklist does not exist');
 
-  const checklistItems = await retrieve(checklistId);
+  const checklistItems = await retrieve(checklistId, null);
 
   if (!checklistItems.length) throw new CustomError(404, 'Checklist item does not exist');
 
@@ -27,7 +27,7 @@ export const getChecklistItemById = async (req: Request, res: Response): Promise
 
   await validateUUID({ checklistItemId });
 
-  const checklistItem = await retrieve(null, checklistItemId)[0];
+  const checklistItem = await retrieve(null, checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
@@ -62,7 +62,7 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
     checked: checked
   };
 
-  const checklistItem = await retrieve(null, checklistItemId)[0];
+  const checklistItem = await retrieve(null, checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
@@ -78,7 +78,7 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   await validateUUID({ checklistItemId });
 
-  const checklistItem = await retrieve(null, checklistItemId)[0];
+  const checklistItem = await retrieve(null, checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 

@@ -3,18 +3,33 @@ import { Ticket, UpdateTicket } from '../types/ticket';
 import { Priority } from '../types/priority';
 import { Status } from '../types/status';
 
+// ** FUNCTION OVERLOADS **//
+
+export function retrieve(projectId: string, ticketId: null, ticketName: null): Promise<Ticket[]>;
+
+export function retrieve(projectId: string, ticketId: string, ticketName: string): Promise<Ticket>;
+
+export function retrieve(projectId: null, ticketId: string, ticketName: null): Promise<Ticket>;
+
+// ** END ** //
+
 export function retrieve(
   projectId?: string,
   ticketId?: string,
   ticketName?: string
-): Promise<Ticket[]> {
+): Promise<Ticket[] | Ticket | undefined> {
   const selector = {
     ...(projectId && { project_id: projectId }),
     ...(ticketId && { id: ticketId }),
     ...(ticketName && { name: ticketName })
   };
 
-  return db<Ticket>('ticket').where(selector).returning('*');
+  const query = db<Ticket>('ticket').where(selector).returning('*');
+
+  return (
+    (projectId && !ticketName && query) ||
+    ((ticketId || (projectId && ticketName)) && query.first())
+  );
 }
 
 export function retrievePriorities(): Promise<Priority[]> {

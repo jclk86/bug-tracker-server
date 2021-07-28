@@ -7,8 +7,6 @@ import CustomError from '../errorHandler/CustomError';
 import { User, UpdateUser } from '../types/user';
 import { ROLE } from '../middleware/permission/role';
 
-//! last_active should be done on sign out
-
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
 
@@ -48,7 +46,7 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
 
   res.status(200).send(user);
 };
-
+// ! Must be invited, unless owner. If owner, email must match account email.
 export const createUser = async (req: Request, res: Response): Promise<void> => {
   const { firstName, lastName, email, roleTitle, accountId, password } = req.body;
 
@@ -80,6 +78,10 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER);
     if (ownerExists) throw new CustomError(409, 'Account already has owner');
   }
+
+  // regular user - invited?
+
+  //
 
   await create(signUp);
 

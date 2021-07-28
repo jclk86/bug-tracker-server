@@ -11,11 +11,11 @@ export const getComments = async (req: Request, res: Response): Promise<void> =>
 
   await validateUUID({ ticketId });
 
-  const ticket = await retrieveTicket(null, ticketId)[0];
+  const ticket = await retrieveTicket(null, ticketId, null);
 
   if (!ticket) throw new CustomError(404, 'Ticket does not exist');
 
-  const comments = await retrieve(ticketId);
+  const comments = await retrieve(ticketId, null);
 
   if (!comments.length) throw new CustomError(404, 'No comments have been added for this ticket');
 
@@ -27,7 +27,7 @@ export const getCommentById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ commentId });
 
-  const comment = await retrieve(null, commentId)[0];
+  const comment = await retrieve(null, commentId);
 
   if (!comment) throw new CustomError(404, 'Comment does not exist');
 
@@ -58,7 +58,7 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ commentId });
 
-  const comment = await retrieve(null, commentId)[0];
+  const comment = await retrieve(null, commentId);
 
   if (!comment) throw new CustomError(404, 'Comment does not exist');
 
@@ -79,7 +79,7 @@ export const deleteComment = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ commentId });
 
-  const comment = await retrieve(null, commentId)[0];
+  const comment = await retrieve(null, commentId);
 
   if (!comment) throw new CustomError(404, 'Comment does not exist');
 
