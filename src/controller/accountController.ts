@@ -73,9 +73,10 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
   // create reusable transporter object using the default SMTP transport
 
   // send mail with defined transport object
+  //! make a new registration route?
   await transporter.sendMail(
     {
-      from: '"BugTrackerCo" <bugtrackerco@outlook.com>', // sender address
+      from: `"BugTrackerCo" <${process.env.NODEMAILER_EMAIL}>`, // sender address
       to: email, // list of receivers
       subject: 'Complete registration for BugTrackerCo', // Subject line
       text: 'Complete your registration by clicking on the link', // plain text body
@@ -90,7 +91,7 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
     }
   );
 
-  // await create(newAccount);
+  await create(newAccount);
 
   res.status(201).send({
     message: "If you don't see an email in your inbox, check your spam email",
