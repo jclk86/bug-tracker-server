@@ -75,11 +75,11 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
   // send mail with defined transport object
   await transporter.sendMail(
     {
-      from: '"Fred Foo 👻" <bugtrackerco@outlook.com>', // sender address
+      from: '"BugTrackerCo" <bugtrackerco@outlook.com>', // sender address
       to: email, // list of receivers
-      subject: 'Hello ✔', // Subject line
-      text: 'Hello world?', // plain text body
-      html: '<b>Hello world?</b>' // html body
+      subject: 'Complete registration for BugTrackerCo', // Subject line
+      text: 'Complete your registration by clicking on the link', // plain text body
+      html: `<p>Click <a href="http://localhost:8000/user/account/${newAccount.id}">here</a> to complete registration</p>` // html body
     },
     function (err, info) {
       if (err) {
