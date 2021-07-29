@@ -33,9 +33,11 @@ export const sendEmail = (email: string, accountId: string): void => {
     },
     function (err, info) {
       if (err) {
+        // can throw error here
         console.log(err);
         return;
       }
+      // can remove
       console.log(info.response);
     }
   );
