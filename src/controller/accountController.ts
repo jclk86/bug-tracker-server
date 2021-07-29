@@ -1,11 +1,13 @@
 import { retrieve, create, update, remove } from '../model/account';
 import { retrieve as retrieveUser } from '../model/user';
+import { create as createInvite } from '../model/invite';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Account, UpdateAccount } from '../types/account';
-import { transporter } from '../nodemailer/nodemailer';
+import { Invite } from '../types/invite';
+import { sendEmail } from '../nodemailer/nodemailer';
 
 export const getAccountById = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
@@ -59,42 +61,26 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
 
   if (emailExists) throw new CustomError(409, 'Account email already exists');
 
-  // Send email via nodemailer
-  // ! change url for production
-  // const options = {
-  //   from: 'jcnyg1986@gmail.com',
-  //   to: email,
-  //   subject: 'Complete registration for BugTrackerCo',
-  //   text: `Complete your registration by clicking on the link`,
-  //   html: `<p>Click <a href="http://localhost:8000/user/account/${newAccount.id}">here</a> to complete registration</p>`,
-  //   headers: { 'x-myheader': 'test header' }
-  // };
-
-  // create reusable transporter object using the default SMTP transport
-
-  // send mail with defined transport object
-  //! make a new registration route?
-  await transporter.sendMail(
-    {
-      from: `"BugTrackerCo" <${process.env.NODEMAILER_EMAIL}>`, // sender address
-      to: email, // list of receivers
-      subject: 'Complete registration for BugTrackerCo', // Subject line
-      text: 'Complete your registration by clicking on the link', // plain text body
-      html: `<p>Click <a href="http://localhost:8000/user/account/${newAccount.id}">here</a> to complete registration</p>` // html body
-    },
-    function (err, info) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(info.response);
-    }
-  );
-
+  // Creates account
   await create(newAccount);
 
+  // Owner's own email is added to invite table.
+  const invite: Invite = {
+    id: uuidv4(),
+    email: email,
+    account_id: newAccount.id,
+    date_sent: currentTimeStamp
+  };
+
+  await createInvite(invite);
+
+  // Send email via nodemailer
+  // ! if this newAccount.id route doesn't work, just add company name to drop down menu in registration form
+  // !the email verfication for invite and the invite table itself should already hold accountId
+  await sendEmail(email, newAccount.id);
+
   res.status(201).send({
-    message: "If you don't see an email in your inbox, check your spam email",
+    message: "Email sent! If you don't see an email in your inbox, check your spam email",
     data: newAccount
   });
 };

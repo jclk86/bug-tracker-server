@@ -30,13 +30,6 @@ export function retrieve(
   userRole: null
 ): Promise<User>;
 
-export function retrieve(
-  accountId: null,
-  userId: null,
-  userEmail: string,
-  userRole: null
-): Promise<User>;
-
 // ** END ** //
 
 export function retrieve(
@@ -53,11 +46,8 @@ export function retrieve(
   };
 
   const query = db<User>('user').where(selector).returning('*');
-
-  return (
-    (accountId && !userRole && query) ||
-    ((userId || userEmail || (accountId && userRole)) && query.first())
-  );
+  // if accountId && no userRole, then return array. If not, return first item.
+  return (accountId && !userRole && query) || query.first();
 }
 
 export function create(signUp: User): Promise<void> {

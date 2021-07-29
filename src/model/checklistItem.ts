@@ -19,7 +19,7 @@ export function retrieve(
 
   const query = db<ChecklistItem>('checklist_item').where(selector).returning('*');
 
-  return (checklistId && query) || (checklistItemId && query.first());
+  return (checklistId && query) || query.first();
 }
 
 export function create(checklistItem: ChecklistItem): Promise<void> {

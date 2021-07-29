@@ -26,10 +26,7 @@ export function retrieve(
 
   const query = db<Ticket>('ticket').where(selector).returning('*');
 
-  return (
-    (projectId && !ticketName && query) ||
-    ((ticketId || (projectId && ticketName)) && query.first())
-  );
+  return (projectId && !ticketName && query) || query.first();
 }
 
 export function retrievePriorities(): Promise<Priority[]> {

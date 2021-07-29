@@ -1,5 +1,6 @@
 import { retrieve, create, update, remove } from '../model/user';
 import { retrieve as retrieveAccount } from '../model/account';
+import { retrieve as retrieveInvite, remove as removeInvite } from '../model/invite';
 import { checkBody, currentTimeStamp, hashPassword, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -48,7 +49,8 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
 };
 // ! Must be invited, unless owner. If owner, email must match account email.
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-  const { firstName, lastName, email, roleTitle, accountId, password } = req.body;
+  const { accountId } = req.params;
+  const { firstName, lastName, email, roleTitle, password } = req.body;
 
   // hash password
   //! check what happens if no password is passed
@@ -69,6 +71,17 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   await checkBody(signUp);
 
+  // Checks if user was invited to register under account
+  const invited = await retrieveInvite(accountId, signUp.email);
+
+  if (!invited)
+    throw new CustomError(
+      404,
+      'Must be invited by account owner to register as user for this account'
+    );
+
+  // Checks if user already exists in db.
+  // Note: If an employee of a current company wants to sign up as account owner, must use different email
   const user = await retrieve(null, null, signUp.email, null);
 
   if (user) throw new CustomError(409, 'User is already registered');
@@ -79,11 +92,11 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     if (ownerExists) throw new CustomError(409, 'Account already has owner');
   }
 
-  // regular user - invited?
-
-  //
-
+  // creates user
   await create(signUp);
+
+  // removes newly created user from invite table
+  await removeInvite(email);
 
   res.status(201).send(signUp);
 };
@@ -110,7 +123,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   };
 
   await checkBody(updatedUser);
-
+  // Checks if email exists already under account id
   if (user.email !== updatedUser.email) {
     const emailExists = await retrieve(null, null, updatedUser.email, null);
     if (emailExists) throw new CustomError(409, 'Email already exists');

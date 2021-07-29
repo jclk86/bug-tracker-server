@@ -13,7 +13,7 @@ const checklistItemRouter = Router();
 
 // checklistItemRouter.use('/checklist-item', catchAsync(requireAuth));
 
-checklistItemRouter.get('/checklist-item/checklist/:checklistId', catchAsync(getChecklistItems));
+checklistItemRouter.get('/checklist-items/checklist/:checklistId', catchAsync(getChecklistItems));
 
 checklistItemRouter.get('/checklist-item/:checklistItemId', catchAsync(getChecklistItemById));
 

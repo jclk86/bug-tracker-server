@@ -13,7 +13,7 @@ const commentRouter = Router();
 
 // commentRouter.use('/comment', catchAsync(requireAuth));
 
-commentRouter.get('/comment/ticket/:ticketId', catchAsync(getComments));
+commentRouter.get('/comments/ticket/:ticketId', catchAsync(getComments));
 
 commentRouter.get('/comment/:commentId', catchAsync(getCommentById));
 

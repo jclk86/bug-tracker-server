@@ -16,7 +16,7 @@ const ticketRouter = Router();
 
 // ticketRouter.all('/ticket', catchAsync(requireAuth));
 
-ticketRouter.get('/ticket/project/:projectId', catchAsync(getTickets));
+ticketRouter.get('/tickets/project/:projectId', catchAsync(getTickets));
 
 ticketRouter.get('/ticket/name/:ticketName', catchAsync(getTicketByName));
 

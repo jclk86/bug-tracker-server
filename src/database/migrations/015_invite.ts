@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
       .inTable('account')
       .onUpdate('cascade')
       .onDelete('cascade');
-    table.timestamp('date_created');
+    table.timestamp('date_sent');
   });
 }
 

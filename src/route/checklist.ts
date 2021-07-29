@@ -15,7 +15,7 @@ const checklistRouter = Router();
 
 checklistRouter.use('/checklist', catchAsync(requireAuth));
 
-checklistRouter.get('/checklist/ticket/:ticketId', catchAsync(getChecklists));
+checklistRouter.get('/checklists/ticket/:ticketId', catchAsync(getChecklists));
 
 checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
 

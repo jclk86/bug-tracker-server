@@ -20,7 +20,7 @@ export function retrieve(
 
   const query = db<Comment>('comment').where(selector).returning('*');
 
-  return (ticketId && query) || (commentId && query.first());
+  return (ticketId && query) || query.first();
 }
 
 export function create(newComment: Comment): Promise<void> {

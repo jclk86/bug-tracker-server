@@ -36,10 +36,7 @@ export function retrieve(
 
   const query = db<Checklist>('checklist').where(selector).returning('*');
 
-  return (
-    (ticketId && !checklistName && query) ||
-    ((checklistId || (ticketId && checklistName)) && query.first())
-  );
+  return (ticketId && !checklistName && query) || query.first();
 }
 
 export function create(newChecklist: Checklist): Promise<void> {

@@ -15,7 +15,7 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const projectRouter = Router();
 
-projectRouter.get('/project/account/:accountId', catchAsync(getProjects));
+projectRouter.get('/projects/account/:accountId', catchAsync(getProjects));
 
 projectRouter.get('/project/:projectId', catchAsync(getProjectById));
 

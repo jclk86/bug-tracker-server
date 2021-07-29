@@ -12,3 +12,5 @@ const inviteRouter = Router();
 inviteRouter.post('/invite/:accountId', catchAsync(createInvite));
 
 inviteRouter.delete('/invite', catchAsync(deleteInvite));
+
+export default inviteRouter;

@@ -51,11 +51,7 @@ export function retrieveProjectUser(
 
   const query = db<ProjectUser>('project_users').where(selector).returning('*');
 
-  return (
-    (projectId && !userId && query) ||
-    (projectId && userId && query.first()) ||
-    (!projectId && userId && query.first())
-  );
+  return (projectId && !userId && query) || query.first();
 }
 
 export function retrievePriorities(): Promise<Priority[]> {
