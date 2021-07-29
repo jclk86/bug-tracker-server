@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
-  getAllTicketsByProjectId,
+  getTickets,
   createTicket,
   getTicketByName,
   getTicketById,
@@ -9,27 +9,27 @@ import {
   updateTicket,
   getTicketPriorities,
   getTicketStatuses
-} from '../controller/ticket';
+} from '../controller/ticketController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const ticketRouter = Router();
 
-ticketRouter.all('/ticket', catchAsync(requireAuth));
+// ticketRouter.all('/ticket', catchAsync(requireAuth));
 
-ticketRouter.get('/ticket/projectId/:projectId', catchAsync(getAllTicketsByProjectId));
+ticketRouter.get('/tickets/project/:projectId', catchAsync(getTickets));
 
 ticketRouter.get('/ticket/name/:ticketName', catchAsync(getTicketByName));
-
-ticketRouter.get('/ticket/id/:ticketId', catchAsync(getTicketById));
-
-ticketRouter.post('/ticket/create', catchAsync(createTicket));
-
-ticketRouter.patch('/ticket/edit/:ticketId', catchAsync(updateTicket));
-
-ticketRouter.delete('/ticket/delete/:ticketId', catchAsync(deleteTicket));
 
 ticketRouter.get('/ticket/priorities', catchAsync(getTicketPriorities));
 
 ticketRouter.get('/ticket/statuses', catchAsync(getTicketStatuses));
+
+ticketRouter.get('/ticket/:ticketId', catchAsync(getTicketById));
+
+ticketRouter.post('/ticket', catchAsync(createTicket));
+
+ticketRouter.patch('/ticket/:ticketId', catchAsync(updateTicket));
+
+ticketRouter.delete('/ticket/:ticketId', catchAsync(deleteTicket));
 
 export default ticketRouter;

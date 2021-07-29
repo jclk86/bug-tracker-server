@@ -8,7 +8,7 @@ export type UserLogin = {
 export interface UserPayload {
   id?: string;
   email?: string;
-  permission_id?: number;
+  role?: string;
 }
 
 export interface UserToken extends User {

@@ -1,58 +1,72 @@
 import {
-  getByProjectId,
-  getById,
-  getByName,
-  getByProjectIdAndName,
+  retrieve,
   create,
-  removeById,
+  remove,
   update,
-  getPriorities,
-  getStatuses
+  retrievePriorities,
+  retrieveStatuses
 } from '../model/ticket';
-import { getById as getProject } from '../model/project';
+import { retrieve as retrieveProject } from '../model/project';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { Ticket, UpdateTicket } from '../types/ticket';
 
-export const getAllTicketsByProjectId = async (req: Request, res: Response): Promise<void> => {
+export const getTickets = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
 
-  await validateUUID({ projectId: projectId });
+  await validateUUID({ projectId });
 
-  const projectExists = await getProject(projectId);
+  const project = await retrieveProject(null, projectId, null);
 
-  if (!projectExists) throw new CustomError(404, 'Project does not exist');
+  if (!project) throw new CustomError(404, 'Project does not exist');
 
-  const tickets = await getByProjectId(projectId);
+  const tickets = await retrieve(projectId, null, null);
 
   if (!tickets.length) throw new CustomError(404, 'No tickets have been added');
 
   res.status(200).send(tickets);
 };
 
-export const getTicketByName = async (req: Request, res: Response): Promise<void> => {
-  const { ticketName } = req.params;
-
-  const ticket = await getByName(ticketName);
-
-  if (!ticket) throw new CustomError(404, 'Ticket does not exist');
-
-  res.status(200).send(ticket);
-};
-
 export const getTicketById = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
-  const ticket = await getById(ticketId);
+  const ticket = await retrieve(null, ticketId, null);
 
   if (!ticket) throw new CustomError(404, 'Ticket does not exist');
 
   res.status(200).send(ticket);
 };
+
+export const getTicketByName = async (req: Request, res: Response): Promise<void> => {
+  const { ticketName } = req.params;
+
+  const ticket = await retrieve(null, null, ticketName);
+
+  if (!ticket) throw new CustomError(404, 'Ticket does not exist');
+
+  res.status(200).send(ticket);
+};
+
+export const getTicketPriorities = async (req: Request, res: Response): Promise<void> => {
+  const priorities = await retrievePriorities();
+
+  if (!priorities.length) throw new CustomError(404, 'No ticket priorities have been added ');
+
+  res.status(200).send(priorities);
+};
+
+export const getTicketStatuses = async (req: Request, res: Response): Promise<void> => {
+  const statuses = await retrieveStatuses();
+
+  if (!statuses.length) throw new CustomError(404, 'No ticket statuses have been added ');
+
+  res.status(200).send(statuses);
+};
+
 // ! auto assign project id
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
   const {
@@ -79,9 +93,9 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
 
   await checkBody(newTicket);
 
-  const project = await getByProjectIdAndName(newTicket.project_id, newTicket.name);
+  const ticketNameExists = await retrieve(newTicket.project_id, null, newTicket.name);
 
-  if (project) throw new CustomError(409, 'Project already exists');
+  if (ticketNameExists) throw new CustomError(409, 'Ticket already exists');
 
   await create(newTicket);
 
@@ -92,9 +106,9 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
   const { ticketId } = req.params;
   const { name, description, ticketStatusId, ticketPriorityId, dueDate, completionDate } = req.body;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
-  const ticket = await getById(ticketId);
+  const ticket = await retrieve(null, ticketId, null);
 
   if (!ticket) throw new CustomError(404, 'Ticket does not exist');
 
@@ -111,8 +125,8 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
   await checkBody(updatedTicket);
 
   if (ticket.name !== updatedTicket.name) {
-    const nameExists = await getByProjectIdAndName(ticket.project_id, updatedTicket.name);
-    if (nameExists) throw new CustomError(409, 'Ticket name already exists');
+    const ticketNameExists = await retrieve(ticket.project_id, null, updatedTicket.name);
+    if (ticketNameExists) throw new CustomError(409, 'Ticket name already exists');
   }
 
   await update(ticketId, updatedTicket);
@@ -123,25 +137,13 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
   const { ticketId } = req.params;
 
-  await validateUUID({ ticketId: ticketId });
+  await validateUUID({ ticketId });
 
-  await removeById(ticketId);
+  const ticket = await retrieve(null, ticketId, null);
+
+  if (!ticket) throw new CustomError(404, 'Ticket does not exist');
+
+  await remove(ticketId);
 
   res.status(200).send({ message: 'Ticket was successfully deleted' });
-};
-
-export const getTicketPriorities = async (req: Request, res: Response): Promise<void> => {
-  const priorities = await getPriorities();
-
-  if (!priorities.length) throw new CustomError(404, 'No ticket priorities have been added ');
-
-  res.status(200).send(priorities);
-};
-
-export const getTicketStatuses = async (req: Request, res: Response): Promise<void> => {
-  const statuses = await getStatuses();
-
-  if (!statuses.length) throw new CustomError(404, 'No ticket statuses have been added ');
-
-  res.status(200).send(statuses);
 };

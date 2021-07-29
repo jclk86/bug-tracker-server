@@ -2,25 +2,27 @@ import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
   getChecklistById,
-  getAllChecklistsByTicketId,
+  getChecklists,
   createChecklist,
   updateChecklist,
   deleteChecklist
-} from '../controller/checklist';
+} from '../controller/checklistController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistRouter = Router();
 
-checklistRouter.all('/checklist', catchAsync(requireAuth));
+// !replace checklistId with setChecklist?
 
-checklistRouter.get('/checklist/id/:checklistId', catchAsync(getChecklistById));
+checklistRouter.use('/checklist', catchAsync(requireAuth));
 
-checklistRouter.get('/checklist/ticketId/:ticketId', catchAsync(getAllChecklistsByTicketId));
+checklistRouter.get('/checklists/ticket/:ticketId', catchAsync(getChecklists));
+
+checklistRouter.get('/checklist/:checklistId', catchAsync(getChecklistById));
 
 checklistRouter.post('/checklist/create', catchAsync(createChecklist));
 
-checklistRouter.patch('/checklist/edit/:checklistId', catchAsync(updateChecklist));
+checklistRouter.patch('/checklist/:checklistId', catchAsync(updateChecklist));
 
-checklistRouter.delete('/checklist/delete/:checklistId', catchAsync(deleteChecklist));
+checklistRouter.delete('/checklist/:checklistId', catchAsync(deleteChecklist));
 
 export default checklistRouter;

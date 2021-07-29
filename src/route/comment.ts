@@ -1,26 +1,26 @@
 import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
-  getAllCommentsByticketId,
+  getComments,
   getCommentById,
   updateComment,
   createComment,
   deleteComment
-} from '../controller/comment';
+} from '../controller/commentController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const commentRouter = Router();
 
-commentRouter.all('/comment', catchAsync(requireAuth));
+// commentRouter.use('/comment', catchAsync(requireAuth));
 
-commentRouter.get('/comment/ticketId/:ticketId', catchAsync(getAllCommentsByticketId));
+commentRouter.get('/comments/ticket/:ticketId', catchAsync(getComments));
 
-commentRouter.get('/comment/id/:commentId', catchAsync(getCommentById));
+commentRouter.get('/comment/:commentId', catchAsync(getCommentById));
 
-commentRouter.post('/comment/create', catchAsync(createComment));
+commentRouter.post('/comment', catchAsync(createComment));
 
-commentRouter.patch('/comment/edit/:commentId', catchAsync(updateComment));
+commentRouter.patch('/comment/:commentId', catchAsync(updateComment));
 
-commentRouter.delete('/comment/delete/:commentId', catchAsync(deleteComment));
+commentRouter.delete('/comment/:commentId', catchAsync(deleteComment));
 
 export default commentRouter;

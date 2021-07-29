@@ -1,57 +1,53 @@
 import db from '../database/config';
 import { User, UpdateUser } from '../types/user';
 
-export function get(): Promise<User[]> {
-  return db<User>('user').returning('*');
-}
+// ** FUNCTION OVERLOADS **//
+export function retrieve(
+  accountId: string,
+  userId: null,
+  userEmail: null,
+  userRole: null
+): Promise<User[]>;
 
-// export function getBySelector(id?: string, email?: string): Promise<User | undefined> {
-//   const selector = {
-//     ...(id && { id: id }),
-//     ...(email && { email: email })
-//   };
+export function retrieve(
+  accountId: string,
+  userId: null,
+  userEmail: null,
+  userRole: string
+): Promise<User>;
 
-//   const cols = [
-//     'id',
-//     'first_name AS firstName',
-//     'last_name AS lastName',
-//     'permission_id AS permissionId',
-//     'email',
-//     'date_created AS dateCreated',
-//     'company_id AS companyId',
-//     'active'
-//   ];
+export function retrieve(
+  accountId: null,
+  userId: null,
+  userEmail: string,
+  userRole: null
+): Promise<User>;
 
-//   const data = db<User>('user').select(cols).where(selector).first();
+export function retrieve(
+  accountId: null,
+  userId: string,
+  userEmail: null,
+  userRole: null
+): Promise<User>;
 
-//   return data;
-// }
+// ** END ** //
 
-export function getByEmail(userEmail: string): Promise<User | undefined> {
-  const selector = { email: userEmail };
+export function retrieve(
+  accountId?: string,
+  userId?: string,
+  userEmail?: string,
+  userRole?: string
+): Promise<User[] | User | undefined> {
+  const selector = {
+    ...(accountId && { account_id: accountId }),
+    ...(userId && { id: userId }),
+    ...(userEmail && { email: userEmail }),
+    ...(userRole && { role: userRole })
+  };
 
-  return db<User>('user').where(selector).returning('*').first();
-}
-
-export function getById(userId: string): Promise<User | undefined> {
-  const selector = { id: userId };
-
-  return db<User>('user').where(selector).returning('*').first();
-}
-
-export function getByCompanyId(companyId: string): Promise<User[]> {
-  const selector = { company_id: companyId };
-
-  return db<User>('user').where(selector).returning('*');
-}
-
-export function getAccountOwner(
-  companyId: string,
-  permissionId: number
-): Promise<User | undefined> {
-  const selector = { company_id: companyId, permission_id: permissionId };
-
-  return db<User>('user').where(selector).returning('*').first();
+  const query = db<User>('user').where(selector).returning('*');
+  // if accountId && no userRole, then return array. If not, return first item.
+  return (accountId && !userRole && query) || query.first();
 }
 
 export function create(signUp: User): Promise<void> {
@@ -64,13 +60,7 @@ export function update(userId: string, updatedUser: UpdateUser): Promise<void> {
   return db<User>('user').where(selector).update(updatedUser);
 }
 
-export function removeByEmail(userEmail: string): Promise<User | undefined> {
-  const selector = { email: userEmail };
-
-  return db<User>('user').where(selector).delete();
-}
-
-export function removeById(userId: string): Promise<void> {
+export function remove(userId: string): Promise<void> {
   const selector = { id: userId };
 
   return db<User>('user').where(selector).delete();

@@ -5,7 +5,7 @@ export default {
       host: process.env.DATABASE_HOST || 'localhost',
       port: process.env.DATABASE_PORT || '5432',
       password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATEBASE_NAME || 'chimuwaku',
+      database: process.env.DATEBASE_NAME || 'bug_tracker',
       user: process.env.DATEBASE_USER || 'postgres',
       ssl: false
     },

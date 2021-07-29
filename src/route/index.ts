@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import companyRouter from './company';
+import accountRouter from './account';
 import userRouter from './user';
-import permissionRouter from './permission';
 import projectRouter from './project';
 import ticketRouter from './ticket';
 import checklistRouter from './checklist';
@@ -9,12 +8,13 @@ import checklistItemRouter from './checklistItem';
 import commentRouter from './comment';
 import authRouter from './auth';
 import adminRouter from './admin';
+import inviteRouter from './invite';
 
 const router = Router();
 
 router.use(userRouter);
-router.use(companyRouter);
-router.use(permissionRouter);
+router.use(accountRouter);
+router.use(inviteRouter);
 router.use(projectRouter);
 router.use(ticketRouter);
 router.use(checklistRouter);

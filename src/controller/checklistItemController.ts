@@ -1,26 +1,23 @@
-import { getById, getByChecklistId, create, update, remove } from '../model/checklistItem';
-import { getById as getChecklist } from '../model/checklist';
+import { retrieve, create, update, remove } from '../model/checklistItem';
+import { retrieve as retrieveChecklist } from '../model/checklist';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
-export const getAllChecklistItemsByChecklistId = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const getChecklistItems = async (req: Request, res: Response): Promise<void> => {
   const { checklistId } = req.params;
 
-  await validateUUID({ checklistId: checklistId });
+  await validateUUID({ checklistId });
 
-  const checklistExists = await getChecklist(checklistId);
+  const checklist = await retrieveChecklist(null, checklistId, null);
 
-  if (!checklistExists) throw new CustomError(404, 'No such checklist exists');
+  if (!checklist) throw new CustomError(404, 'Checklist does not exist');
 
-  const checklistItems = await getByChecklistId(checklistId);
+  const checklistItems = await retrieve(checklistId, null);
 
-  if (!checklistItems.length) throw new CustomError(404, 'No such checklist item exists');
+  if (!checklistItems.length) throw new CustomError(404, 'Checklist item does not exist');
 
   res.status(200).send(checklistItems);
 };
@@ -28,11 +25,11 @@ export const getAllChecklistItemsByChecklistId = async (
 export const getChecklistItemById = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
-  await validateUUID({ checklistItemId: checklistItemId });
+  await validateUUID({ checklistItemId });
 
-  const checklistItem = await getById(checklistItemId);
+  const checklistItem = await retrieve(null, checklistItemId);
 
-  if (!checklistItem) throw new CustomError(404, 'No such checklist item exists');
+  if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
   res.status(200).send(checklistItem);
 };
@@ -58,12 +55,16 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
   const { checklistItemId } = req.params;
   const { description, checked } = req.body;
 
-  await validateUUID({ checklistItemId: checklistItemId });
+  await validateUUID({ checklistItemId });
 
   const updatedChecklistItem: UpdateChecklistItem = {
     description: description,
     checked: checked
   };
+
+  const checklistItem = await retrieve(null, checklistItemId);
+
+  if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
   await checkBody(updatedChecklistItem);
 
@@ -75,11 +76,11 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
 export const deleteChecklistItem = async (req: Request, res: Response): Promise<void> => {
   const { checklistItemId } = req.params;
 
-  await validateUUID({ checklistItemId: checklistItemId });
+  await validateUUID({ checklistItemId });
 
-  const exists = await getById(checklistItemId);
+  const checklistItem = await retrieve(null, checklistItemId);
 
-  if (!exists) throw new CustomError(404, 'Checklist item does not exist');
+  if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
   await remove(checklistItemId);
 

@@ -2,16 +2,28 @@
 // ! prevents just anyone creating admin accounts.
 
 import db from '../database/config';
-import { User } from '../types/user';
+import { Account } from '../types/account';
 
-export function get(): Promise<User[]> {
-  return db<User>('user').returning('*');
-}
+export function retrieve(accountId: string): Promise<Account>;
 
-export function getOwners(): Promise<User[]> {
+export function retrieve(): Promise<Account[]>;
+
+// Accounts
+export function retrieve(accountId?: string): Promise<Account[] | Account> {
+  // If accountId is not provided, returns all accounts.
   const selector = {
-    permission_id: 1
+    ...(accountId && { id: accountId })
   };
 
-  return db<User>('user').where(selector).returning('*');
+  const query = db<Account>('account').where(selector).returning('*');
+
+  return (accountId && query.first()) || query;
+}
+
+export function remove(accountId: string): Promise<void> {
+  const selector = {
+    id: accountId
+  };
+
+  return db<Account>('account').where(selector).delete();
 }

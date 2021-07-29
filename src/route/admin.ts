@@ -1,15 +1,18 @@
 import { Router } from 'express';
-import { getAllUsers, getAllOwners } from '../controller/admin';
+import { getAccounts, getAccountById, deleteAccount } from '../controller/adminController';
 import { catchAsync } from './utilities';
 import { requireAuthRole } from '../middleware/roleAuth';
 import { requireAuth } from '../middleware/jwtAuth';
+import { ROLE } from '../middleware/permission/role';
 
 const adminRouter = Router();
 
-adminRouter.all('/admin/*', catchAsync(requireAuth), requireAuthRole('admin'));
+// adminRouter.use('/admin', catchAsync(requireAuth), requireAuthRole(ROLE.ADMIN));
 
-adminRouter.get('/admin/users', catchAsync(getAllUsers));
+adminRouter.get('/admin/accounts', catchAsync(getAccounts));
 
-adminRouter.get('/admin/owners', catchAsync(getAllOwners));
+adminRouter.get('/admin/accounts/:accountId', catchAsync(getAccountById));
+
+adminRouter.delete('/admin/accounts/:accountId', catchAsync(deleteAccount));
 
 export default adminRouter;

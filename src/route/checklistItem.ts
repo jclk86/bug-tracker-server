@@ -2,31 +2,25 @@ import { Router } from 'express';
 import { catchAsync } from './utilities';
 import {
   getChecklistItemById,
-  getAllChecklistItemsByChecklistId,
+  getChecklistItems,
   createChecklistItem,
   updateChecklistItem,
   deleteChecklistItem
-} from '../controller/checklistItem';
+} from '../controller/checklistItemController';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const checklistItemRouter = Router();
 
-checklistItemRouter.all('/checklistItem', catchAsync(requireAuth));
+// checklistItemRouter.use('/checklist-item', catchAsync(requireAuth));
 
-checklistItemRouter.get(
-  '/checklistItem/checklistId/:checklistId',
-  catchAsync(getAllChecklistItemsByChecklistId)
-);
+checklistItemRouter.get('/checklist-items/checklist/:checklistId', catchAsync(getChecklistItems));
 
-checklistItemRouter.get('/checklistItem/id/:checklistItemId', catchAsync(getChecklistItemById));
+checklistItemRouter.get('/checklist-item/:checklistItemId', catchAsync(getChecklistItemById));
 
-checklistItemRouter.post('/checklistItem/create', catchAsync(createChecklistItem));
+checklistItemRouter.post('/checklist-item', catchAsync(createChecklistItem));
 
-checklistItemRouter.patch('/checklistItem/edit/:checklistItemId', catchAsync(updateChecklistItem));
+checklistItemRouter.patch('/checklist-item/:checklistItemId', catchAsync(updateChecklistItem));
 
-checklistItemRouter.delete(
-  '/checklistItem/delete/:checklistItemId',
-  catchAsync(deleteChecklistItem)
-);
+checklistItemRouter.delete('/checklist-item/:checklistItemId', catchAsync(deleteChecklistItem));
 
 export default checklistItemRouter;

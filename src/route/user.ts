@@ -2,30 +2,26 @@ import { Router } from 'express';
 import {
   getUserById,
   getUserByEmail,
-  getAllUsersByCompanyId,
+  getUsers,
   createUser,
   updateUser,
   deleteUser
-} from '../controller/user';
+} from '../controller/userController';
 import { catchAsync } from './utilities';
 import { requireAuth } from '../middleware/jwtAuth';
 
 const userRouter = Router();
+// ! you may need to make a new get route for user registration. Depends on how you plan to get the accountId -- invite table via email? Or req.params
+userRouter.get('/users/account/:accountId', catchAsync(getUsers));
 
-userRouter.post('/user/create', catchAsync(createUser));
+userRouter.get('/user/email/:userEmail', catchAsync(getUserByEmail));
 
-userRouter.get(
-  '/user/companyId/:companyId',
-  catchAsync(requireAuth),
-  catchAsync(getAllUsersByCompanyId)
-);
+userRouter.get('/user/:userId', catchAsync(getUserById));
 
-userRouter.get('/user/email/:userEmail', catchAsync(requireAuth), catchAsync(getUserByEmail));
+userRouter.post('/user/account/:accountId', catchAsync(createUser));
 
-userRouter.get('/user/id/:userId', catchAsync(requireAuth), catchAsync(getUserById));
+userRouter.patch('/user/:userId', catchAsync(updateUser));
 
-userRouter.patch('/user/edit/:userId', catchAsync(requireAuth), catchAsync(updateUser));
-
-userRouter.delete('/user/delete/:userId', catchAsync(requireAuth), catchAsync(deleteUser));
+userRouter.delete('/user/:userId', catchAsync(deleteUser));
 
 export default userRouter;
