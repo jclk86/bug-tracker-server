@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
 import { retrieve, create, update, remove } from '../model/invite';
+import { retrieve as retrieveAccount } from '../model/account';
 import { Invite } from '../types/invite';
-import { currentTimeStamp } from './utilities';
+import { currentTimeStamp, validateUUID } from './utilities';
 import { sendEmail } from '../nodemailer/nodemailer';
 
 // show user that is already in db
@@ -16,6 +17,12 @@ export const createInvite = async (req: Request, res: Response): Promise<void> =
   let inviteData: Invite;
   // ! remove whitespace more than 1 and split emails - front end duty?
   const emails = req.body.emails.replace(/\s+/g, ' ').split(' ');
+
+  await validateUUID({ accountId });
+
+  const account = await retrieveAccount(accountId, null);
+
+  if (!account) throw new CustomError(404, 'Account does not exist');
 
   // check length
   if (emails.length > 10) throw new CustomError(400, 'Only 10 emails max per invite');

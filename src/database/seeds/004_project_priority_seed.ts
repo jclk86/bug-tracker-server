@@ -1,21 +1,21 @@
 const projectPriorities = [
   {
-    order_number: 0,
+    id: 0,
     option: 'None',
     marks_empty: true
   },
   {
-    order_number: 1,
+    id: 1,
     option: 'Low',
     marks_empty: false
   },
   {
-    order_number: 2,
+    id: 2,
     option: 'Medium',
     marks_empty: false
   },
   {
-    order_number: 3,
+    id: 3,
     option: 'High',
     marks_empty: false
   }

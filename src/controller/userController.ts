@@ -52,9 +52,20 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   const { accountId } = req.params;
   const { firstName, lastName, email, roleTitle, password } = req.body;
 
+  await validateUUID({ accountId });
+
+  // Checks if password is empty
+  if (password === '') throw new CustomError(400, 'Missing password');
+
+  // Check if owner
+  const account = await retrieveAccount(accountId, null);
+
+  if (!account) throw new CustomError(404, 'Account does not exist');
+
+  // Assign owner if email matches
+  const isOwner = account.email === email ? 'owner' : roleTitle;
+
   // hash password
-  //! check what happens if no password is passed
-  // ! account should be auto assigned
   const hashedPassword = await hashPassword(password);
 
   const signUp: User = {
@@ -62,7 +73,7 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     first_name: firstName,
     last_name: lastName,
     email: email,
-    role: roleTitle,
+    role: isOwner,
     password: hashedPassword,
     account_id: accountId,
     active: true,
@@ -90,6 +101,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     // Ensures only 1 owner per account
     const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER);
     if (ownerExists) throw new CustomError(409, 'Account already has owner');
+  } else if (signUp.role === ROLE.ADMIN) {
+    throw new CustomError(403, 'Not an authorized action');
   }
 
   // creates user
@@ -106,6 +119,8 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   const { password, email, roleTitle, active } = req.body;
 
   await validateUUID({ userId });
+
+  if (password === '') throw new CustomError(400, 'Missing password');
 
   const user = await retrieve(null, userId, null, null);
 
@@ -126,10 +141,18 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   // Checks if email exists already under account id
   if (user.email !== updatedUser.email) {
     const emailExists = await retrieve(null, null, updatedUser.email, null);
+
     if (emailExists) throw new CustomError(409, 'Email already exists');
+
+    const invited = await retrieveInvite(null, email as string);
+
+    if (invited) throw new CustomError(409, 'Email already exists');
   }
 
-  if (updatedUser.role !== user.role || updatedUser.role === ROLE.OWNER)
+  if (
+    (updatedUser.role !== user.role && updatedUser.role === ROLE.OWNER) ||
+    updatedUser.role === ROLE.ADMIN
+  )
     throw new CustomError(400, 'Can only change roles between Manager and Developer');
 
   await update(userId, updatedUser);

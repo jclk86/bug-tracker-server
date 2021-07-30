@@ -19,9 +19,9 @@ projectRouter.get('/projects/account/:accountId', catchAsync(getProjects));
 
 projectRouter.get('/project/:projectId', catchAsync(getProjectById));
 
-projectRouter.get('/project/priorities', catchAsync(getProjectPriorities));
+projectRouter.get('/project-priorities', catchAsync(getProjectPriorities));
 
-projectRouter.get('/project/statuses', catchAsync(getProjectStatuses));
+projectRouter.get('/project-statuses', catchAsync(getProjectStatuses));
 
 projectRouter.post('/project', catchAsync(createProject));
 

@@ -77,6 +77,7 @@ export const getProjectUsers = async (req: Request, res: Response): Promise<void
 };
 
 // ! this needs to auto assign accountId. It will take from user's account_id
+// ! account id is passed via a context in front end
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   // ! person who creates project is team leader. Automatically filled in on front end
   const {

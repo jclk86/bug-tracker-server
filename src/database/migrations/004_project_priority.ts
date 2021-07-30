@@ -2,8 +2,7 @@ import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<Knex.SchemaBuilder> {
   return knex.schema.createTable('project_priority', (table: Knex.TableBuilder) => {
-    table.increments('id').primary();
-    table.integer('order_number');
+    table.integer('id').primary();
     table.text('option');
     table.boolean('marks_empty').defaultTo(false);
   });

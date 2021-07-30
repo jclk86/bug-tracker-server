@@ -67,7 +67,7 @@ export const getTicketStatuses = async (req: Request, res: Response): Promise<vo
   res.status(200).send(statuses);
 };
 
-// ! auto assign project id
+// ! auto assign project id - through context or req.params???
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
   const {
     name,

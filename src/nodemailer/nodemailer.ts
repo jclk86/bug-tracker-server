@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 // pool and rateLimit/ rateDelta allow for sometime before each email sent.
 // Prevents concurrent connections limit exceeded issue
 // https://stackoverflow.com/questions/53366844/nodejs-setting-a-timeout-for-nodemailer
+// Limit exceeds on outlook. Verify account to send more.
 export const transporter = nodemailer.createTransport({
   host: 'smtp-mail.outlook.com',
   secureConnection: false,

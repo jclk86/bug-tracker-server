@@ -20,9 +20,9 @@ ticketRouter.get('/tickets/project/:projectId', catchAsync(getTickets));
 
 ticketRouter.get('/ticket/name/:ticketName', catchAsync(getTicketByName));
 
-ticketRouter.get('/ticket/priorities', catchAsync(getTicketPriorities));
+ticketRouter.get('/ticket-priorities', catchAsync(getTicketPriorities));
 
-ticketRouter.get('/ticket/statuses', catchAsync(getTicketStatuses));
+ticketRouter.get('/ticket-statuses', catchAsync(getTicketStatuses));
 
 ticketRouter.get('/ticket/:ticketId', catchAsync(getTicketById));
 

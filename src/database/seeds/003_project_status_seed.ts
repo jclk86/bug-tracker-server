@@ -1,41 +1,41 @@
 const projectStatuses = [
   {
-    order_number: 0,
+    id: 0,
     option: 'None',
     color: 'gray',
     marks_empty: false,
     marks_completion: false
   },
   {
-    order_number: 1,
+    id: 1,
     option: 'On Hold',
     color: 'red',
     marks_empty: false,
     marks_completion: false
   },
   {
-    order_number: 2,
+    id: 2,
     option: 'Planning',
     color: 'blue',
     marks_empty: false,
     marks_completion: false
   },
   {
-    order_number: 3,
+    id: 3,
     option: 'Developing',
     color: 'purple',
     marks_empty: false,
     marks_completion: false
   },
   {
-    order_number: 4,
+    id: 4,
     option: 'Testing',
     color: 'orange',
     marks_empty: false,
     marks_completion: false
   },
   {
-    order_number: 5,
+    id: 5,
     option: 'Completed',
     color: 'green',
     marks_empty: false,
