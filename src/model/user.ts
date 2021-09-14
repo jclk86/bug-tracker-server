@@ -2,6 +2,7 @@ import db from '../database/config';
 import { User, UpdateUser } from '../types/user';
 
 // ** FUNCTION OVERLOADS **//
+
 export function retrieve(
   accountId: string,
   userId: null,

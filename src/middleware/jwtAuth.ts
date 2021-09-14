@@ -12,16 +12,23 @@ export const requireAuth = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authHeader = req.get('authorization');
+  const authHeader = req.get('x-auth-token');
+  console.log('authHeader: ', authHeader);
 
   const accessToken = authHeader && authHeader.split(' ')[1];
 
-  if (accessToken == null) throw new CustomError(401, 'Invalid or expired token');
+  console.log('accessToken in requireAuth: ', accessToken);
+
+  if (accessToken == null) throw new CustomError(401, 'Unauthorized');
+
+  const { refreshToken } = req.cookies;
+
+  console.log('REFRESH TOKEN IN COOKIE: ', refreshToken);
 
   // const payload = (await jwt.verify(accessToken, process.env.ACCESS_JWT_KEY)) as UserPayload;
 
   await jwt.verify(accessToken, process.env.ACCESS_JWT_KEY, (err, user: UserPayload) => {
-    if (err) return res.redirect(403, '/login');
+    if (err) return res.sendStatus(403);
     req['user'] = user;
     next();
   });

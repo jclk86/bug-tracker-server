@@ -12,8 +12,6 @@ import { requireAuth } from '../middleware/jwtAuth';
 
 const accountRouter = Router();
 
-// get. The controller will check req.params or req.body itself and then determine what to get
-
 accountRouter.get('/account/:accountId', catchAsync(getAccountById));
 
 accountRouter.get('/account/email/:email', catchAsync(getAccountByEmail));

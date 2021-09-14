@@ -49,41 +49,10 @@ export const getUserByEmail = async (req: Request, res: Response): Promise<void>
 };
 // ! Must be invited, unless owner. If owner, email must match account email.
 export const createUser = async (req: Request, res: Response): Promise<void> => {
-  const { accountId } = req.params;
   const { firstName, lastName, email, roleTitle, password } = req.body;
 
-  await validateUUID({ accountId });
-
-  // Checks if password is empty
-  if (password === '') throw new CustomError(400, 'Missing password');
-
-  // Check if owner
-  const account = await retrieveAccount(accountId, null);
-
-  if (!account) throw new CustomError(404, 'Account does not exist');
-
-  // Assign owner if email matches
-  const isOwner = account.email === email ? 'owner' : roleTitle;
-
-  // hash password
-  const hashedPassword = await hashPassword(password);
-
-  const signUp: User = {
-    id: uuidv4(),
-    first_name: firstName,
-    last_name: lastName,
-    email: email,
-    role: isOwner,
-    password: hashedPassword,
-    account_id: accountId,
-    active: true,
-    date_created: currentTimeStamp
-  };
-
-  await checkBody(signUp);
-
   // Checks if user was invited to register under account
-  const invited = await retrieveInvite(accountId, signUp.email);
+  const invited = await retrieveInvite(null, email)[0];
 
   if (!invited)
     throw new CustomError(
@@ -93,17 +62,35 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
 
   // Checks if user already exists in db.
   // Note: If an employee of a current company wants to sign up as account owner, must use different email
-  const user = await retrieve(null, null, signUp.email, null);
+  const user = await retrieve(null, null, email, null)[0];
 
-  if (user) throw new CustomError(409, 'User is already registered');
+  if (user)
+    throw new CustomError(
+      409,
+      'User is already registered. Please register with a different email.'
+    );
 
-  if (signUp.role === ROLE.OWNER) {
-    // Ensures only 1 owner per account
-    const ownerExists = await retrieve(signUp.account_id, null, null, ROLE.OWNER);
-    if (ownerExists) throw new CustomError(409, 'Account already has owner');
-  } else if (signUp.role === ROLE.ADMIN) {
-    throw new CustomError(403, 'Not an authorized action');
-  }
+  const account = await retrieveAccount(invited.account_id, null);
+
+  // Assign owner if email matches
+  const isOwner = account.email === email ? 'owner' : roleTitle;
+
+  // Hash password
+  const hashedPassword = await hashPassword(password);
+
+  const signUp: User = {
+    id: uuidv4(),
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
+    role: isOwner,
+    password: hashedPassword,
+    account_id: invited.account_id,
+    active: true,
+    date_created: currentTimeStamp
+  };
+
+  await checkBody(signUp);
 
   // creates user
   await create(signUp);

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import CustomError from '../errorHandler/CustomError';
 
+// ADMIN in the if statement
 export const requireAuthRole = (roleTitle: string): RequestHandler => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { role } = req['user'];

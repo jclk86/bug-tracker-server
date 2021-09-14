@@ -7,7 +7,7 @@ import { ROLE } from '../middleware/permission/role';
 
 const adminRouter = Router();
 
-// adminRouter.use('/admin', catchAsync(requireAuth), requireAuthRole(ROLE.ADMIN));
+adminRouter.use('/admin', catchAsync(requireAuth), requireAuthRole(ROLE.ADMIN));
 
 adminRouter.get('/admin/accounts', catchAsync(getAccounts));
 

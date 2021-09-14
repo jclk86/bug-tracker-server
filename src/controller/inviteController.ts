@@ -7,24 +7,22 @@ import { Invite } from '../types/invite';
 import { currentTimeStamp, validateUUID } from './utilities';
 import { sendEmail } from '../nodemailer/nodemailer';
 
-// show user that is already in db
-// ! change into 1 get
-// ! INVITE FORM is available AFTER account owner has registered, invited himself, created his user account
-// ! From his dashboard, he can invite other users and possible give access to other users to invite as well-- where then
-// ! once given access, that invite form link would appear in that user's dashboard as well.
 export const createInvite = async (req: Request, res: Response): Promise<void> => {
   const { accountId } = req.params;
   let inviteData: Invite;
-  // ! remove whitespace more than 1 and split emails - front end duty?
+
+  // Ensure email input is correct
   const emails = req.body.emails.replace(/\s+/g, ' ').split(' ');
 
+  // Ensure accountId params is not malformed
   await validateUUID({ accountId });
 
+  // Ensure accountId params exists
   const account = await retrieveAccount(accountId, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
-  // check length
+  // Check length
   if (emails.length > 10) throw new CustomError(400, 'Only 10 emails max per invite');
 
   for (const email of emails) {

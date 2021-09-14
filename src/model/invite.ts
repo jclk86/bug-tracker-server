@@ -3,9 +3,9 @@ import { Invite } from '../types/invite';
 
 //** FUNCTION OVERLOADS **/
 
-export function retrieve(accountId: string, email: string): Promise<Invite>;
 export function retrieve(accountId: string, email: null): Promise<Invite[]>;
 export function retrieve(accountId: null, email: string): Promise<Invite>;
+export function retrieve(accountId: string, email: string): Promise<Invite>;
 
 // ** END ** //
 

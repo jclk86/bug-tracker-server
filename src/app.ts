@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: 'http://localhost:3000',
-    allowedHeaders: ['Origin, Content-Type, Accept, Authorization'],
+    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'Authorization', 'x-auth-token'],
     exposedHeaders: ['X-Total-Count', 'Link'],
     credentials: true
   })
@@ -53,7 +53,7 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
   const statusCode = response.error.status || 500;
 
   // place console.log during development to log error message
-  res.status(statusCode).json(response.error.message);
+  res.status(statusCode).json(response.error.message || {});
 });
 
 export default app;

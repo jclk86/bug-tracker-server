@@ -7,7 +7,7 @@ const authRouter = Router();
 
 authRouter.post('/login', catchAsync(login));
 
-authRouter.post('/refresh', catchAsync(requireAuth), catchAsync(postRefreshToken));
+authRouter.post('/refreshToken', catchAsync(postRefreshToken));
 
 authRouter.delete('/logout', catchAsync(requireAuth), catchAsync(logout));
 

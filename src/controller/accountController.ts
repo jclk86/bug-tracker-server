@@ -42,12 +42,12 @@ export const getAccountByCompanyName = async (req: Request, res: Response): Prom
 };
 
 export const createAccount = async (req: Request, res: Response): Promise<void> => {
-  const { company_name, email } = req.body;
+  const { companyName, email } = req.body;
 
   const newAccount: Account = {
     id: uuidv4(),
     email: email,
-    company_name: company_name,
+    company_name: companyName,
     date_created: currentTimeStamp
   };
 
@@ -56,6 +56,8 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
   const companyNameExists = await retrieve(null, null, newAccount.company_name);
 
   if (companyNameExists) throw new CustomError(409, 'Account name already exists');
+
+  // if (companyNameExists) throw new CustomError(409, 'Account name already exists');
 
   const emailExists = await retrieve(null, email, null);
 
@@ -118,7 +120,7 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
 
     // Checks if the role is owner
     if (user.role !== 'owner')
-      throw new CustomError(403, 'Non-owners cannot become account owners');
+      throw new CustomError(401, 'Non-owners cannot become account owners');
   }
 
   await update(accountId, updatedAccount);

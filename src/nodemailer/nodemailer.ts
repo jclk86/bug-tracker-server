@@ -30,7 +30,7 @@ export const sendEmail = (email: string, accountId: string): void => {
       to: email, // list of receivers
       subject: 'Complete registration for BugTrackerCo', // Subject line
       text: 'Complete your registration by clicking on the link', // plain text body
-      html: `<p>Click <a href="http://localhost:8000/user/account/${accountId}">here</a> to complete registration</p>` // html body
+      html: `<p>Click <a href="http://localhost:3000/user/signup/${accountId}">here</a> to complete registration</p>` // html body
     },
     function (err, info) {
       if (err) {

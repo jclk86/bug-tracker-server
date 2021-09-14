@@ -1,12 +1,14 @@
-import { checkBody, currentTimeStamp } from './utilities';
+import { checkBody } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { retrieve, update } from '../model/user';
+import { retrieve } from '../model/user';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 import client from '../database/tedis';
 
+// https://indepth.dev/posts/1382/localstorage-vs-cookies
+// https://marmelab.com/blog/2020/07/02/manage-your-jwt-react-admin-authentication-in-memory.html
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
@@ -25,30 +27,34 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   if (!isMatch) throw new CustomError(400, 'Incorrect email or password');
 
-  const payload: UserPayload = {
-    id: user.id,
-    email: user.email,
-    role: user.role
+  const payload = {
+    id: user.id
   };
 
-  const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, { expiresIn: '5m' });
-  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY, { expiresIn: '1d' });
+  const accessToken = await jwt.sign(payload, process.env.ACCESS_JWT_KEY, {
+    expiresIn: '1h'
+  });
+
+  // ! add expiry date to refresh token
+  const refreshToken = await jwt.sign(payload, process.env.REFRESH_JWT_KEY);
 
   if (!accessToken || !refreshToken) throw new CustomError(401, 'Invalid token');
 
-  // place into header on client side
-  //! samesite requires cors header to be set
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: true,
     sameSite: 'strict'
   });
 
-  res.json({ accessToken, refreshToken });
+  res.json({ token: accessToken });
 };
 
+// https://stackoverflow.com/questions/66614039/refresh-token-how-to-handle-post-routing
+
 export const postRefreshToken = async (req: Request, res: Response): Promise<void> => {
-  const { refreshToken } = req.cookies;
+  const { refreshToken } = req.cookies || '';
+
+  if (!refreshToken) throw new CustomError(401, 'Unauthorized');
 
   // check if token exists among blacklisted tokens
   const isBlackListedToken = await client.get(refreshToken);
@@ -56,21 +62,25 @@ export const postRefreshToken = async (req: Request, res: Response): Promise<voi
   if (isBlackListedToken) throw new CustomError(401, 'blacklisted');
 
   await jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY, async (err, user: UserPayload) => {
-    if (err) throw new CustomError(403, 'Invalid token');
+    if (err) throw new CustomError(401, 'Invalid token');
 
-    // destructures email from user to override expiresIn from user
-    const accessToken = jwt.sign(user, process.env.ACCESS_JWT_KEY);
+    const { id } = user;
 
-    res.json({ accessToken });
+    const newAccessToken = await jwt.sign({ id }, process.env.ACCESS_JWT_KEY, {
+      expiresIn: '1h'
+    });
+
+    res.status(201).json({ token: newAccessToken });
   });
 };
 // ! add last active - requires type
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  // clear the access token in client end by setting the in-memory variable for accessToken = null
-  const { refreshToken } = req.cookies;
+  const { refreshToken } = req.cookies || '';
+
+  if (!refreshToken) throw new CustomError(401, 'Unauthorized');
 
   await jwt.verify(refreshToken, process.env.REFRESH_JWT_KEY, async (err, user) => {
-    if (err) throw new CustomError(403, 'Invalid token');
+    if (err) return res.status(401);
 
     const userId = user.id;
 
@@ -82,5 +92,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
   });
 
   res.clearCookie('refreshToken');
-  res.redirect('/login');
+
+  res.end();
 };
