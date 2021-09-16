@@ -1,26 +1,20 @@
 import db from '../database/config';
 import { Comment, UpdateComment } from '../types/comment';
 
-// ** FUNCTION OVERLOADS ** //
-
-export function retrieve(ticketId: string, commentId: null): Promise<Comment[]>;
-
-export function retrieve(ticketId: null, commentId: string): Promise<Comment>;
-
-//** END ** //
-
-export function retrieve(
-  ticketId?: string,
-  commentId?: string
-): Promise<Comment[] | Comment | undefined> {
+export function retrieveAll(ticketId: string): Promise<Comment[]> {
   const selector = {
-    ...(ticketId && { ticket_id: ticketId }),
-    ...(commentId && { id: commentId })
+    ticketId: ticketId
   };
 
-  const query = db<Comment>('comment').where(selector).returning('*');
+  return db<Comment>('comment').where(selector).returning('*');
+}
 
-  return (ticketId && query) || query.first();
+export function retrieveBy(id: string): Promise<Comment | undefined> {
+  const selector = {
+    ...(id && { id: id })
+  };
+
+  return db<Comment>('comment').where(selector).returning('*').first();
 }
 
 export function create(newComment: Comment): Promise<void> {

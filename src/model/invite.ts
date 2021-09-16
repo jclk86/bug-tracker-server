@@ -1,26 +1,21 @@
 import db from '../database/config';
 import { Invite } from '../types/invite';
 
-//** FUNCTION OVERLOADS **/
-
-export function retrieve(accountId: string, email: null): Promise<Invite[]>;
-export function retrieve(accountId: null, email: string): Promise<Invite>;
-export function retrieve(accountId: string, email: string): Promise<Invite>;
-
-// ** END ** //
-
-export function retrieve(
-  accountId?: string,
-  email?: string
-): Promise<Invite[] | Invite | undefined> {
+export function retrieveAll(accountId: string): Promise<Invite[]> {
   const selector = {
-    ...(accountId && { account_id: accountId }),
+    accountId: accountId
+  };
+
+  return db<Invite>('invite').where(selector).returning('*');
+}
+
+export function retrieveBy(id?: string, email?: string): Promise<Invite | undefined> {
+  const selector = {
+    ...(id && { id: id }),
     ...(email && { email: email })
   };
 
-  const query = db<Invite>('invite').where(selector).returning('*');
-
-  return (accountId && !email && query) || query.first();
+  return db<Invite>('invite').where(selector).returning('*').first();
 }
 
 export function create(inviteData: Invite): Promise<void> {

@@ -18,7 +18,7 @@ userRouter.get('/user/email/:userEmail', catchAsync(getUserByEmail));
 
 userRouter.get('/user/:userId', catchAsync(getUserById));
 
-userRouter.post('/user/account/:accountId', catchAsync(createUser));
+userRouter.post('/user', catchAsync(createUser));
 
 userRouter.patch('/user/:userId', catchAsync(updateUser));
 

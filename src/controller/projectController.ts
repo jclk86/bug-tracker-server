@@ -1,15 +1,18 @@
 import {
-  retrieve,
+  retrieveAll,
+  retrieveBy,
   create,
   update,
   remove,
   retrievePriorities,
   retrieveStatuses,
   addProjectUser,
-  retrieveProjectUser,
+  retrieveAllProjectUsers,
+  retrieveProjectUserBy,
   removeProjectUser
 } from '../model/project';
-import { retrieve as retrieveAccount } from '../model/account';
+import { retrieveBy as retrieveAccount } from '../model/account';
+import { retrieveBy as retrieveProject } from '../model/project';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,7 +28,7 @@ export const getProjects = async (req: Request, res: Response): Promise<void> =>
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
-  const projects = await retrieve(accountId, null, null);
+  const projects = await retrieveAll(accountId);
 
   if (!projects?.length) throw new CustomError(404, 'No projects have been added');
 
@@ -37,7 +40,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId, null);
+  const project = await retrieveBy(projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
@@ -65,11 +68,11 @@ export const getProjectUsers = async (req: Request, res: Response): Promise<void
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId, null);
+  const project = await retrieveProject(projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
-  const projectUsers = await retrieveProjectUser(projectId, null);
+  const projectUsers = await retrieveAllProjectUsers(projectId);
 
   if (!projectUsers.length) throw new CustomError(404, 'No users have been added to project');
 
@@ -108,7 +111,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
   await checkBody(newProject);
 
-  const projectNameExists = await retrieve(newProject.account_id, null, newProject.name);
+  const projectNameExists = await retrieveProject(null, newProject.name);
 
   if (projectNameExists) throw new CustomError(409, 'Project name already exists');
 
@@ -138,7 +141,7 @@ export const addUserToProject = async (req: Request, res: Response): Promise<voi
     user_id: userId
   };
 
-  const userAlreadyAdded = await retrieveProjectUser(
+  const userAlreadyAdded = await retrieveProjectUserBy(
     newProjectUser.project_id,
     newProjectUser.user_id
   );
@@ -165,7 +168,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId, null);
+  const project = await retrieveProject(projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 
@@ -183,11 +186,6 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
   await checkBody(updatedProject);
 
-  if (project.name !== updatedProject.name) {
-    const projectNameExists = await retrieve(project.account_id, null, updatedProject.name);
-    if (projectNameExists) throw new CustomError(409, 'Project name already exists');
-  }
-
   await update(projectId, updatedProject);
 
   res.status(201).send(updatedProject);
@@ -201,7 +199,7 @@ export const deleteProjectUser = async (req: Request, res: Response): Promise<vo
 
   await validateUUID({ userId });
 
-  const user = await retrieveProjectUser(projectId, userId);
+  const user = await retrieveProjectUserBy(projectId, userId);
 
   if (!user) throw new CustomError(404, 'User does not exist for project');
 
@@ -215,7 +213,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ projectId });
 
-  const project = await retrieve(null, projectId, null);
+  const project = await retrieveProject(projectId, null);
 
   if (!project) throw new CustomError(404, 'Project does not exist');
 

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import CustomError from '../errorHandler/CustomError';
-import { retrieve, create, update, remove } from '../model/invite';
-import { retrieve as retrieveAccount } from '../model/account';
+import { retrieveBy, create, update, remove } from '../model/invite';
+import { retrieveBy as retrieveAccount } from '../model/account';
 import { Invite } from '../types/invite';
 import { currentTimeStamp, validateUUID } from './utilities';
 import { sendEmail } from '../nodemailer/nodemailer';
@@ -18,7 +18,7 @@ export const createInvite = async (req: Request, res: Response): Promise<void> =
   await validateUUID({ accountId });
 
   // Ensure accountId params exists
-  const account = await retrieveAccount(accountId, null);
+  const account = await retrieveAccount(accountId, null, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
@@ -26,7 +26,7 @@ export const createInvite = async (req: Request, res: Response): Promise<void> =
   if (emails.length > 10) throw new CustomError(400, 'Only 10 emails max per invite');
 
   for (const email of emails) {
-    inviteData = await retrieve(accountId, email as string);
+    inviteData = await retrieveBy(null, email);
 
     if (inviteData) {
       await update(inviteData.id, currentTimeStamp);
@@ -49,7 +49,7 @@ export const createInvite = async (req: Request, res: Response): Promise<void> =
 export const deleteInvite = async (req: Request, res: Response): Promise<void> => {
   const email = req.body.email as string;
 
-  const invite = await retrieve(null, email);
+  const invite = await retrieveBy(null, email);
 
   if (!invite) throw new CustomError(404, 'Invite does not exist');
 

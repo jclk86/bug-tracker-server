@@ -7,7 +7,7 @@ import { Account, UpdateAccount } from '../types/account';
 // ! The only thing to watch out for is strack trace
 
 // Retrieves specific account
-export function retrieve(
+export function retrieveBy(
   accountId?: string,
   accountEmail?: string,
   companyName?: string

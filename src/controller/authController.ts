@@ -2,7 +2,7 @@ import { checkBody } from './utilities';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { retrieve } from '../model/user';
+import { retrieveBy } from '../model/user';
 import { UserLogin, UserPayload } from '../types/auth';
 import CustomError from '../errorHandler/CustomError';
 import client from '../database/tedis';
@@ -19,7 +19,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
   await checkBody(userLogin);
 
-  const user = await retrieve(null, null, userLogin.email, null);
+  const user = await retrieveBy(null, userLogin.email);
 
   if (!user) throw new CustomError(400, 'User does not exist');
 

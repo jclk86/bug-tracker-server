@@ -1,5 +1,5 @@
-import { retrieve, create, update, remove } from '../model/account';
-import { retrieve as retrieveUser } from '../model/user';
+import { retrieveBy, create, update, remove } from '../model/account';
+import { retrieveBy as retrieveUser } from '../model/user';
 import { create as createInvite } from '../model/invite';
 import { checkBody, currentTimeStamp, validateUUID } from './utilities';
 import { Request, Response } from 'express';
@@ -14,7 +14,7 @@ export const getAccountById = async (req: Request, res: Response): Promise<void>
 
   await validateUUID({ accountId });
 
-  const account = await retrieve(accountId, null, null);
+  const account = await retrieveBy(accountId, null, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
@@ -24,7 +24,7 @@ export const getAccountById = async (req: Request, res: Response): Promise<void>
 export const getAccountByEmail = async (req: Request, res: Response): Promise<void> => {
   const { email } = req.params;
 
-  const account = await retrieve(null, email, null);
+  const account = await retrieveBy(null, email, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
@@ -34,7 +34,7 @@ export const getAccountByEmail = async (req: Request, res: Response): Promise<vo
 export const getAccountByCompanyName = async (req: Request, res: Response): Promise<void> => {
   const { companyName } = req.params;
 
-  const account = await retrieve(null, null, companyName);
+  const account = await retrieveBy(null, null, companyName);
 
   if (!account) throw new CustomError(404, 'account does not exist');
 
@@ -53,13 +53,13 @@ export const createAccount = async (req: Request, res: Response): Promise<void> 
 
   await checkBody(newAccount);
 
-  const companyNameExists = await retrieve(null, null, newAccount.company_name);
+  const companyNameExists = await retrieveBy(null, null, newAccount.company_name);
 
   if (companyNameExists) throw new CustomError(409, 'Account name already exists');
 
   // if (companyNameExists) throw new CustomError(409, 'Account name already exists');
 
-  const emailExists = await retrieve(null, email, null);
+  const emailExists = await retrieveBy(null, email, null);
 
   if (emailExists) throw new CustomError(409, 'Account email already exists');
 
@@ -93,7 +93,7 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ accountId });
 
-  const account = await retrieve(accountId, null, null);
+  const account = await retrieveBy(accountId, null, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
@@ -106,15 +106,15 @@ export const updateAccount = async (req: Request, res: Response): Promise<void> 
   await checkBody(updatedAccount);
 
   if (account.company_name !== updatedAccount.company_name) {
-    const companyNameExists = await retrieve(null, null, updatedAccount.company_name);
+    const companyNameExists = await retrieveBy(null, null, updatedAccount.company_name);
     if (companyNameExists) throw new CustomError(409, 'Account name already exists');
   } else if (account.email !== updatedAccount.email) {
     // Checks if a current account has same email
-    const accountEmailExists = await retrieve(null, updatedAccount.email, null);
+    const accountEmailExists = await retrieveBy(null, updatedAccount.email, null);
     if (accountEmailExists) throw new CustomError(409, 'Account email already exists');
 
     // Checks if the new email matches with an existing user
-    const user = await retrieveUser(null, null, updatedAccount.email, null);
+    const user = await retrieveUser(null, updatedAccount.email);
     // Original owner is deleted.
     if (!user) throw new CustomError(404, 'User does not exist. Please create owner account.');
 
@@ -133,7 +133,7 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ accountId });
 
-  const account = await retrieve(accountId, null, null);
+  const account = await retrieveBy(accountId, null, null);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 

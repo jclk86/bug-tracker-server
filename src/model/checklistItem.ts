@@ -1,25 +1,20 @@
 import db from '../database/config';
 import { ChecklistItem, UpdateChecklistItem } from '../types/checklistItem';
 
-// ** FUNCTION OVERLOADS ** //
-export function retrieve(checklistId: string, checklistItemId: null): Promise<ChecklistItem[]>;
-
-export function retrieve(checklistId: null, checklistItemId: string): Promise<ChecklistItem[]>;
-
-// ** END ** //
-
-export function retrieve(
-  checklistId?: string,
-  checklistItemId?: string
-): Promise<ChecklistItem[] | ChecklistItem | undefined> {
+export function retrieveAll(checklistId: string): Promise<ChecklistItem[]> {
   const selector = {
-    ...(checklistId && { checklist_id: checklistId }),
+    ...(checklistId && { checklist_id: checklistId })
+  };
+
+  return db<ChecklistItem>('checklist_item').where(selector).returning('*');
+}
+
+export function retrieveBy(checklistItemId: string): Promise<ChecklistItem | undefined> {
+  const selector = {
     ...(checklistItemId && { id: checklistItemId })
   };
 
-  const query = db<ChecklistItem>('checklist_item').where(selector).returning('*');
-
-  return (checklistId && query) || query.first();
+  return db<ChecklistItem>('checklist_item').where(selector).returning('*').first();
 }
 
 export function create(checklistItem: ChecklistItem): Promise<void> {

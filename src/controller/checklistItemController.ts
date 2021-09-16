@@ -1,5 +1,5 @@
-import { retrieve, create, update, remove } from '../model/checklistItem';
-import { retrieve as retrieveChecklist } from '../model/checklist';
+import { retrieveAll, retrieveBy, create, update, remove } from '../model/checklistItem';
+import { retrieveBy as retrieveChecklist } from '../model/checklist';
 import { checkBody, validateUUID } from './utilities';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,11 +11,11 @@ export const getChecklistItems = async (req: Request, res: Response): Promise<vo
 
   await validateUUID({ checklistId });
 
-  const checklist = await retrieveChecklist(null, checklistId, null);
+  const checklist = await retrieveChecklist(checklistId, null);
 
   if (!checklist) throw new CustomError(404, 'Checklist does not exist');
 
-  const checklistItems = await retrieve(checklistId, null);
+  const checklistItems = await retrieveAll(checklistId);
 
   if (!checklistItems.length) throw new CustomError(404, 'Checklist item does not exist');
 
@@ -27,7 +27,7 @@ export const getChecklistItemById = async (req: Request, res: Response): Promise
 
   await validateUUID({ checklistItemId });
 
-  const checklistItem = await retrieve(null, checklistItemId);
+  const checklistItem = await retrieveBy(checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
@@ -62,7 +62,7 @@ export const updateChecklistItem = async (req: Request, res: Response): Promise<
     checked: checked
   };
 
-  const checklistItem = await retrieve(null, checklistItemId);
+  const checklistItem = await retrieveBy(checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 
@@ -78,7 +78,7 @@ export const deleteChecklistItem = async (req: Request, res: Response): Promise<
 
   await validateUUID({ checklistItemId });
 
-  const checklistItem = await retrieve(null, checklistItemId);
+  const checklistItem = await retrieveBy(checklistItemId);
 
   if (!checklistItem) throw new CustomError(404, 'Checklist item does not exist');
 

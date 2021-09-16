@@ -3,55 +3,41 @@ import { Project, UpdateProject, ProjectUser } from '../types/project';
 import { Priority } from '../types/priority';
 import { Status } from '../types/status';
 
-// ** FUNCTION OVERLOADS **//
-
-export function retrieve(accountId: string, projectId: null, projectName: null): Promise<Project[]>;
-
-export function retrieve(accountId: string, projectId: null, projectName: string): Promise<Project>;
-
-export function retrieve(accountId: null, projectId: string, projectName: null): Promise<Project>;
-
-// ** END ** //
-
-export function retrieve(
-  accountId?: string,
-  projectId?: string,
-  projectName?: string
-): Promise<Project[] | Project | undefined> {
+export function retrieveAll(accountId: string): Promise<Project[]> {
   const selector = {
-    ...(accountId && { account_id: accountId }),
+    ...(accountId && { account_id: accountId })
+  };
+
+  return db<Project>('project').where(selector).returning('*');
+}
+
+export function retrieveBy(projectId: string, projectName: string): Promise<Project | undefined> {
+  const selector = {
     ...(projectId && { id: projectId }),
     ...(projectName && { name: projectName })
   };
 
-  const query = db<Project>('project').where(selector).returning('*');
-
-  return (
-    (accountId && !projectName && query) ||
-    ((projectId || (accountId && projectName)) && query.first())
-  );
+  return db<Project>('project').where(selector).returning('*').first();
 }
 
-// ** FUNCTION OVERLOADS **//
+export function retrieveAllProjectUsers(projectId: string): Promise<ProjectUser[]> {
+  const selector = {
+    ...(projectId && { project_id: projectId })
+  };
 
-export function retrieveProjectUser(projectId: string, userId: string): Promise<ProjectUser>;
+  return db<ProjectUser>('project_users').where(selector).returning('*');
+}
 
-export function retrieveProjectUser(projectId: string, userId: null): Promise<ProjectUser[]>;
-
-export function retrieveProjectUser(projectId: null, userId: string): Promise<ProjectUser>;
-
-export function retrieveProjectUser(
-  projectId?: string,
-  userId?: string
-): Promise<ProjectUser[] | ProjectUser | undefined> {
+export function retrieveProjectUserBy(
+  projectId: string,
+  userId: string
+): Promise<ProjectUser | undefined> {
   const selector = {
     ...(projectId && { project_id: projectId }),
     ...(userId && { user_id: userId })
   };
 
-  const query = db<ProjectUser>('project_users').where(selector).returning('*');
-
-  return (projectId && !userId && query) || query.first();
+  return db<ProjectUser>('project_users').where(selector).returning('*').first();
 }
 
 export function retrievePriorities(): Promise<Priority[]> {

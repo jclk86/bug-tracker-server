@@ -1,11 +1,11 @@
-import { retrieve } from '../model/admin';
+import { retrieveAll, retrieveBy } from '../model/admin';
 import { Request, Response } from 'express';
 import CustomError from '../errorHandler/CustomError';
 import { validateUUID } from './utilities';
 import { remove } from '../model/account';
 
 export const getAccounts = async (req: Request, res: Response): Promise<void> => {
-  const accounts = await retrieve();
+  const accounts = await retrieveAll();
 
   if (!accounts?.length) throw new CustomError(404, 'Accounts have not been added');
 
@@ -17,7 +17,7 @@ export const getAccountById = async (req: Request, res: Response): Promise<void>
 
   if (accountId) await validateUUID({ accountId });
 
-  const account = await retrieve(accountId);
+  const account = await retrieveBy(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
@@ -29,7 +29,7 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
 
   await validateUUID({ accountId });
 
-  const account = await retrieve(accountId);
+  const account = await retrieveBy(accountId);
 
   if (!account) throw new CustomError(404, 'Account does not exist');
 
